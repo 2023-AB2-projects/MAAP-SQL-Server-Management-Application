@@ -1,2 +1,8 @@
-package backend.model.DatabaseActionModel;public class CreateTableObject {
+package backend.model.DatabaseActionModel;
+
+public class CreateTableObject implements DatabaseAction{
+    @Override
+    public void actionPerforme() {
+
+    }
 }
