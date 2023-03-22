@@ -7,7 +7,7 @@ plugins {
 // apply from: '../lint.gradle'
 
 application {
-    mainClass = "backend.Main"
+    mainClass = "Main"
 }
 
 repositories {
