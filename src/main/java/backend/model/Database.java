@@ -9,4 +9,8 @@ import java.util.List;
 public class Database {
     private String dataBaseName;        // stores the name of the database
     private List<Field> fields;         // stores the name of the tables
+
+    public Database(String name) {
+        dataBaseName = name;
+    }
 }
