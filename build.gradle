@@ -3,8 +3,10 @@ plugins {
     id 'java'
     id 'application'
     id 'maven-publish'
-
 }
+
+System.setProperty( "user.dir", "ab2-project-nemleszkitolmasolni" )
+println  "  project dir:  "+ System.getProperty("user.dir");
 
 // apply QA tasks
 // apply from: 'lint.gradle'
@@ -27,6 +29,8 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.1'
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.14.1'
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.14.2'
 
 
     // https://mvnrepository.com/artifact/org.projectlombok/lombok

@@ -1,11 +1,16 @@
 package backend;
 
-import jdk.jfr.Label;
+import backend.model.Database;
+import backend.repository.DatabaseRepository;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Slf4j
 public class Main {
     public static void main(String[] args) {
-        log.info("Hello World!");
+        DatabaseRepository.createDataBase(new Database());
     }
 }
