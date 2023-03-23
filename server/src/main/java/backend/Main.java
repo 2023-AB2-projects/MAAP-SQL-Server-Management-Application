@@ -1,11 +1,10 @@
 package backend;
 
-import backend.model.CreateDatabaseAction;
-import backend.model.DatabaseAction;
+import backend.databaseactions.createactions.CreateDatabaseAction;
+import backend.databaseactions.DatabaseAction;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.io.File;
 
 @Slf4j
 public class Main {
