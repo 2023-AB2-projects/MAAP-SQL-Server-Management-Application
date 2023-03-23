@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 
 public class GUIController extends JFrame implements ActionListener {
     // Reference to ClientController
-    private ClientController clientController;
+    private final ClientController clientController;
 
     // Components
     private ConnectionFrame connectionFrame;
@@ -37,8 +37,8 @@ public class GUIController extends JFrame implements ActionListener {
         // Add components to listener (listener = this)
         this.addListeners();
 
-        // Set frame to visible
-        this.setVisible(true);
+//        // Set frame to visible
+//        this.setVisible(true);
     }
 
     private void frameSetup() {
@@ -99,6 +99,9 @@ public class GUIController extends JFrame implements ActionListener {
             System.out.println("Debug - 3. GUI Controller: IP: " + ip + " | Port: " + port);
 
             this.clientController.establishConnection(ip, port);
+
+            // SQL window should be visible
+            this.setVisible(true);
         }
     }
 
