@@ -25,6 +25,9 @@ public class ConnectionFrame extends JFrame {
         // Add components to frame
         this.addComponents();
 
+        // Add listener to button
+        this.addListeners();
+
         // Set frame visible
         this.setVisible(true);
     }
@@ -55,6 +58,10 @@ public class ConnectionFrame extends JFrame {
         this.add(this.connectButton);
     }
 
+    private void addListeners() {
+        this.connectButton.addActionListener(this.guiController);
+    }
+
     private void frameSetup() {
         // JFrame settings
         this.setSize(500, 500);
@@ -65,4 +72,10 @@ public class ConnectionFrame extends JFrame {
         // Layout manager
         this.setLayout(new GridLayout(3, 2, 10, 10));
     }
+
+    /* Getters */
+    public JButton getConnectButton() { return this.connectButton; }
+
+    public String getIP() { return this.ipField.getText(); }
+    public String getPort() { return this.portField.getText(); }
 }

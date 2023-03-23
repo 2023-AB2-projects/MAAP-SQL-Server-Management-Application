@@ -19,6 +19,7 @@ public class GUIController extends JFrame implements ActionListener {
 
     // References
     private JButton sendCommandButton;
+    private JButton connectionButton;
 
     public GUIController(ClientController clientController) {
         // Reference
@@ -54,6 +55,7 @@ public class GUIController extends JFrame implements ActionListener {
     private void initComponents() {
         // Connection Frame
         this.connectionFrame = new ConnectionFrame(this);
+        this.connectionButton = this.connectionFrame.getConnectButton();
 
         // Init menu controller
         this.menuController = new MenuController(this);
@@ -79,6 +81,7 @@ public class GUIController extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent event) {
+
         if (event.getSource().equals(this.sendCommandButton)) {
             String command = this.sendCommandButton.getText();
 
@@ -87,6 +90,15 @@ public class GUIController extends JFrame implements ActionListener {
             System.out.println("Debug - 3. GUI Controller: Command: " + command);
 
             this.clientController.sendCommandToServer(command);
+        } else if(event.getSource().equals(this.connectionButton)) {
+            String ip = this.connectionFrame.getIP();
+            String port = this.connectionFrame.getPort();
+
+            System.out.println("Debug - 1. GUI Controller: Connect button pressed!");
+            System.out.println("Debug - 2. GUI Controller: Delegating work to client controller!");
+            System.out.println("Debug - 3. GUI Controller: IP: " + ip + " | Port: " + port);
+
+            this.clientController.establishConnection(ip, port);
         }
     }
 
