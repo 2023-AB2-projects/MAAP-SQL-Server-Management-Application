@@ -142,5 +142,4 @@ public class GUIController extends JFrame implements ActionListener {
     /* Setters */
     public void setInputTextAreaString(String string) { this.inputTextArea.setInputTextAreaString(string); }
 
-    public void setCommandOutput(String commandOutput) { this.outputTextArea.setText(commandOutput) ;}
 }
