@@ -1,24 +1,35 @@
 package frontend;
 
+import control.ClientController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class GUIController extends JFrame implements ActionListener {
+    // Reference to ClientController
+    private final ClientController clientController;
+
+    // Components
+    private ConnectionFrame connectionFrame;
     private MenuController menuController;
     private InputTextArea inputTextArea;
     private OutputTextArea outputTextArea;
 
     // References
     private JButton sendCommandButton;
+    private JButton connectionButton;
 
-    public GUIController() {
+    public GUIController(ClientController clientController) {
+        // Reference
+        this.clientController = clientController;
+
         // Setup JFrame
         this.frameSetup();
 
         // Init menu controller
-        this.initVariables();
+        this.initComponents();
 
         // Add menu controller to frame
         this.addComponents();
@@ -26,8 +37,8 @@ public class GUIController extends JFrame implements ActionListener {
         // Add components to listener (listener = this)
         this.addListeners();
 
-        // Set frame to visible
-        this.setVisible(true);
+//        // Set frame to visible
+//        this.setVisible(true);
     }
 
     private void frameSetup() {
@@ -41,7 +52,11 @@ public class GUIController extends JFrame implements ActionListener {
         this.setLayout(new GridLayout(2, 1, 10, 10));
     }
 
-    private void initVariables() {
+    private void initComponents() {
+        // Connection Frame
+        this.connectionFrame = new ConnectionFrame(this);
+        this.connectionButton = this.connectionFrame.getConnectButton();
+
         // Init menu controller
         this.menuController = new MenuController(this);
         this.sendCommandButton = this.menuController.getSendCommandButton();    // Reference
@@ -66,12 +81,32 @@ public class GUIController extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent event) {
+
         if (event.getSource().equals(this.sendCommandButton)) {
-            System.out.println("1. Send button pressed!");
-            System.out.println("2. Command to be executed: " + this.inputTextArea.getText());
+            String command = this.sendCommandButton.getText();
+
+            System.out.println("Debug - 1. GUI Controller: Send button pressed!");
+            System.out.println("Debug - 2. GUI Controller: Delegating work to client controller (-> MessageHandler)!");
+            System.out.println("Debug - 3. GUI Controller: Command: " + command);
+
+            this.clientController.sendCommandToServer(command);
+        } else if(event.getSource().equals(this.connectionButton)) {
+            String ip = this.connectionFrame.getIP();
+            String port = this.connectionFrame.getPort();
+
+            System.out.println("Debug - 1. GUI Controller: Connect button pressed!");
+            System.out.println("Debug - 2. GUI Controller: Delegating work to client controller!");
+            System.out.println("Debug - 3. GUI Controller: IP: " + ip + " | Port: " + port);
+
+            this.clientController.establishConnection(ip, port);
+
+            // SQL window should be visible
+            this.setVisible(true);
         }
     }
 
     /* Setters */
     public void setInputTextAreaString(String string) { this.inputTextArea.setInputTextAreaString(string); }
+
+    public void setCommandOutput(String commandOutput) { this.outputTextArea.setText(commandOutput) ;}
 }
