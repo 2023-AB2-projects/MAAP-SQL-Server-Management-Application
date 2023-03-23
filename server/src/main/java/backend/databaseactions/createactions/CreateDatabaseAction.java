@@ -19,12 +19,9 @@ import java.io.IOException;
 public class CreateDatabaseAction implements DatabaseAction {
     @JsonProperty
     private String databaseName;
-    @JsonProperty
-    private Integer nrTables;
 
     public CreateDatabaseAction(String databaseName) {
         this.databaseName = databaseName;
-        this.nrTables = 10;
     }
 
     @Override
@@ -44,7 +41,7 @@ public class CreateDatabaseAction implements DatabaseAction {
         System.out.println("Before Create Database:" + rootNode.toPrettyString());
 
         // reading
-        JsonNode databaseArrayNode = rootNode.get(config.getDB_CATALOG_ROOT());
+        JsonNode databaseArrayNode = rootNode.get(Config.getDbCatalogRoot());
         System.out.println("Database node: " + databaseArrayNode.toPrettyString());
         JsonNode newDatabase = JsonNodeFactory.instance.objectNode().putPOJO("Database", this);
 
