@@ -1,5 +1,13 @@
 {
-  "Databases": [
-
-  ]
+  "Databases" : [ {
+    "Database" : {
+      "databaseName" : "myDataBase2",
+      "nrTables" : 10
+    }
+  }, {
+    "Database" : {
+      "databaseName" : "adrienAdatbazisa",
+      "nrTables" : 10
+    }
+  } ]
 }

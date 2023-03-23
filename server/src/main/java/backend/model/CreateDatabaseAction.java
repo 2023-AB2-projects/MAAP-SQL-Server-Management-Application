@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -58,6 +59,11 @@ public class CreateDatabaseAction implements DatabaseAction{
         System.out.println(rootNode);
 
         JsonNode databaseArrayNode = rootNode.get(config.getDB_CATALOG_ROOT());
-        // JsonNode newDatabaseNode = mapper.cre
+        JsonNode newDatabase = mapper.createObjectNode().putPOJO("Database" , this);
+
+        ArrayNode usersArray = (ArrayNode) databaseArrayNode;
+        usersArray.add(newDatabase);
+
+        mapper.writeValue(new File(config.getDB_CATALOG_PATH()), rootNode);
     }
 }
