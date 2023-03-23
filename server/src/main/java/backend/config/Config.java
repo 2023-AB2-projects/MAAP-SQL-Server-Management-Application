@@ -6,7 +6,7 @@ import java.io.File;
 
 @Data
 public class Config {
-    private static String DB_CATALOG_PATH = System.getProperty("user.dir") + "/src/main/resources/Catalog.json";
+    private static final String DB_CATALOG_PATH = System.getProperty("user.dir") + "/src/main/resources/Catalog.json";
     private static final String DB_CATALOG_ROOT = "Databases";
 
     /* Getters */

@@ -40,7 +40,8 @@ public class CreateDatabaseAction implements DatabaseAction {
 
         // Get array that contains all the databases
         JsonNode databasesArrayValue = rootNode.get(Config.getDbCatalogRoot());
-//        System.out.println("Current databases: " + databasesArrayValue);
+        // System.out.println("Current databases: " + databasesArrayValue);
+
 
         // Get current array of databases stored in 'Databases' json node
         ArrayNode catalogDatabaseNodes = (ArrayNode) databasesArrayValue;
