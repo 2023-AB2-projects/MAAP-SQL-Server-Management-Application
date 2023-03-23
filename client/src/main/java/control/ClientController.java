@@ -3,6 +3,8 @@ package control;
 import backend.ConnectionManager;
 import frontend.GUIController;
 
+import java.io.IOException;
+
 public class ClientController {
     /* ClientController has a reference to GUI, MessageHandler and ConnectionManager */
     private GUIController guiController;
@@ -22,18 +24,21 @@ public class ClientController {
     }
 
     /* Client controls */
-    public void establishConnection(String ip, String port) {
+    public void establishConnection(String ip, String port) throws IOException {
         this.messageHandler.establishConnection(ip, port);
+    }
+
+    public void stopConnection() throws IOException {
+        this.messageHandler.stopConnection();
     }
 
     public void sendCommandToServer(String command) {
         this.messageHandler.sendCommandToServer(command);
     }
 
-    public void setCommandOutput(String commandOutput) {
-        this.guiController.setCommandOutput(commandOutput);
+    public String receiveMessage() throws IOException {
+        return messageHandler.receiveMessage();
     }
-    /* /Client controls */
 
     public static void main(String[] args) {
         ClientController client = new ClientController();

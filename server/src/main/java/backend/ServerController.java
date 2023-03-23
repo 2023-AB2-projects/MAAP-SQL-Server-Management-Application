@@ -1,12 +1,17 @@
 package backend;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 
+@Slf4j
 public class ServerController {
     public void start(int port) throws IOException {
+
         ServerConnection serverConnection = new ServerConnection(port);
 
         serverConnection.start();
+        log.info("Client Connected");
         String shutdownMsg = "SHUTDOWN";
 
         while(true){
@@ -17,6 +22,7 @@ public class ServerController {
                 if(msg.equals(shutdownMsg)){
                     serverConnection.send("SERVER DISCONNECTED");
                     serverConnection.stop();
+                    log.info("Server Shutting Down");
                     break;
                 }
 
@@ -25,7 +31,9 @@ public class ServerController {
                 serverConnection.send(msg);
             }catch (NullPointerException e){
                 serverConnection.stop();
+                log.info("Client Disconnected");
                 serverConnection.start();
+                log.info("Client Connected");
             }
         }
 

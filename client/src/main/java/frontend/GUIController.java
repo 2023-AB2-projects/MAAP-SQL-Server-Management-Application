@@ -6,6 +6,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 public class GUIController extends JFrame implements ActionListener {
     // Reference to ClientController
@@ -44,7 +47,18 @@ public class GUIController extends JFrame implements ActionListener {
     private void frameSetup() {
         // JFrame settings
         this.setSize(1600, 900);
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    clientController.stopConnection();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                super.windowClosing(e);
+                System.exit(0);
+            }
+        });
         this.setTitle("Client side application");
         this.setFocusable(true);
 
@@ -83,13 +97,21 @@ public class GUIController extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent event) {
 
         if (event.getSource().equals(this.sendCommandButton)) {
-            String command = this.sendCommandButton.getText();
+            String command = this.inputTextArea.getText();
 
             System.out.println("Debug - 1. GUI Controller: Send button pressed!");
             System.out.println("Debug - 2. GUI Controller: Delegating work to client controller (-> MessageHandler)!");
             System.out.println("Debug - 3. GUI Controller: Command: " + command);
 
             this.clientController.sendCommandToServer(command);
+
+            try {
+                String response = clientController.receiveMessage();
+                outputTextArea.setText(response);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
         } else if(event.getSource().equals(this.connectionButton)) {
             String ip = this.connectionFrame.getIP();
             String port = this.connectionFrame.getPort();
@@ -98,10 +120,16 @@ public class GUIController extends JFrame implements ActionListener {
             System.out.println("Debug - 2. GUI Controller: Delegating work to client controller!");
             System.out.println("Debug - 3. GUI Controller: IP: " + ip + " | Port: " + port);
 
-            this.clientController.establishConnection(ip, port);
-
-            // SQL window should be visible
-            this.setVisible(true);
+            try {
+                this.clientController.establishConnection(ip, port);
+                // SQL window should be visible
+                this.setVisible(true);
+                //change this later
+                connectionFrame.setVisible(false);
+            } catch (IOException e) {
+                //change this later maybe
+                System.out.println("Server Not Running");
+            }
         }
     }
 

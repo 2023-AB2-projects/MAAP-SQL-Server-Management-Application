@@ -2,6 +2,8 @@ package control;
 
 import backend.ConnectionManager;
 
+import java.io.IOException;
+
 
 public class MessageHandler {
     private ClientController clientController;
@@ -16,11 +18,13 @@ public class MessageHandler {
     }
 
     /* Message handler methods */
-    public void establishConnection(String ip, String host) {
+    public void establishConnection(String ip, String host) throws IOException {
         // Connection manager
         this.connectionManager.establishConnection(ip, host);
     }
-
+    public void stopConnection() throws IOException {
+        this.connectionManager.stopConnection();
+    }
     public void sendCommandToServer(String command) {
         // Before sending processing
 
@@ -29,11 +33,8 @@ public class MessageHandler {
         this.connectionManager.sendMessage(command);
     }
 
-    public void processReceivedOutputFromServer(String commandOutput) {
-        // Processing
-
-        // Then send to client controller
-        this.clientController.setCommandOutput(commandOutput);
+    public String receiveMessage() throws IOException {
+        return connectionManager.receiveMessage();
     }
     /* /Message handler methods */
 }
