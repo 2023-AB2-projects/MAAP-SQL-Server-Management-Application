@@ -7,7 +7,7 @@ plugins {
 // apply from: '../lint.gradle'
 
 application {
-    mainClass = "Main"
+    mainClass = "control.ClientController"
 }
 
 repositories {
