@@ -11,7 +11,7 @@ public class Connection {
     protected BufferedReader in;
     public void send(String msg){
         out.println(msg);
-        out.println("");
+        out.println("END OF COMMAND");
         out.flush();
     }
     public String receive() throws IOException, NullPointerException {
@@ -19,7 +19,7 @@ public class Connection {
         StringBuilder fullMessage = new StringBuilder();
         while(true){
             msg = in.readLine();
-            if(msg.equals("")){
+            if(msg.equals("END OF COMMAND")){
                 break;
             }
             fullMessage.append(msg);
@@ -27,6 +27,7 @@ public class Connection {
         }
         fullMessage.delete(fullMessage.lastIndexOf("\r\n"), fullMessage.length());
         return fullMessage.toString();
+
     }
 }
 

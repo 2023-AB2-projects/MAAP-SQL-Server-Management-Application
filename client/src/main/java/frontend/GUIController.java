@@ -108,8 +108,14 @@ public class GUIController extends JFrame implements ActionListener {
             try {
                 String response = clientController.receiveMessage();
                 outputTextArea.setText(response);
+                if(response.equals("SERVER DISCONNECTED")){
+                    clientController.stopConnection();
+                    System.out.println("Server was shut down");
+                    System.exit(0);
+                }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.out.println("Server is no longer running");
+                System.exit(0);
             }
 
         } else if(event.getSource().equals(this.connectionButton)) {
