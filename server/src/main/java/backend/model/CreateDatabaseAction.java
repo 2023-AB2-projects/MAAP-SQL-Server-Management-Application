@@ -4,10 +4,12 @@ import backend.config.Config;
 import backend.model.XMLModel.Database;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -21,7 +23,7 @@ import java.io.InputStream;
 
 @Data
 @JsonRootName(value = "Database")
-public class CreateDatabaseAction implements DatabaseAction{
+public class CreateDatabaseAction implements DatabaseAction {
     @JsonProperty
     private String databaseName;
     @JsonProperty
@@ -38,32 +40,30 @@ public class CreateDatabaseAction implements DatabaseAction{
         Config config = new Config();
 
         // opening the Catalog file
-        File catalog = new File(config.getDB_CATALOG_PATH());
+        File catalog = config.getCatalogFile();
 
-        // creating the database xml model
-        // Database database = new Database();
-        // database.setDatabaseName(databaseName);
+        // new object mapper with indented output
+        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        // SerializationFeature -> Indent Json file
 
-        // XmlMapper xmlMapper = new XmlMapper();
-        // xmlMapper.writeValue(catalog, this);
+        // reading json file into root obj(tree)
+        JsonNode rootNode = mapper.readTree(catalog);
+        System.out.println("Before Create Database:" + rootNode.toPrettyString());
 
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);;
-        // mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
-        // ObjectNode node = (ObjectNode) mapper.readTree(new File(config.getDB_CATALOG_PATH()));
-
-        // node.putPOJO("Database",this);
-        // mapper.writeValue(new File(config.getDB_CATALOG_PATH()),node);
-
-        JsonNode rootNode = mapper.readTree(new File(config.getDB_CATALOG_PATH()));
-        System.out.println("Before Create Datbase:");
-        System.out.println(rootNode);
-
+        // reading
         JsonNode databaseArrayNode = rootNode.get(config.getDB_CATALOG_ROOT());
-        JsonNode newDatabase = mapper.createObjectNode().putPOJO("Database" , this);
+        System.out.println("Database node: " + databaseArrayNode.toPrettyString());
+        JsonNode newDatabase = JsonNodeFactory.instance.objectNode().putPOJO("Database", this);
 
+        // Get current array of databases stored in 'Databases' json node
         ArrayNode usersArray = (ArrayNode) databaseArrayNode;
-        usersArray.add(newDatabase);
+        usersArray.add(newDatabase);        // Add the new database
 
-        mapper.writeValue(new File(config.getDB_CATALOG_PATH()), rootNode);
+        // Mapper -> Write entire catalog
+        mapper.writeValue(catalog, rootNode);
+
+        //FIXME
+        // CreateDatabase Exceptions
+
     }
 }

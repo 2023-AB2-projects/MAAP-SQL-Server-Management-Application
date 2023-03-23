@@ -1,12 +1,32 @@
 {
   "Databases" : [ {
     "Database" : {
-      "databaseName" : "myDataBase2",
+      "databaseName" : "Akoska kis bazisa",
       "nrTables" : 10
     }
   }, {
     "Database" : {
-      "databaseName" : "adrienAdatbazisa",
+      "databaseName" : "Akoska kis bazisa",
+      "nrTables" : 10
+    }
+  }, {
+    "Database" : {
+      "databaseName" : "Akoska kis bazisa",
+      "nrTables" : 10
+    }
+  }, {
+    "Database" : {
+      "databaseName" : "Akoska kis bazisa",
+      "nrTables" : 10
+    }
+  }, {
+    "Database" : {
+      "databaseName" : "Akoska kis bazisa",
+      "nrTables" : 10
+    }
+  }, {
+    "Database" : {
+      "databaseName" : "Akoska kis bazisa",
       "nrTables" : 10
     }
   } ]

@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         log.info(System.getProperty("user.dir"));
 
-        DatabaseAction databaseAction = new CreateDatabaseAction("adrienAdatbazisa");
+        DatabaseAction databaseAction = new CreateDatabaseAction("Akoska kis bazisa");
         databaseAction.actionPerform();
     }
 }
