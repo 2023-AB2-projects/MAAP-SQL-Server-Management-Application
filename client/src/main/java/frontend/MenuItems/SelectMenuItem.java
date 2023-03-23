@@ -1,4 +1,4 @@
-package MenuItems;
+package frontend.MenuItems;
 
 public class SelectMenuItem extends CommandMenuItem {
     public SelectMenuItem() {

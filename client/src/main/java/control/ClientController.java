@@ -1,3 +1,7 @@
+package control;
+
+import frontend.GUIController;
+
 public class ClientController {
     public ClientController() {
         // Init GUI

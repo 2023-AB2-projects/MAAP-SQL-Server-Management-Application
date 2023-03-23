@@ -1,4 +1,4 @@
-package MenuItems;
+package frontend.MenuItems;
 
 import javax.swing.*;
 

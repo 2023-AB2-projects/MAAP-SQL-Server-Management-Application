@@ -1,5 +1,7 @@
-import MenuItems.CommandMenuItem;
-import MenuItems.SelectMenuItem;
+package frontend;
+
+import frontend.MenuItems.CommandMenuItem;
+import frontend.MenuItems.SelectMenuItem;
 
 import javax.swing.*;
 import java.awt.*;
