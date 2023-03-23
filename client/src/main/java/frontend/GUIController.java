@@ -1,11 +1,18 @@
 package frontend;
 
+import control.ClientController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class GUIController extends JFrame implements ActionListener {
+    // Reference to ClientController
+    private ClientController clientController;
+
+    // Components
+    private ConnectionFrame connectionFrame;
     private MenuController menuController;
     private InputTextArea inputTextArea;
     private OutputTextArea outputTextArea;
@@ -13,12 +20,15 @@ public class GUIController extends JFrame implements ActionListener {
     // References
     private JButton sendCommandButton;
 
-    public GUIController() {
+    public GUIController(ClientController clientController) {
+        // Reference
+        this.clientController = clientController;
+
         // Setup JFrame
         this.frameSetup();
 
         // Init menu controller
-        this.initVariables();
+        this.initComponents();
 
         // Add menu controller to frame
         this.addComponents();
@@ -41,7 +51,10 @@ public class GUIController extends JFrame implements ActionListener {
         this.setLayout(new GridLayout(2, 1, 10, 10));
     }
 
-    private void initVariables() {
+    private void initComponents() {
+        // Connection Frame
+        this.connectionFrame = new ConnectionFrame(this);
+
         // Init menu controller
         this.menuController = new MenuController(this);
         this.sendCommandButton = this.menuController.getSendCommandButton();    // Reference
@@ -67,11 +80,18 @@ public class GUIController extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent event) {
         if (event.getSource().equals(this.sendCommandButton)) {
-            System.out.println("1. Send button pressed!");
-            System.out.println("2. Command to be executed: " + this.inputTextArea.getText());
+            String command = this.sendCommandButton.getText();
+
+            System.out.println("Debug - 1. GUI Controller: Send button pressed!");
+            System.out.println("Debug - 2. GUI Controller: Delegating work to client controller (-> MessageHandler)!");
+            System.out.println("Debug - 3. GUI Controller: Command: " + command);
+
+            this.clientController.sendCommandToServer(command);
         }
     }
 
     /* Setters */
     public void setInputTextAreaString(String string) { this.inputTextArea.setInputTextAreaString(string); }
+
+    public void setCommandOutput(String commandOutput) { this.outputTextArea.setText(commandOutput) ;}
 }
