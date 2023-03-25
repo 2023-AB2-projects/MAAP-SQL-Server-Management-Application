@@ -22,7 +22,7 @@ public class ConnectionManager {
     }
 
     public void sendMessage(String command) {
-        System.out.println(command);
+        //System.out.println(command);
         clientConnection.send(command);
     }
 
