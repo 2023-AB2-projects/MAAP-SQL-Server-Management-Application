@@ -12,10 +12,9 @@ public class ConnectionManager {
     }
 
     /* Connection methods */
-    public void establishConnection(String ip, String port) throws IOException {
+    public void establishConnection(String ip) throws IOException {
         clientConnection = new ClientConnection();
         clientConnection.startConnection(ip, 4444);
-        //clientConnection.startConnection(ip, Integer.parseInt(port));
     }
 
     public void stopConnection() throws IOException {

@@ -18,9 +18,9 @@ public class MessageHandler {
     }
 
     /* Message handler methods */
-    public void establishConnection(String ip, String host) throws IOException {
+    public void establishConnection(String ip) throws IOException {
         // Connection manager
-        this.connectionManager.establishConnection(ip, host);
+        this.connectionManager.establishConnection(ip);
     }
     public void stopConnection() throws IOException {
         this.connectionManager.stopConnection();

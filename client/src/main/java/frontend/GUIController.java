@@ -99,9 +99,9 @@ public class GUIController extends JFrame implements ActionListener {
         if (event.getSource().equals(this.sendCommandButton)) {
             String command = this.inputTextArea.getText();
 
-            System.out.println("Debug - 1. GUI Controller: Send button pressed!");
-            System.out.println("Debug - 2. GUI Controller: Delegating work to client controller (-> MessageHandler)!");
-            System.out.println("Debug - 3. GUI Controller: Command: " + command);
+//            System.out.println("Debug - 1. GUI Controller: Send button pressed!");
+//            System.out.println("Debug - 2. GUI Controller: Delegating work to client controller (-> MessageHandler)!");
+//            System.out.println("Debug - 3. GUI Controller: Command: " + command);
 
             this.clientController.sendCommandToServer(command);
 
@@ -120,14 +120,14 @@ public class GUIController extends JFrame implements ActionListener {
 
         } else if(event.getSource().equals(this.connectionButton)) {
             String ip = this.connectionFrame.getIP();
-            String port = this.connectionFrame.getPort();
+//            String port = this.connectionFrame.getPort();
 
-            System.out.println("Debug - 1. GUI Controller: Connect button pressed!");
-            System.out.println("Debug - 2. GUI Controller: Delegating work to client controller!");
-            System.out.println("Debug - 3. GUI Controller: IP: " + ip + " | Port: " + port);
+//            System.out.println("Debug - 1. GUI Controller: Connect button pressed!");
+//            System.out.println("Debug - 2. GUI Controller: Delegating work to client controller!");
+//            System.out.println("Debug - 3. GUI Controller: IP: " + ip + " | Port: " + port);
 
             try {
-                this.clientController.establishConnection(ip, port);
+                this.clientController.establishConnection(ip);
                 // SQL window should be visible
                 this.setVisible(true);
                 //change this later

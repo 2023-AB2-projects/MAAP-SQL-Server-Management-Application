@@ -8,8 +8,10 @@ public class ConnectionFrame extends JFrame {
     private GUIController guiController;
 
     // Components
-    private JLabel ipLabel, portLabel;
-    private JTextField ipField, portField;
+    private JLabel ipLabel;
+    //private JLabel portLabel;
+    private JTextField ipField;
+    //private JTextField portField;
     private JButton connectButton;
 
     public ConnectionFrame(GUIController guiController) {
@@ -35,11 +37,11 @@ public class ConnectionFrame extends JFrame {
     private void initComponents() {
         // Labels
         this.ipLabel = new JLabel("IP: ");
-        this.portLabel = new JLabel("Port: ");
+        //this.portLabel = new JLabel("Port: ");
 
         // Text fields
         this.ipField = new JTextField("");
-        this.portField = new JTextField("");
+        //this.portField = new JTextField("");
 
         // Button
         this.connectButton = new JButton("Connect");
@@ -47,12 +49,14 @@ public class ConnectionFrame extends JFrame {
 
     private void addComponents() {
         // IP section
+        ipLabel.setHorizontalAlignment(JLabel.CENTER);
+        ipLabel.setVerticalAlignment(JLabel.CENTER);
         this.add(this.ipLabel);
         this.add(this.ipField);
 
         // Port section
-        this.add(this.portLabel);
-        this.add(this.portField);
+        //this.add(this.portLabel);
+        //this.add(this.portField);
 
         // Connect button
         this.add(this.connectButton);
@@ -64,18 +68,18 @@ public class ConnectionFrame extends JFrame {
 
     private void frameSetup() {
         // JFrame settings
-        this.setSize(500, 500);
+        this.setSize(500, 200);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("Connect to server");
         this.setFocusable(true);
 
         // Layout manager
-        this.setLayout(new GridLayout(3, 2, 10, 10));
+        this.setLayout(new GridLayout(2, 2, 10, 10));
     }
 
     /* Getters */
     public JButton getConnectButton() { return this.connectButton; }
 
     public String getIP() { return this.ipField.getText(); }
-    public String getPort() { return this.portField.getText(); }
+    //public String getPort() { return this.portField.getText(); }
 }

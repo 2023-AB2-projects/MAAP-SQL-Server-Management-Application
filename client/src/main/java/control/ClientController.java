@@ -24,8 +24,8 @@ public class ClientController {
     }
 
     /* Client controls */
-    public void establishConnection(String ip, String port) throws IOException {
-        this.messageHandler.establishConnection(ip, port);
+    public void establishConnection(String ip) throws IOException {
+        this.messageHandler.establishConnection(ip);
     }
 
     public void stopConnection() throws IOException {
