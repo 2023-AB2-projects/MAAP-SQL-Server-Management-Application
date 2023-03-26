@@ -14,13 +14,17 @@ public class TestDatabaseActions {
         String databaseName = "master", tableName = "People", fileName = "PeopleTableFile";
         int rowLength = 50;
         ArrayList<Attribute> attributes = new ArrayList<>(){{
-            add(new Attribute("id", "int", 0, false));
-            add(new Attribute("name", "char", 100, false));
-            add(new Attribute("age", "int", 0, false));
-            add(new Attribute("height", "int", 0, false));
+            add(new Attribute("id", "int", 0, false, false));
+            add(new Attribute("name", "char", 100, false, true));
+            add(new Attribute("age", "int", 0, false, true));
+            add(new Attribute("height", "int", 0, false, true));
         }};
         PrimaryKey primaryKey = new PrimaryKey(new ArrayList<>(){{ add("id"); }});
-        ArrayList<ForeignKey> foreignKeys = new ArrayList<>();
+        ArrayList<ForeignKey> foreignKeys = new ArrayList<>(){{
+            add(new ForeignKey("Cars", new ArrayList<>() {{
+                add("id");
+            }}));
+        }};
         ArrayList<IndexFile> indexFiles = new ArrayList<>();
         ArrayList<String> uniqueAttributes = new ArrayList<>(){{
             add("name");
@@ -36,10 +40,10 @@ public class TestDatabaseActions {
             System.out.println("Database doesn't exist!");
         } catch (PrimaryKeyNotFound e) {
             System.out.println("Primary key is not found in table attributes!");
-            throw new RuntimeException(e);
         } catch (ForeignKeyNotFound e) {
             System.out.println("Foreign key is not found in table attributes!");
-            throw new RuntimeException(e);
+        } catch (AttributeCantBeNull e) {
+            System.out.println("Given primary key has nullable attributes!");
         }
     }
 
@@ -48,8 +52,8 @@ public class TestDatabaseActions {
         String databaseName = "master", tableName = "Cars", fileName = "CarsTableFile";
         int rowLength = 100;
         ArrayList<Attribute> attributes = new ArrayList<>(){{
-            add(new Attribute("id", "int", 0, false));
-            add(new Attribute("name", "char", 100, false));
+            add(new Attribute("id", "int", 0, false, false));
+            add(new Attribute("name", "char", 100, false, true));
         }};
         PrimaryKey primaryKey = new PrimaryKey(new ArrayList<>(){{ add("id"); }});
         ArrayList<ForeignKey> foreignKeys = new ArrayList<>();
@@ -66,10 +70,10 @@ public class TestDatabaseActions {
             System.out.println("Database doesn't exist!");
         } catch (PrimaryKeyNotFound e) {
             System.out.println("Primary key is not found in table attributes!");
-            throw new RuntimeException(e);
         } catch (ForeignKeyNotFound e) {
             System.out.println("Foreign key is not found in table attributes!");
-            throw new RuntimeException(e);
+        } catch (AttributeCantBeNull e) {
+            System.out.println("Given primary key has nullable attributes!");
         }
     }
 

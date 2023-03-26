@@ -5,4 +5,5 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize
 public record Attribute(@JsonProperty String attributeName, @JsonProperty String type,
-                        @JsonProperty int length, @JsonProperty boolean isNull) {}
+                        @JsonProperty int length, @JsonProperty boolean isNull,
+                        @JsonProperty boolean isNullable) {}

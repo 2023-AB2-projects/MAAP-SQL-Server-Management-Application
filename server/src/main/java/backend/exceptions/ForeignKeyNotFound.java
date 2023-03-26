@@ -1,7 +1,9 @@
 package backend.exceptions;
 
+import java.util.ArrayList;
+
 public class ForeignKeyNotFound extends Exception {
-    public ForeignKeyNotFound(String tableName, String foreignKeyName) {
-        super("In table=" + tableName + " there's no foreign key=" + foreignKeyName);
+    public ForeignKeyNotFound(String tableName, ArrayList<String> referencedAttributes) {
+        super("In table=" + tableName + " there's no foreign key=" + referencedAttributes);
     }
 }
