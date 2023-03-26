@@ -38,18 +38,14 @@ public class CreateDatabaseAction implements DatabaseAction {
         // Json catalog -> Java JsonNode
         JsonNode rootNode = mapper.readTree(catalog);
 
-        // Get array that contains all the databases
-        JsonNode databasesArrayValue = rootNode.get(Config.getDbCatalogRoot());
-        // System.out.println("Current databases: " + databasesArrayValue);
-
-
         // Get current array of databases stored in 'Databases' json node
-        ArrayNode catalogDatabaseNodes = (ArrayNode) databasesArrayValue;
-        for (final JsonNode databaseNode : catalogDatabaseNodes) {
+        ArrayNode databasesArray = (ArrayNode) rootNode.get(Config.getDbCatalogRoot());
+        for (final JsonNode databaseNode : databasesArray) {
             // For each "Database" node find the name of the database
             JsonNode currentDatabaseNodeValue = databaseNode.get("Database").get("databaseName");
+
             if (currentDatabaseNodeValue == null) {
-                log.info("Database action -> Iterating databases -> Database null -> \"databaseName\" not found");
+                log.error("Database action -> Iterating databases -> Database null -> \"databaseName\" not found");
                 continue;
             }
 
@@ -63,7 +59,7 @@ public class CreateDatabaseAction implements DatabaseAction {
 
         // Create new database
         JsonNode newDatabase = JsonNodeFactory.instance.objectNode().putPOJO("Database", this);
-        catalogDatabaseNodes.add(newDatabase);        // Add the new database
+        databasesArray.add(newDatabase);        // Add the new database
 
         // Mapper -> Write entire catalog
         mapper.writeValue(catalog, rootNode);
