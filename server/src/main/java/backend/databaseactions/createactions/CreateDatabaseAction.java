@@ -4,7 +4,6 @@ import backend.config.Config;
 import backend.databaseactions.DatabaseAction;
 import backend.exceptions.DatabaseNameAlreadyExists;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -20,7 +19,6 @@ import java.util.List;
 
 @Data
 @Slf4j
-@JsonRootName(value = "Database")
 public class CreateDatabaseAction implements DatabaseAction {
     @JsonProperty
     private String databaseName;
@@ -34,7 +32,7 @@ public class CreateDatabaseAction implements DatabaseAction {
     }
 
     @Override
-    public void actionPerform() throws IOException, DatabaseNameAlreadyExists {
+    public void actionPerform() throws DatabaseNameAlreadyExists {
         // File that contains the whole catalog
         File catalog = Config.getCatalogFile();
 
@@ -42,7 +40,13 @@ public class CreateDatabaseAction implements DatabaseAction {
         ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
         // Json catalog -> Java JsonNode
-        JsonNode rootNode = mapper.readTree(catalog);
+        JsonNode rootNode;
+        try {
+            rootNode = mapper.readTree(catalog);
+        } catch (IOException exception) {
+            log.error("CreateDatabaseAction -> Mapper couldn't build tree from catalog!");
+            throw new RuntimeException(exception);
+        }
 
         // Get current array of databases stored in 'Databases' json node
         ArrayNode databasesArray = (ArrayNode) rootNode.get(Config.getDbCatalogRoot());
@@ -51,14 +55,14 @@ public class CreateDatabaseAction implements DatabaseAction {
             JsonNode currentDatabaseNodeValue = databaseNode.get("database").get("databaseName");
 
             if (currentDatabaseNodeValue == null) {
-                log.error("Database action -> Iterating databases -> Database null -> \"databaseName\" not found");
+                log.error("CreateDatabaseAction -> Database null -> \"databaseName\" not found");
                 continue;
             }
 
             // Check if a database exists with the given database name
             String currentDatabaseName = currentDatabaseNodeValue.asText();
             if(currentDatabaseName.equals(this.databaseName)) {
-                log.info("Database action -> Iterating databases -> database already exists " + currentDatabaseName);
+                log.info("CreateDatabaseAction -> database already exists " + currentDatabaseName);
                 throw new DatabaseNameAlreadyExists(currentDatabaseName);
             }
         }
@@ -68,6 +72,11 @@ public class CreateDatabaseAction implements DatabaseAction {
         databasesArray.add(newDatabase);        // Add the new database
 
         // Mapper -> Write entire catalog
-        mapper.writeValue(catalog, rootNode);
+        try {
+            mapper.writeValue(catalog, rootNode);
+        } catch (IOException e) {
+            log.error("CreateDatabaseAction -> Write value (mapper) failed");
+            throw new RuntimeException(e);
+        }
     }
 }

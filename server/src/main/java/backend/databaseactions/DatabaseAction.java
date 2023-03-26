@@ -1,9 +1,9 @@
 package backend.databaseactions;
 
+import backend.exceptions.DatabaseDoesntExist;
 import backend.exceptions.DatabaseNameAlreadyExists;
-
-import java.io.IOException;
+import backend.exceptions.TableNameAlreadyExists;
 
 public interface DatabaseAction {
-    void actionPerform() throws IOException, DatabaseNameAlreadyExists;
+    void actionPerform() throws DatabaseNameAlreadyExists, TableNameAlreadyExists, DatabaseDoesntExist;
 }
