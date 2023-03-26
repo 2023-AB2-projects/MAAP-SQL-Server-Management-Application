@@ -8,6 +8,7 @@ import backend.exceptions.DatabaseNameAlreadyExists;
 import backend.exceptions.TableNameAlreadyExists;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class TestDatabaseActions {
     public static void main(String[] args) {
@@ -21,8 +22,8 @@ public class TestDatabaseActions {
         } */
 
         // CreateTable
-        CreateTableAction createTable = new CreateTableAction("master1", "tablaNev",
-                "fileNev", 100, null, null, null, null);
+        CreateTableAction createTable = new CreateTableAction("master", "tablaNev",
+                "fileNev", 100, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         try {
             createTable.actionPerform();
         } catch (TableNameAlreadyExists exception) {

@@ -2,7 +2,20 @@
   "databases" : [ {
     "database" : {
       "databaseName" : "master",
-      "tables" : [ ]
+      "tables" : [ {
+        "table" : {
+          "databaseName" : "master",
+          "tableName" : "tablaNev",
+          "fileName" : "fileNev",
+          "rowLength" : 100,
+          "attributes" : [ ],
+          "pKAttributes" : [ ],
+          "fKAttributes" : [ ],
+          "indexFiles" : [ ],
+          "fkattributes" : [ ],
+          "pkattributes" : [ ]
+        }
+      } ]
     }
   }, {
     "database" : {

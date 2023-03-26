@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,6 +51,39 @@ public class CreateTableAction implements DatabaseAction {
         this.indexFiles = indexFiles;
     }
 
+    /* Utility */
+    private JsonNode findDatabase(JsonNode rootNode) {
+        // Check if database exists
+        ArrayNode databasesArray = (ArrayNode) rootNode.get(Config.getDbCatalogRoot());
+        for (final JsonNode databaseNode : databasesArray) {
+            // For each "Database" node find the name of the database
+            JsonNode currentDatabaseNodeValue = databaseNode.get("database").get("databaseName");
+
+            if (currentDatabaseNodeValue == null) {
+                log.error("CreateTableAction -> Database null -> \"databaseName\" not found");
+                continue;
+            }
+
+            // Check if a database exists with the given database name
+            String currentDatabaseName = currentDatabaseNodeValue.asText();
+            if(currentDatabaseName.equals(this.databaseName)) {
+                return databaseNode;
+            }
+        }
+
+        return null;
+    }
+
+    private boolean tableAlreadyExists(JsonNode databaseNode) {
+        ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");
+        for(final JsonNode tableNode : databaseTables) {
+            //TODO
+            return true;
+        }
+        return false;
+    }
+    /* / Utility */
+
     @Override
     public void actionPerform() throws TableNameAlreadyExists, DatabaseDoesntExist {
         // File that contains the whole catalog
@@ -68,27 +102,29 @@ public class CreateTableAction implements DatabaseAction {
         }
 
         // Check if database exists
-        ArrayNode databasesArray = (ArrayNode) rootNode.get(Config.getDbCatalogRoot());
-        boolean databaseExists = false;
-        for (final JsonNode databaseNode : databasesArray) {
-            // For each "Database" node find the name of the database
-            JsonNode currentDatabaseNodeValue = databaseNode.get("database").get("databaseName");
-
-            if (currentDatabaseNodeValue == null) {
-                log.error("CreateTableAction -> Database null -> \"databaseName\" not found");
-                continue;
-            }
-
-            // Check if a database exists with the given database name
-            String currentDatabaseName = currentDatabaseNodeValue.asText();
-            if(currentDatabaseName.equals(this.databaseName)) {
-                databaseExists = true;
-                break;
-            }
-        }
-        if(!databaseExists) {
+        JsonNode databaseNode = this.findDatabase(rootNode);
+        if(databaseNode == null) {
             log.error("CreateTableAction -> Database doesn't exits: " + this.databaseName + "!");
             throw new DatabaseDoesntExist(this.databaseName);
+        }
+
+        // Check if table already exists in database
+        if (this.tableAlreadyExists(databaseNode)) {
+            log.error("CreateTableAction -> Table already exists in database=" + this.databaseName + " tableName=" + this.tableName);
+            throw new TableNameAlreadyExists(this.tableName);
+        }
+
+        // Create new table in database
+        ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");
+        JsonNode newTable = JsonNodeFactory.instance.objectNode().putPOJO("table", this);
+        databaseTables.add(newTable);
+
+        // Mapper -> Write entire catalog
+        try {
+            mapper.writeValue(catalog, rootNode);
+        } catch (IOException e) {
+            log.error("CreateTableAction -> Write value (mapper) failed");
+            throw new RuntimeException(e);
         }
     }
 }
