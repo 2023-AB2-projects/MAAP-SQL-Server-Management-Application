@@ -5,6 +5,8 @@ import backend.databaseactions.DatabaseAction;
 import backend.databaseelements.Attribute;
 import backend.databaseelements.IndexFile;
 import backend.exceptions.DatabaseDoesntExist;
+import backend.exceptions.ForeignKeyNotFound;
+import backend.exceptions.PrimaryKeyNotFound;
 import backend.exceptions.TableNameAlreadyExists;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,32 +14,30 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-@Data
 @Slf4j
 public class CreateTableAction implements DatabaseAction {
-    private String databaseName;
+    private final String databaseName;
 
     @JsonProperty
-    private String tableName, fileName;
+    private final String tableName, fileName;
 
     @JsonProperty
-    private int rowLength;
+    private final int rowLength;
 
     @JsonProperty
-    private ArrayList<Attribute> attributes;
+    private final ArrayList<Attribute> attributes;
 
     @JsonProperty
-    private ArrayList<String> pKAttributes, fKAttributes;
+    private final ArrayList<String> pKAttributes, fKAttributes;
 
     @JsonProperty
-    private ArrayList<IndexFile> indexFiles;
+    private final ArrayList<IndexFile> indexFiles;
 
     public CreateTableAction(String databaseName, String tableName, String fileName, int rowLength, ArrayList<Attribute> attributes,
                              ArrayList<String> pKAttributes, ArrayList<String> fKAttributes, ArrayList<IndexFile> indexFiles) {
@@ -77,15 +77,26 @@ public class CreateTableAction implements DatabaseAction {
     private boolean tableAlreadyExists(JsonNode databaseNode) {
         ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");
         for(final JsonNode tableNode : databaseTables) {
-            //TODO
-            return true;
+            if(tableNode.get("table").get("tableName").asText().equals(this.tableName)) {
+                return true;
+            }
         }
+        return false;
+    }
+
+    private boolean attributeExistsInTable(String attributeName) {
+        // Iterate through all attributes and check if we have one with the given name
+        for(final Attribute attribute : this.attributes) {
+            if(attribute.getAttributeName().equals(attributeName)) return true;
+        }
+
         return false;
     }
     /* / Utility */
 
     @Override
-    public void actionPerform() throws TableNameAlreadyExists, DatabaseDoesntExist {
+    public void actionPerform() throws TableNameAlreadyExists, DatabaseDoesntExist,
+            PrimaryKeyNotFound, ForeignKeyNotFound {
         // File that contains the whole catalog
         File catalog = Config.getCatalogFile();
 
@@ -112,6 +123,20 @@ public class CreateTableAction implements DatabaseAction {
         if (this.tableAlreadyExists(databaseNode)) {
             log.error("CreateTableAction -> Table already exists in database=" + this.databaseName + " tableName=" + this.tableName);
             throw new TableNameAlreadyExists(this.tableName);
+        }
+
+        // Check if PK, FK attributes exist in table
+        for (final String pKName : this.pKAttributes) {
+            if(!this.attributeExistsInTable(pKName)) {
+                log.error("CreateTableAction -> PK doesn't exist in the table=" + this.tableName + ", pK=" + pKName);
+                throw new PrimaryKeyNotFound(this.tableName, pKName);
+            }
+        }
+        for (final String fKName : this.fKAttributes) {
+            if(!this.attributeExistsInTable(fKName)) {
+                log.error("CreateTableAction -> FK doesn't exist in the table=" + this.tableName + ", pK=" + fKName);
+                throw new PrimaryKeyNotFound(this.tableName, fKName);
+            }
         }
 
         // Create new table in database

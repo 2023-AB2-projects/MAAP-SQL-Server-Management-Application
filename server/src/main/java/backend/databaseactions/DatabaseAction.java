@@ -1,9 +1,7 @@
 package backend.databaseactions;
 
-import backend.exceptions.DatabaseDoesntExist;
-import backend.exceptions.DatabaseNameAlreadyExists;
-import backend.exceptions.TableNameAlreadyExists;
+import backend.exceptions.*;
 
 public interface DatabaseAction {
-    void actionPerform() throws DatabaseNameAlreadyExists, TableNameAlreadyExists, DatabaseDoesntExist;
+    void actionPerform() throws DatabaseNameAlreadyExists, TableNameAlreadyExists, DatabaseDoesntExist, PrimaryKeyNotFound, ForeignKeyNotFound;
 }
