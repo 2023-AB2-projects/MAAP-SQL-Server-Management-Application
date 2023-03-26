@@ -141,6 +141,8 @@ public class CreateTableAction implements DatabaseAction {
             }
         }
 
+        // Check if FK attributes exist in other tables
+
         // Create new table in database
         ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");
         JsonNode newTable = JsonNodeFactory.instance.objectNode().putPOJO("table", this);

@@ -4,9 +4,9 @@
       "databaseName" : "master",
       "tables" : [ {
         "table" : {
-          "tableName" : "People",
-          "fileName" : "PeopleTableFile",
-          "rowLength" : 50,
+          "tableName" : "Cars",
+          "fileName" : "CarsTableFile",
+          "rowLength" : 100,
           "attributes" : [ {
             "attributeName" : "id",
             "type" : "int",
@@ -17,22 +17,12 @@
             "type" : "char",
             "length" : 100,
             "isNull" : false
-          }, {
-            "attributeName" : "age",
-            "type" : "int",
-            "length" : 0,
-            "isNull" : false
-          }, {
-            "attributeName" : "height",
-            "type" : "int",
-            "length" : 0,
-            "isNull" : false
           } ],
           "primaryKey" : {
             "primaryKeyAttributes" : [ "id" ]
           },
           "foreignKeys" : [ ],
-          "uniqueAttributes" : [ "name" ],
+          "uniqueAttributes" : [ ],
           "indexFiles" : [ ]
         }
       } ]
