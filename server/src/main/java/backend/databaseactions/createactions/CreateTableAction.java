@@ -3,7 +3,9 @@ package backend.databaseactions.createactions;
 import backend.config.Config;
 import backend.databaseactions.DatabaseAction;
 import backend.databaseelements.Attribute;
+import backend.databaseelements.ForeignKey;
 import backend.databaseelements.IndexFile;
+import backend.databaseelements.PrimaryKey;
 import backend.exceptions.DatabaseDoesntExist;
 import backend.exceptions.ForeignKeyNotFound;
 import backend.exceptions.PrimaryKeyNotFound;
@@ -34,25 +36,28 @@ public class CreateTableAction implements DatabaseAction {
     private final ArrayList<Attribute> attributes;
 
     @JsonProperty
-    private final ArrayList<String> pKAttributes, fKAttributes;
+    private final PrimaryKey primaryKey;
+
+    @JsonProperty
+    private final ArrayList<ForeignKey> foreignKeys;
 
     @JsonProperty
     private final ArrayList<IndexFile> indexFiles;
 
     public CreateTableAction(String databaseName, String tableName, String fileName, int rowLength, ArrayList<Attribute> attributes,
-                             ArrayList<String> pKAttributes, ArrayList<String> fKAttributes, ArrayList<IndexFile> indexFiles) {
+                             PrimaryKey primaryKey, ArrayList<ForeignKey> foreignKeys, ArrayList<IndexFile> indexFiles) {
         this.databaseName = databaseName;
         this.tableName = tableName;
         this.fileName = fileName;
         this.rowLength = rowLength;
         this.attributes = attributes;
-        this.pKAttributes = pKAttributes;
-        this.fKAttributes = fKAttributes;
+        this.primaryKey = primaryKey;
+        this.foreignKeys = foreignKeys;
         this.indexFiles = indexFiles;
     }
 
     /* Utility */
-    private JsonNode findDatabase(JsonNode rootNode) {
+    private JsonNode findDatabaseNode(JsonNode rootNode) {
         // Check if database exists
         ArrayNode databasesArray = (ArrayNode) rootNode.get(Config.getDbCatalogRoot());
         for (final JsonNode databaseNode : databasesArray) {
@@ -87,9 +92,8 @@ public class CreateTableAction implements DatabaseAction {
     private boolean attributeExistsInTable(String attributeName) {
         // Iterate through all attributes and check if we have one with the given name
         for(final Attribute attribute : this.attributes) {
-            if(attribute.getAttributeName().equals(attributeName)) return true;
+            if(attribute.attributeName().equals(attributeName)) return true;
         }
-
         return false;
     }
     /* / Utility */
@@ -113,7 +117,7 @@ public class CreateTableAction implements DatabaseAction {
         }
 
         // Check if database exists
-        JsonNode databaseNode = this.findDatabase(rootNode);
+        JsonNode databaseNode = this.findDatabaseNode(rootNode);
         if(databaseNode == null) {
             log.error("CreateTableAction -> Database doesn't exits: " + this.databaseName + "!");
             throw new DatabaseDoesntExist(this.databaseName);
@@ -125,19 +129,19 @@ public class CreateTableAction implements DatabaseAction {
             throw new TableNameAlreadyExists(this.tableName);
         }
 
-        // Check if PK, FK attributes exist in table
-        for (final String pKName : this.pKAttributes) {
-            if(!this.attributeExistsInTable(pKName)) {
-                log.error("CreateTableAction -> PK doesn't exist in the table=" + this.tableName + ", pK=" + pKName);
-                throw new PrimaryKeyNotFound(this.tableName, pKName);
+        // Check if PK attributes exist in table
+        for (final String pKAttribute : this.primaryKey.primaryKeyAttributes()) {
+            if(!this.attributeExistsInTable(pKAttribute)) {
+                log.error("CreateTableAction -> PK doesn't exist in the table=" + this.tableName + ", pK=" + pKAttribute);
+                throw new PrimaryKeyNotFound(this.tableName, pKAttribute);
             }
         }
-        for (final String fKName : this.fKAttributes) {
-            if(!this.attributeExistsInTable(fKName)) {
-                log.error("CreateTableAction -> FK doesn't exist in the table=" + this.tableName + ", pK=" + fKName);
-                throw new PrimaryKeyNotFound(this.tableName, fKName);
-            }
-        }
+//        for (final String fKName : this.fKAttributes) {
+//            if(!this.attributeExistsInTable(fKName)) {
+//                log.error("CreateTableAction -> FK doesn't exist in the table=" + this.tableName + ", pK=" + fKName);
+//                throw new PrimaryKeyNotFound(this.tableName, fKName);
+//            }
+//        }
 
         // Create new table in database
         ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");

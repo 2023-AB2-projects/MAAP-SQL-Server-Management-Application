@@ -1,13 +1,12 @@
 package backend;
 
-import backend.databaseactions.DatabaseAction;
-import backend.databaseactions.createactions.CreateDatabaseAction;
 import backend.databaseactions.createactions.CreateTableAction;
 import backend.databaseelements.Attribute;
+import backend.databaseelements.ForeignKey;
 import backend.databaseelements.IndexFile;
+import backend.databaseelements.PrimaryKey;
 import backend.exceptions.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class TestDatabaseActions {
@@ -28,13 +27,12 @@ public class TestDatabaseActions {
         attributes.add(new Attribute("Name", "char", 100, false));
         attributes.add(new Attribute("Age", "int", 0, false));
         attributes.add(new Attribute("Height", "int", 0, false));
-        ArrayList<String> pKAttributes = new ArrayList<>(), fKAttributes = new ArrayList<>();
-        pKAttributes.add("Name");
-        fKAttributes.add("Height");
+        PrimaryKey primaryKey = new PrimaryKey(new ArrayList<>(){{ add("Name"); }});
+        ArrayList<ForeignKey> foreignKeys = new ArrayList<>();
         ArrayList<IndexFile> indexFiles = new ArrayList<>();
 
         CreateTableAction createTable = new CreateTableAction(databaseName, tableName, fileName,
-                rowLength, attributes, pKAttributes, fKAttributes, indexFiles);
+                rowLength, attributes, primaryKey, foreignKeys, indexFiles);
         try {
             createTable.actionPerform();
         } catch (TableNameAlreadyExists exception) {

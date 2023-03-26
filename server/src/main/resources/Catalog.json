@@ -11,31 +11,25 @@
             "attributeName" : "Name",
             "type" : "char",
             "length" : 100,
-            "isNull" : false,
-            "null" : false
+            "isNull" : false
           }, {
             "attributeName" : "Age",
             "type" : "int",
             "length" : 0,
-            "isNull" : false,
-            "null" : false
+            "isNull" : false
           }, {
             "attributeName" : "Height",
             "type" : "int",
             "length" : 0,
-            "isNull" : false,
-            "null" : false
+            "isNull" : false
           } ],
-          "pKAttributes" : [ "Name" ],
-          "fKAttributes" : [ "Height" ],
+          "primaryKey" : {
+            "primaryKeyAttributes" : [ "Name" ]
+          },
+          "foreignKeys" : [ ],
           "indexFiles" : [ ]
         }
       } ]
-    }
-  }, {
-    "database" : {
-      "databaseName" : "Adrienke teszt3",
-      "tables" : [ ]
     }
   } ]
 }
