@@ -8,25 +8,31 @@
           "fileName" : "PeopleTableFile",
           "rowLength" : 50,
           "attributes" : [ {
-            "attributeName" : "Name",
-            "type" : "char",
-            "length" : 100,
-            "isNull" : false
-          }, {
-            "attributeName" : "Age",
+            "attributeName" : "id",
             "type" : "int",
             "length" : 0,
             "isNull" : false
           }, {
-            "attributeName" : "Height",
+            "attributeName" : "name",
+            "type" : "char",
+            "length" : 100,
+            "isNull" : false
+          }, {
+            "attributeName" : "age",
+            "type" : "int",
+            "length" : 0,
+            "isNull" : false
+          }, {
+            "attributeName" : "height",
             "type" : "int",
             "length" : 0,
             "isNull" : false
           } ],
           "primaryKey" : {
-            "primaryKeyAttributes" : [ "Name" ]
+            "primaryKeyAttributes" : [ "id" ]
           },
           "foreignKeys" : [ ],
+          "uniqueAttributes" : [ "name" ],
           "indexFiles" : [ ]
         }
       } ]

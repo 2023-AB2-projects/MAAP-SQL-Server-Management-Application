@@ -23,16 +23,22 @@ public class TestDatabaseActions {
         // CreateTable
         String databaseName = "master", tableName = "People", fileName = "PeopleTableFile";
         int rowLength = 50;
-        ArrayList<Attribute> attributes = new ArrayList<>();
-        attributes.add(new Attribute("Name", "char", 100, false));
-        attributes.add(new Attribute("Age", "int", 0, false));
-        attributes.add(new Attribute("Height", "int", 0, false));
-        PrimaryKey primaryKey = new PrimaryKey(new ArrayList<>(){{ add("Name"); }});
+        ArrayList<Attribute> attributes = new ArrayList<>(){{
+            add(new Attribute("id", "int", 0, false));
+            add(new Attribute("name", "char", 100, false));
+            add(new Attribute("age", "int", 0, false));
+            add(new Attribute("height", "int", 0, false));
+        }};
+        PrimaryKey primaryKey = new PrimaryKey(new ArrayList<>(){{ add("id"); }});
         ArrayList<ForeignKey> foreignKeys = new ArrayList<>();
         ArrayList<IndexFile> indexFiles = new ArrayList<>();
+        ArrayList<String> uniqueAttributes = new ArrayList<>(){{
+            add("name");
+        }};
+
 
         CreateTableAction createTable = new CreateTableAction(databaseName, tableName, fileName,
-                rowLength, attributes, primaryKey, foreignKeys, indexFiles);
+                rowLength, attributes, primaryKey, foreignKeys, uniqueAttributes, indexFiles);
         try {
             createTable.actionPerform();
         } catch (TableNameAlreadyExists exception) {

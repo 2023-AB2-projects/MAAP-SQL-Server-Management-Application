@@ -42,10 +42,13 @@ public class CreateTableAction implements DatabaseAction {
     private final ArrayList<ForeignKey> foreignKeys;
 
     @JsonProperty
+    private final ArrayList<String> uniqueAttributes;
+
+    @JsonProperty
     private final ArrayList<IndexFile> indexFiles;
 
     public CreateTableAction(String databaseName, String tableName, String fileName, int rowLength, ArrayList<Attribute> attributes,
-                             PrimaryKey primaryKey, ArrayList<ForeignKey> foreignKeys, ArrayList<IndexFile> indexFiles) {
+                             PrimaryKey primaryKey, ArrayList<ForeignKey> foreignKeys, ArrayList<String> uniqueAttributes, ArrayList<IndexFile> indexFiles) {
         this.databaseName = databaseName;
         this.tableName = tableName;
         this.fileName = fileName;
@@ -53,6 +56,7 @@ public class CreateTableAction implements DatabaseAction {
         this.attributes = attributes;
         this.primaryKey = primaryKey;
         this.foreignKeys = foreignKeys;
+        this.uniqueAttributes = uniqueAttributes;
         this.indexFiles = indexFiles;
     }
 
@@ -136,12 +140,6 @@ public class CreateTableAction implements DatabaseAction {
                 throw new PrimaryKeyNotFound(this.tableName, pKAttribute);
             }
         }
-//        for (final String fKName : this.fKAttributes) {
-//            if(!this.attributeExistsInTable(fKName)) {
-//                log.error("CreateTableAction -> FK doesn't exist in the table=" + this.tableName + ", pK=" + fKName);
-//                throw new PrimaryKeyNotFound(this.tableName, fKName);
-//            }
-//        }
 
         // Create new table in database
         ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");
