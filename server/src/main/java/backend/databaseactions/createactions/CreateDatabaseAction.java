@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Slf4j
@@ -23,8 +25,12 @@ public class CreateDatabaseAction implements DatabaseAction {
     @JsonProperty
     private String databaseName;
 
+    @JsonProperty
+    private List<String> tables;
+
     public CreateDatabaseAction(String databaseName) {
         this.databaseName = databaseName;
+        this.tables = new ArrayList<>();
     }
 
     @Override
@@ -42,7 +48,7 @@ public class CreateDatabaseAction implements DatabaseAction {
         ArrayNode databasesArray = (ArrayNode) rootNode.get(Config.getDbCatalogRoot());
         for (final JsonNode databaseNode : databasesArray) {
             // For each "Database" node find the name of the database
-            JsonNode currentDatabaseNodeValue = databaseNode.get("Database").get("databaseName");
+            JsonNode currentDatabaseNodeValue = databaseNode.get("database").get("databaseName");
 
             if (currentDatabaseNodeValue == null) {
                 log.error("Database action -> Iterating databases -> Database null -> \"databaseName\" not found");
@@ -58,7 +64,7 @@ public class CreateDatabaseAction implements DatabaseAction {
         }
 
         // Create new database
-        JsonNode newDatabase = JsonNodeFactory.instance.objectNode().putPOJO("Database", this);
+        JsonNode newDatabase = JsonNodeFactory.instance.objectNode().putPOJO("database", this);
         databasesArray.add(newDatabase);        // Add the new database
 
         // Mapper -> Write entire catalog

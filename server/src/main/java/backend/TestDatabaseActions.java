@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class TestDatabaseActions {
     public static void main(String[] args) {
-        DatabaseAction createDatabase = new CreateDatabaseAction("Adrienke teszt");
+        DatabaseAction createDatabase = new CreateDatabaseAction("Adrienke teszt3");
         try {
             createDatabase.actionPerform();
         } catch (IOException exception) {
