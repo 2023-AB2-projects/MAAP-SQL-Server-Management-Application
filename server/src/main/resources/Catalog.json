@@ -3,5 +3,9 @@
     "Database" : {
       "databaseName" : "master"
     }
+  }, {
+    "Database" : {
+      "databaseName" : "Adrienke teszt"
+    }
   } ]
 }
