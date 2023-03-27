@@ -1,31 +1,28 @@
-package backend.databaseActions.createActions;
+package backend.databaseActions.miscActions;
 
 import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.DatabaseModel;
-import backend.exceptions.DatabaseNameAlreadyExists;
+import backend.exceptions.DatabaseDoesntExist;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
 
-@Data
 @Slf4j
-public class CreateDatabaseAction implements DatabaseAction {
+public class UseDatabaseAction implements DatabaseAction {
     private final DatabaseModel database;
 
-    public CreateDatabaseAction(DatabaseModel databaseModel) {
+    public UseDatabaseAction(DatabaseModel databaseModel) {
         this.database = databaseModel;
     }
 
     @Override
-    public Object actionPerform() throws DatabaseNameAlreadyExists {
+    public Object actionPerform() throws DatabaseDoesntExist {
         // File that contains the whole catalog
         File catalog = Config.getCatalogFile();
 
@@ -55,23 +52,11 @@ public class CreateDatabaseAction implements DatabaseAction {
             // Check if a database exists with the given database name
             String currentDatabaseName = currentDatabaseNodeValue.asText();
             if(currentDatabaseName.equals(this.database.databaseName())) {
-                log.info("CreateDatabaseAction -> database already exists " + currentDatabaseName);
-                throw new DatabaseNameAlreadyExists(currentDatabaseName);
+                return this.database.databaseName();
             }
         }
 
-        // Create new database
-        JsonNode newDatabase = JsonNodeFactory.instance.objectNode().putPOJO("database", this.database);
-        databasesArray.add(newDatabase);        // Add the new database
-
-        // Mapper -> Write entire catalog
-        try {
-            mapper.writeValue(catalog, rootNode);
-        } catch (IOException e) {
-            log.error("CreateDatabaseAction -> Write value (mapper) failed");
-            throw new RuntimeException(e);
-        }
-
-        return null;
+        // Database doesn't exists
+        throw new DatabaseDoesntExist(this.database.databaseName());
     }
 }

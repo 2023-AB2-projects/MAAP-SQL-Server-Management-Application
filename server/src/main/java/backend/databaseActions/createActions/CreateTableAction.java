@@ -127,7 +127,7 @@ public class CreateTableAction implements DatabaseAction {
     /* / Utility */
 
     @Override
-    public void actionPerform() throws TableNameAlreadyExists, DatabaseDoesntExist,
+    public Object actionPerform() throws TableNameAlreadyExists, DatabaseDoesntExist,
             PrimaryKeyNotFound, ForeignKeyNotFound, AttributeCantBeNull, AttributesAreNotUnique {
         // File that contains the whole catalog
         File catalog = Config.getCatalogFile();
@@ -210,5 +210,6 @@ public class CreateTableAction implements DatabaseAction {
             log.error("CreateTableAction -> Write value (mapper) failed");
             throw new RuntimeException(e);
         }
+        return null;
     }
 }
