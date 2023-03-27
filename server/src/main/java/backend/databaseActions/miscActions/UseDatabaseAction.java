@@ -45,7 +45,7 @@ public class UseDatabaseAction implements DatabaseAction {
             JsonNode currentDatabaseNodeValue = databaseNode.get("database").get("databaseName");
 
             if (currentDatabaseNodeValue == null) {
-                log.error("CreateDatabaseAction -> Database null -> \"databaseName\" not found");
+                log.error("UseDatabaseAction -> Database null -> \"databaseName\" not found");
                 continue;
             }
 
