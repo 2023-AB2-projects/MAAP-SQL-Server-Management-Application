@@ -90,24 +90,22 @@ public class TestDatabaseActions {
     }
 
     public static void main(String[] args) {
-        TestDatabaseActions temp = new TestDatabaseActions();
-
+        TestDatabaseActions test = new TestDatabaseActions();
 
         // CreateDatabase
-        DatabaseAction createDatabase = new CreateDatabaseAction(new DatabaseModel("Adrienke adatbazisa", new ArrayList<>() {{
-            add(temp.createPeopeTableModel());
-        }}));
-        try {
-            createDatabase.actionPerform();
-        } catch (DatabaseNameAlreadyExists exception) {
-            System.out.println("Database name already exists");
-        } catch (Exception exception) {
-            System.out.println("ERROR -> CreateDabaseAction should not invoke this exception!");
-        }
+//        DatabaseAction createDatabase = new CreateDatabaseAction(new DatabaseModel("Adrienke adatbazisa", new ArrayList<>() {{
+//            add(test.createPeopeTableModel());
+//        }}));
+//        try {
+//            createDatabase.actionPerform();
+//        } catch (DatabaseNameAlreadyExists exception) {
+//            System.out.println("Database name already exists");
+//        } catch (Exception exception) {
+//            System.out.println("ERROR -> CreateDabaseAction should not invoke this exception!");
+//        }
 
         // CreateTable
-//        TestDatabaseActions test = new TestDatabaseActions();
-//        test.createCarsTable();
-//        test.createPeopleTable();
+        test.createCarsTable();
+        test.createPeopleTable();
     }
 }
