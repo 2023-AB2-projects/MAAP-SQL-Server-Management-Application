@@ -61,7 +61,7 @@ public class ServerController {
     }
 
     private void initCatalog(File catalog) throws IOException {
-        String jsonCreate = "{\"Databases\":[{\"Database\":{\"databaseName\":\"master\"}}]}";
+        String jsonCreate = "{\"databases\":[{\"database\":{\"databaseName\":\"master\", \"tables\":[]}}]}";
         ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
         Object jsonObject = mapper.readValue(jsonCreate, Object.class);
