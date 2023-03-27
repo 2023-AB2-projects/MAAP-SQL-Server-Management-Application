@@ -1,6 +1,8 @@
 package backend;
 
+import backend.databaseActions.DatabaseAction;
 import backend.databaseActions.createActions.CreateTableAction;
+import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.*;
 import backend.exceptions.*;
 
@@ -103,7 +105,18 @@ public class TestDatabaseActions {
 //        }
 
         // CreateTable
-        test.createCarsTable();
-        test.createPeopleTable();
+//        test.createCarsTable();
+//        test.createPeopleTable();
+
+        // Use Database
+        DatabaseAction useDatabase = new UseDatabaseAction(new DatabaseModel("master1", new ArrayList<>()));
+        try {
+            String databaseName = (String) useDatabase.actionPerform();
+            System.out.println("Databasename=" + databaseName);
+        } catch (DatabaseDoesntExist e) {
+            System.out.println("Database doesn't exist!");
+        } catch (Exception exception) {
+            System.out.println("ERROR -> UseDatabase should not invoke this exception!");
+        }
     }
 }
