@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 public class ServerController {
@@ -16,6 +17,14 @@ public class ServerController {
     @Getter
     @Setter
     private String sqlCommand;
+
+    @Getter
+    @Setter
+    private String currentDatabase;
+
+    @Getter
+    @Setter
+    private List<String> databases;
 
     public ServerController() {
         log.info("Server Started!");
@@ -25,6 +34,14 @@ public class ServerController {
 
     private void init() {
         accessCatalog();
+        loadDatabases();
+        setDefaultDatabase();
+    }
+
+    private void setDefaultDatabase() {
+    }
+
+    private void loadDatabases() {
 
     }
 
