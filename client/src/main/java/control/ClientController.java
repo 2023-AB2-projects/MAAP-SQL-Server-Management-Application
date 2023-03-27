@@ -11,7 +11,6 @@ public class ClientController {
     private GUIController guiController;
     private MessageHandler messageHandler;
     private MenuController menuController;
-    private String[] databaseNames;
 
     public ClientController() {
         // Init Client side components
@@ -31,13 +30,12 @@ public class ClientController {
         this.messageHandler.establishConnection(ip);
         String databaseNames = messageHandler.receiveMessage();
 
-        if(databaseNames.equals("[]")){
-            return;
-        }
-
         //for testing purposes
         //databaseNames = "[asd1, asd2, asd3]";
 
+        if(databaseNames.equals("[]")){
+            return;
+        }
         databaseNames = databaseNames.substring(1, databaseNames.length() - 1);
         menuController.addDatabaseNames(databaseNames.split(","));
     }

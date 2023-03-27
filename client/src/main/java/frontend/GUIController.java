@@ -108,20 +108,7 @@ public class GUIController extends JFrame implements ActionListener {
 //            System.out.println("Debug - 2. GUI Controller: Delegating work to client controller (-> MessageHandler)!");
 //            System.out.println("Debug - 3. GUI Controller: Command: " + command);
 
-            this.clientController.sendCommandToServer(command);
-
-            try {
-                String response = clientController.receiveMessage();
-                outputTextArea.setText(response);
-                if(response.equals("SERVER DISCONNECTED")){
-                    clientController.stopConnection();
-                    System.out.println("Server was shut down");
-                    System.exit(0);
-                }
-            } catch (IOException e) {
-                System.out.println("Server is no longer running");
-                System.exit(0);
-            }
+            this.sendReceiveSetMessage(command);
 
         } else if(event.getSource().equals(this.connectionButton)) {
             String ip = this.connectionFrame.getIP();
@@ -132,6 +119,8 @@ public class GUIController extends JFrame implements ActionListener {
                 this.setVisible(true);
                 //change this later
                 connectionFrame.setVisible(false);
+
+                this.sendReceiveSetMessage("USE master");
             } catch (IOException e) {
                 //change this later maybe
                 System.out.println("Server Not Running");
@@ -142,19 +131,28 @@ public class GUIController extends JFrame implements ActionListener {
 
             log.info("USE " + selected + " command sent to server");
 
-
-            clientController.sendCommandToServer("USE " + selected);
-            try {
-                String response = clientController.receiveMessage();
-                outputTextArea.setText(response);
-            } catch (IOException e) {
-                System.out.println("Server is no longer running");
-                System.exit(0);
-            }
+            this.sendReceiveSetMessage("USE " + selected);
         }
     }
 
     /* Setters */
     public void setInputTextAreaString(String string) { this.inputTextArea.setInputTextAreaString(string); }
 
+    //method: Send msg param to server, receives a message and sets text of outputTextArea, or terminates execution if the server is no longer running
+    public void sendReceiveSetMessage(String msg){
+        this.clientController.sendCommandToServer(msg);
+
+        try {
+            String response = clientController.receiveMessage();
+            outputTextArea.setText(response);
+            if(response.equals("SERVER DISCONNECTED")){
+                clientController.stopConnection();
+                System.out.println("Server was shut down");
+                System.exit(0);
+            }
+        } catch (IOException e) {
+            System.out.println("Server is no longer running");
+            System.exit(0);
+        }
+    }
 }
