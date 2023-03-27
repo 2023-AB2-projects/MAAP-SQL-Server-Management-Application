@@ -16,6 +16,11 @@ import java.io.IOException;
 public class DropTableAction implements DatabaseAction {
     private final String tableName, databaseName;
 
+    public DropTableAction(String tableName, String databaseName) {
+        this.tableName = tableName;
+        this.databaseName = databaseName;
+    }
+
     /* Utility */
     private JsonNode findDatabaseNodeFromRoot(String databaseName, JsonNode rootNode) {
         // Check if database exists
@@ -39,11 +44,6 @@ public class DropTableAction implements DatabaseAction {
         return null;
     }
     /* /Utility */
-
-    public DropTableAction(String tableName, String databaseName) {
-        this.tableName = tableName;
-        this.databaseName = databaseName;
-    }
 
     @Override
     public Object actionPerform() throws DatabaseDoesntExist, TableDoesntExist {

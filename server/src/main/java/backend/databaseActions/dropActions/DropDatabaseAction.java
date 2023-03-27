@@ -16,6 +16,7 @@ import java.io.IOException;
 public class DropDatabaseAction implements DatabaseAction {
     private final DatabaseModel database;
 
+    // TODO: replace DatabaseModel with simple String
     public DropDatabaseAction(DatabaseModel databaseModel) {
         this.database = databaseModel;
     }
