@@ -2,16 +2,25 @@ package frontend;
 
 import frontend.MenuItems.CommandMenuItem;
 import frontend.MenuItems.SelectMenuItem;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
+@Slf4j
 public class MenuController extends JMenuBar implements MouseListener {
     private JMenu selectMenu, createAlterMenu, dropDeleteMenu, insertUpdateMenu;
     private JButton sendCommandButton;
 
+    @Getter
+    private JComboBox<String> databaseSelector;
     // References
     private GUIController guiController;
 
@@ -34,6 +43,11 @@ public class MenuController extends JMenuBar implements MouseListener {
 
     private void initMenus() {
         // Init sub menus
+
+        this.databaseSelector = new JComboBox<>();
+        databaseSelector.addItem("master");
+        databaseSelector.setSelectedIndex(0);
+
         this.selectMenu = new JMenu("SELECT");
         this.createAlterMenu = new JMenu("CREATE/ALTER");
         this.dropDeleteMenu = new JMenu("DROP/DELETE");
@@ -45,6 +59,7 @@ public class MenuController extends JMenuBar implements MouseListener {
     }
 
     private void addComponentsToMenuBar() {
+        this.add(this.databaseSelector);
         this.add(this.selectMenu);
         this.add(this.createAlterMenu);
         this.add(this.dropDeleteMenu);
@@ -60,8 +75,24 @@ public class MenuController extends JMenuBar implements MouseListener {
     }
 
     private void addListeners() {
+        databaseSelector.addActionListener(guiController);
+
         for (Component menuItem : this.selectMenu.getMenuComponents()) {
             menuItem.addMouseListener(this);
+        }
+    }
+
+    public void addDatabaseNames(String databaseNames){
+        databaseSelector.removeAllItems();
+        databaseSelector.addItem("master");
+        if(databaseNames.equals("[]")){
+            return;
+        }
+        databaseNames = databaseNames.substring(1, databaseNames.length() - 1);
+
+        String[] listOfDatabaseNames = databaseNames.split(",");
+        for (String databaseName : listOfDatabaseNames) {
+            databaseSelector.addItem(databaseName);
         }
     }
 

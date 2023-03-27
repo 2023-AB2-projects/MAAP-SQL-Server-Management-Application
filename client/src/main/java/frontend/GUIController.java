@@ -1,22 +1,26 @@
 package frontend;
 
+import backend.MessageModes;
 import control.ClientController;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.IOException;
 
-public class GUIController extends JFrame implements ActionListener {
+@Slf4j
+public class GUIController extends JFrame implements ActionListener, ItemListener {
     // Reference to ClientController
     private final ClientController clientController;
 
     // Components
     private ConnectionFrame connectionFrame;
+
+    @Getter
     private MenuController menuController;
+    private String selectedDatabase;
     private InputTextArea inputTextArea;
     private OutputTextArea outputTextArea;
 
@@ -24,10 +28,10 @@ public class GUIController extends JFrame implements ActionListener {
     private JButton sendCommandButton;
     private JButton connectionButton;
 
+
     public GUIController(ClientController clientController) {
         // Reference
         this.clientController = clientController;
-
         // Setup JFrame
         this.frameSetup();
 
@@ -102,29 +106,13 @@ public class GUIController extends JFrame implements ActionListener {
 //            System.out.println("Debug - 1. GUI Controller: Send button pressed!");
 //            System.out.println("Debug - 2. GUI Controller: Delegating work to client controller (-> MessageHandler)!");
 //            System.out.println("Debug - 3. GUI Controller: Command: " + command);
-
             this.clientController.sendCommandToServer(command);
+            this.receiveMessageAndPerformAction(MessageModes.refreshDatabases);
+            this.receiveMessageAndPerformAction(MessageModes.setTextArea);
 
-            try {
-                String response = clientController.receiveMessage();
-                outputTextArea.setText(response);
-                if(response.equals("SERVER DISCONNECTED")){
-                    clientController.stopConnection();
-                    System.out.println("Server was shut down");
-                    System.exit(0);
-                }
-            } catch (IOException e) {
-                System.out.println("Server is no longer running");
-                System.exit(0);
-            }
 
         } else if(event.getSource().equals(this.connectionButton)) {
             String ip = this.connectionFrame.getIP();
-//            String port = this.connectionFrame.getPort();
-
-//            System.out.println("Debug - 1. GUI Controller: Connect button pressed!");
-//            System.out.println("Debug - 2. GUI Controller: Delegating work to client controller!");
-//            System.out.println("Debug - 3. GUI Controller: IP: " + ip + " | Port: " + port);
 
             try {
                 this.clientController.establishConnection(ip);
@@ -132,6 +120,11 @@ public class GUIController extends JFrame implements ActionListener {
                 this.setVisible(true);
                 //change this later
                 connectionFrame.setVisible(false);
+
+                this.clientController.sendCommandToServer("USE master");
+                this.receiveMessageAndPerformAction(MessageModes.refreshDatabases);
+                this.receiveMessageAndPerformAction(MessageModes.setTextArea);
+
             } catch (IOException e) {
                 //change this later maybe
                 System.out.println("Server Not Running");
@@ -139,7 +132,47 @@ public class GUIController extends JFrame implements ActionListener {
         }
     }
 
+
     /* Setters */
     public void setInputTextAreaString(String string) { this.inputTextArea.setInputTextAreaString(string); }
 
+    //method receives message from server and performs action determined by mode param
+    public void receiveMessageAndPerformAction(int mode) {
+
+        try {
+            String response = clientController.receiveMessage();
+            log.info(response + " received from server");
+            if (response.equals("SERVER DISCONNECTED")) {
+                clientController.stopConnection();
+                System.out.println("Server was shut down");
+                System.exit(0);
+            }
+
+            if (mode == MessageModes.setTextArea) {
+                outputTextArea.setText(response);
+            } else if (mode == MessageModes.refreshDatabases) {
+                this.menuController.addDatabaseNames(response);
+            }
+        } catch (IOException e) {
+            System.out.println("Server is no longer running");
+            System.exit(0);
+        }
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent event) {
+        if(event.getSource().equals(menuController.getDatabaseSelector())) {
+            JComboBox<String> combo = (JComboBox<String>) event.getSource();
+            String selected = (String) combo.getSelectedItem();
+            if(selected == null){
+                return;
+            }
+
+            log.info("USE " + selected + " command sent to server");
+
+            this.clientController.sendCommandToServer("USE " + selected);
+            this.receiveMessageAndPerformAction(MessageModes.refreshDatabases);
+            this.receiveMessageAndPerformAction(MessageModes.setTextArea);
+        }
+    }
 }
