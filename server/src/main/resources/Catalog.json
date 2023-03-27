@@ -1,11 +1,13 @@
 {
-  "Databases" : [ {
-    "Database" : {
-      "databaseName" : "master"
+  "databases" : [ {
+    "database" : {
+      "databaseName" : "master",
+      "tables" : [ ]
     }
   }, {
-    "Database" : {
-      "databaseName" : "Adrienke teszt"
+    "database" : {
+      "databaseName" : "Adrienke adatbazisa",
+      "tables" : [ ]
     }
   } ]
 }
