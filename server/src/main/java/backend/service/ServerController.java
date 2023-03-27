@@ -63,7 +63,7 @@ public class ServerController {
         return null;
     }
 
-    private void updateRootNodeAndDatabasesList() {
+    public void updateRootNodeAndDatabasesList() {
         // Reset databases list
         this.databaseNames.clear();
 

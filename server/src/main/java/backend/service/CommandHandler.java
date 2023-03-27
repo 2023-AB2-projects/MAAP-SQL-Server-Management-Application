@@ -2,6 +2,7 @@ package backend.service;
 
 import backend.databaseActions.DatabaseAction;
 import backend.databaseActions.createActions.CreateDatabaseAction;
+import backend.databaseActions.dropActions.DropDatabaseAction;
 import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.DatabaseModel;
 import backend.exceptions.DatabaseDoesntExist;
@@ -10,7 +11,7 @@ import backend.exceptions.DatabaseNameAlreadyExists;
 import java.util.ArrayList;
 
 public class CommandHandler {
-    private ServerController serverController;
+    private final ServerController serverController;
 
     public CommandHandler(ServerController serverController){
         this.serverController = serverController;
@@ -45,12 +46,20 @@ public class CommandHandler {
             String databaseName = (String) databaseAction.actionPerform();
             serverController.setCurrentDatabaseName(databaseName);
             serverController.setResponse("Database Created : " + databaseName);
-
+            updateControllerNodes(databaseAction);
             System.out.println("Databasename=" + databaseName);
         } catch (DatabaseDoesntExist e) {
             System.out.println("Database doesn't exist!");
         } catch (Exception exception) {
             System.out.println("ERROR -> UseDatabase should not invoke this exception!");
         }
+
+
+
+    }
+
+    private void updateControllerNodes(DatabaseAction databaseAction) {
+        if (databaseAction instanceof CreateDatabaseAction) { serverController.updateRootNodeAndDatabasesList(); }
+        if (databaseAction instanceof DropDatabaseAction) { serverController.updateRootNodeAndDatabasesList(); }
     }
 }
