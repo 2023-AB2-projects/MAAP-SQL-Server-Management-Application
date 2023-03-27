@@ -106,7 +106,7 @@ public class Parser {
 
     private CreateTableAction parseCreateTable(List<String> tokens, String databaseName) throws SQLParseException {
 
-        throw(new SQLParseException("Unimplemented action \"Create Table\" for parser");)
+        throw(new SQLParseException("Unimplemented action \"Create Table\" for parser"));
         //CreateTableAction cta = new CreateTableAction();
         //return cta;
     }
@@ -124,14 +124,22 @@ public class Parser {
 
         DatabaseModel databaseModel = new DatabaseModel(databaseName, new ArrayList<>());
 
-        //DropDatabaseAction dda = new DropDatabaseAction(databaseModel);
-        DropDatabaseAction dda = new DropDatabaseAction();
+        DropDatabaseAction dda = new DropDatabaseAction(databaseModel);
         return dda;
     }    
 
     private DropTableAction parseDropTable(List<String> tokens, String databaseName) throws SQLParseException {
+        if (tokens.size() < 2) {
+            throw(new SQLParseException("Missing token for table name"));
+        }
+        if (tokens.size() > 3) {
+            throw(new SQLParseException("Too many tokens after `" + tokens.get(2) + "`"));
+        }
 
-        DropTableAction dta = new DropTableAction();
+        String tableName = tokens.get(2);
+        checkName(tableName);
+
+        DropTableAction dta = new DropTableAction(tableName, databaseName);
         return dta;
     }  
 
