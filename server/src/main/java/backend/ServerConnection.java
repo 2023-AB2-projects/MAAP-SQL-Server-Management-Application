@@ -25,15 +25,5 @@ public class ServerConnection extends Connection{
         serverSocket.close();
     }
 
-//    public static void main(String[] args) throws IOException, InterruptedException {
-//        ServerConnection serverConnection = new ServerConnection(4444);
-//        serverConnection.start();
-//        for (int i = 0; i < 10; i++) {
-//            String msg = serverConnection.receive();
-//            serverConnection.send(msg);
-//        }
-//        Thread.sleep(1000);
-//        serverConnection.stop();
-//    }
 }
 
