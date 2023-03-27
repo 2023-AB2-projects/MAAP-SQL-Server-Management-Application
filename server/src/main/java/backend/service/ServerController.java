@@ -191,6 +191,9 @@ public class ServerController {
 
                 commandHandler.processCommand();
 
+                // update available databases for every command
+                serverConnection.send(databaseNames.toString());
+
                 // build a response string, send to client
                 serverConnection.send(getResponse());
 
