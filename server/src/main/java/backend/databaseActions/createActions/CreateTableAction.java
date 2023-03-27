@@ -4,7 +4,6 @@ import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.*;
 import backend.exceptions.*;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -14,44 +13,17 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 @Slf4j
 public class CreateTableAction implements DatabaseAction {
+    private final TableModel table;
+
+    // For simplicity
     private final String databaseName;
 
-    @JsonProperty
-    private final String tableName, fileName;
-
-    @JsonProperty
-    private final int rowLength;
-
-    @JsonProperty
-    private final ArrayList<Attribute> attributes;
-
-    @JsonProperty
-    private final PrimaryKey primaryKey;
-
-    @JsonProperty
-    private final ArrayList<ForeignKey> foreignKeys;
-
-    @JsonProperty
-    private final ArrayList<String> uniqueAttributes;
-
-    @JsonProperty
-    private final ArrayList<IndexFile> indexFiles;
-
-    public CreateTableAction(String databaseName, String tableName, String fileName, int rowLength, ArrayList<Attribute> attributes,
-                             PrimaryKey primaryKey, ArrayList<ForeignKey> foreignKeys, ArrayList<String> uniqueAttributes, ArrayList<IndexFile> indexFiles) {
+    public CreateTableAction(TableModel table, String databaseName) {
+        this.table = table;
         this.databaseName = databaseName;
-        this.tableName = tableName;
-        this.fileName = fileName;
-        this.rowLength = rowLength;
-        this.attributes = attributes;
-        this.primaryKey = primaryKey;
-        this.foreignKeys = foreignKeys;
-        this.uniqueAttributes = uniqueAttributes;
-        this.indexFiles = indexFiles;
     }
 
     /* Utility */
@@ -78,7 +50,7 @@ public class CreateTableAction implements DatabaseAction {
     }
 
     private boolean givenAttributesAreUnique() {
-        return this.attributes.stream().map(Attribute::attributeName).distinct().count() == this.attributes.size();
+        return this.table.attributes().stream().map(AttributeModel::attributeName).distinct().count() == this.table.attributes().size();
     }
 
     private boolean tableAlreadyExists(String tableName, JsonNode databaseNode) {
@@ -93,7 +65,7 @@ public class CreateTableAction implements DatabaseAction {
 
     private boolean attributeExistsInThisTable(String attributeName) {
         // Iterate through all attributes and check if we have one with the given name
-        for(final Attribute attribute : this.attributes) {
+        for(final AttributeModel attribute : this.table.attributes()) {
             if(attribute.attributeName().equals(attributeName)) return true;
         }
         return false;
@@ -101,7 +73,7 @@ public class CreateTableAction implements DatabaseAction {
 
     private boolean attributeIsNullableInThisTable(String givenAttributeName) throws AttributeNotFound {
         // Iterate though all given attributes
-        for(final Attribute attribute : this.attributes) {
+        for(final AttributeModel attribute : this.table.attributes()) {
             if(attribute.attributeName().equals(givenAttributeName)) {
                 // Check if it's null or not
                 return attribute.isNullable();
@@ -109,10 +81,10 @@ public class CreateTableAction implements DatabaseAction {
         }
 
         // Throw exception -> Attribute doesn't exist in current table
-        throw new AttributeNotFound(givenAttributeName, this.tableName);
+        throw new AttributeNotFound(givenAttributeName, this.table.tableName());
     }
 
-    private boolean foreignKeyExistsInTable(ForeignKey foreignKey, JsonNode databaseNode) throws DatabaseDoesntExist {
+    private boolean foreignKeyExistsInTable(ForeignKeyModel foreignKey, JsonNode databaseNode) throws DatabaseDoesntExist {
         // First check if referenced table exists
         String referencedDatabaseName = foreignKey.referencedTable();
         if(!this.tableAlreadyExists(referencedDatabaseName, databaseNode)) {
@@ -182,21 +154,21 @@ public class CreateTableAction implements DatabaseAction {
         // Check if given table attributes are not unique
         if(!this.givenAttributesAreUnique()) {
             log.error("CreateTableAction -> Attributes are not unique!");
-            throw new AttributesAreNotUnique(this.attributes);
+            throw new AttributesAreNotUnique(this.table.attributes());
         }
 
         // Check if table already exists in database
-        if (this.tableAlreadyExists(this.tableName, databaseNode)) {
-            log.error("CreateTableAction -> Table already exists in database=" + this.databaseName + " tableName=" + this.tableName);
-            throw new TableNameAlreadyExists(this.tableName);
+        if (this.tableAlreadyExists(this.table.tableName(), databaseNode)) {
+            log.error("CreateTableAction -> Table already exists in database=" + this.databaseName + " tableName=" + this.table.tableName());
+            throw new TableNameAlreadyExists(this.table.tableName());
         }
 
         // PK check
-        for (final String pKAttribute : this.primaryKey.primaryKeyAttributes()) {
+        for (final String pKAttribute : this.table.primaryKey().primaryKeyAttributes()) {
             // Check if PK attributes exist in table
             if(!this.attributeExistsInThisTable(pKAttribute)) {
-                log.error("CreateTableAction -> PK doesn't exist in the table=" + this.tableName + ", pK=" + pKAttribute);
-                throw new PrimaryKeyNotFound(this.tableName, pKAttribute);
+                log.error("CreateTableAction -> PK doesn't exist in the table=" + this.table.tableName() + ", pK=" + pKAttribute);
+                throw new PrimaryKeyNotFound(this.table.tableName(), pKAttribute);
             }
 
             // Check if PK attributes are nullable (if they are, they can't be primary key attributes)
@@ -207,13 +179,13 @@ public class CreateTableAction implements DatabaseAction {
                 }
             } catch (AttributeNotFound e) {
                 log.error("CreateTableAction -> PK attribute (this is a problem since we checked above) doesn't exist" +
-                        " in table=" + this.tableName + ", pkAttribute=" + pKAttribute);
+                        " in table=" + this.table.tableName() + ", pkAttribute=" + pKAttribute);
                 throw new RuntimeException(e);
             }
         }
 
         // Check if FK attributes exist in other tables
-        for(final ForeignKey foreignKey : this.foreignKeys) {
+        for(final ForeignKeyModel foreignKey : this.table.foreignKeys()) {
             try {
                 if(!this.foreignKeyExistsInTable(foreignKey, databaseNode)) {
                     log.error("CreateTableAction -> FK doesn't exits in table=" + foreignKey.referencedTable() + "," +
@@ -228,7 +200,7 @@ public class CreateTableAction implements DatabaseAction {
 
         // Create new table in database
         ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");
-        JsonNode newTable = JsonNodeFactory.instance.objectNode().putPOJO("table", this);
+        JsonNode newTable = JsonNodeFactory.instance.objectNode().putPOJO("table", this.table);
         databaseTables.add(newTable);
 
         // Mapper -> Write entire catalog

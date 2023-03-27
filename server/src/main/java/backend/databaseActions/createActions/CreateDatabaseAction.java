@@ -2,8 +2,8 @@ package backend.databaseActions.createActions;
 
 import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
+import backend.databaseModels.DatabaseModel;
 import backend.exceptions.DatabaseNameAlreadyExists;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -14,21 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Slf4j
 public class CreateDatabaseAction implements DatabaseAction {
-    @JsonProperty
-    private String databaseName;
+    private final DatabaseModel database;
 
-    @JsonProperty
-    private List<String> tables;
-
-    public CreateDatabaseAction(String databaseName) {
-        this.databaseName = databaseName;
-        this.tables = new ArrayList<>();
+    public CreateDatabaseAction(DatabaseModel databaseModel) {
+        this.database = databaseModel;
     }
 
     @Override
@@ -61,14 +54,14 @@ public class CreateDatabaseAction implements DatabaseAction {
 
             // Check if a database exists with the given database name
             String currentDatabaseName = currentDatabaseNodeValue.asText();
-            if(currentDatabaseName.equals(this.databaseName)) {
+            if(currentDatabaseName.equals(this.database.databaseName())) {
                 log.info("CreateDatabaseAction -> database already exists " + currentDatabaseName);
                 throw new DatabaseNameAlreadyExists(currentDatabaseName);
             }
         }
 
         // Create new database
-        JsonNode newDatabase = JsonNodeFactory.instance.objectNode().putPOJO("database", this);
+        JsonNode newDatabase = JsonNodeFactory.instance.objectNode().putPOJO("database", this.database);
         databasesArray.add(newDatabase);        // Add the new database
 
         // Mapper -> Write entire catalog
