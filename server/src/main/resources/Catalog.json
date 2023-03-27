@@ -1,0 +1,13 @@
+{
+  "databases" : [ {
+    "database" : {
+      "databaseName" : "master",
+      "tables" : [ ]
+    }
+  }, {
+    "database" : {
+      "databaseName" : "Adrienke adatbazisa",
+      "tables" : [ ]
+    }
+  } ]
+}
