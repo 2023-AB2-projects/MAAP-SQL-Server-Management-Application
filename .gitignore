@@ -11,3 +11,6 @@ bin
 build
 **/build/
 !src/**/build/
+
+**/resources
+**/references
