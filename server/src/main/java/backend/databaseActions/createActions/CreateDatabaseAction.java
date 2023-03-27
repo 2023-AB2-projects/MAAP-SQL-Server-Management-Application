@@ -4,6 +4,7 @@ import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.DatabaseModel;
 import backend.exceptions.DatabaseNameAlreadyExists;
+import backend.service.CommandHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -19,6 +20,7 @@ import java.io.IOException;
 @Slf4j
 public class CreateDatabaseAction implements DatabaseAction {
     private final DatabaseModel database;
+    private CommandHandler commandHandler;
 
     public CreateDatabaseAction(DatabaseModel databaseModel) {
         this.database = databaseModel;

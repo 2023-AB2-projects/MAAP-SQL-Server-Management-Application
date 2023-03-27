@@ -6,10 +6,11 @@ import backend.databaseActions.dropActions.DropDatabaseAction;
 import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.DatabaseModel;
 import backend.exceptions.DatabaseDoesntExist;
-import backend.exceptions.DatabaseNameAlreadyExists;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-
+@Slf4j
 public class CommandHandler {
     private final ServerController serverController;
 
@@ -41,7 +42,7 @@ public class CommandHandler {
             System.out.println("ERROR -> CreateDabaseAction should not invoke this exception!");
         }*/
 
-        DatabaseAction databaseAction = new UseDatabaseAction(new DatabaseModel("Adrienke adatbazisa", new ArrayList<>()));
+       /* DatabaseAction databaseAction = new UseDatabaseAction(new DatabaseModel("Adrienke adatbazisa", new ArrayList<>()));
         try {
             String databaseName = (String) databaseAction.actionPerform();
             serverController.setCurrentDatabaseName(databaseName);
@@ -52,14 +53,23 @@ public class CommandHandler {
             System.out.println("Database doesn't exist!");
         } catch (Exception exception) {
             System.out.println("ERROR -> UseDatabase should not invoke this exception!");
-        }
+        }*/
 
+        DatabaseAction databaseAction = new UseDatabaseAction(new DatabaseModel("master", new ArrayList<>())); // = parseCommand()
+        try {
+            Object returnValue = databaseAction.actionPerform();
+            updateControllerNodes(databaseAction, returnValue);
+        } catch (Exception e) {
+            log.error("Command Handler Exception!");
+        }
 
 
     }
 
-    private void updateControllerNodes(DatabaseAction databaseAction) {
-        if (databaseAction instanceof CreateDatabaseAction) { serverController.updateRootNodeAndDatabasesList(); }
-        if (databaseAction instanceof DropDatabaseAction) { serverController.updateRootNodeAndDatabasesList(); }
+    private void updateControllerNodes(DatabaseAction databaseAction, Object returValue) {
+        if (databaseAction instanceof CreateDatabaseAction) {
+            serverController.updateRootNodeAndNamesList();
+            serverController.setResponse("Database Created Successfully!");
+        }
     }
 }

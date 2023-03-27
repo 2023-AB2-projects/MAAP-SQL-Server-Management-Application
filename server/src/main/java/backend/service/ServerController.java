@@ -33,7 +33,7 @@ public class ServerController {
 
     @Getter
     @Setter
-    private List<String> databaseNames;
+    private List<String> databaseNames, tableNames;
 
     @Getter
     private final int port = 4444;
@@ -63,9 +63,10 @@ public class ServerController {
         return null;
     }
 
-    public void updateRootNodeAndDatabasesList() {
-        // Reset databases list
+    public void updateRootNodeAndNamesList() {
+        // Reset databases and tables list
         this.databaseNames.clear();
+        this.tableNames.clear();
 
         // Json catalog -> Java JsonNode
         try {
@@ -83,10 +84,18 @@ public class ServerController {
         }
 
         // Update databases list
+        for(final JsonNode databaseNode : rootNode.get("databases")) {
+            this.databaseNames.add(databaseNode.get("database").get("databaseName").asText());
+        }
+
+        // Update tables list
         ArrayNode databaseTables = (ArrayNode) this.databaseNode.get("database").get("tables");
         for(final JsonNode tableNode : databaseTables) {
-            this.databaseNames.add(tableNode.get("table").get("tableName").asText());
+            this.tableNames.add(tableNode.get("table").get("tableName").asText());
         }
+
+        System.out.println("Current databases=" + this.databaseNames);
+        System.out.println("Current tables=" + this.tableNames);
     }
     /* /Utility */
 
@@ -109,11 +118,12 @@ public class ServerController {
         setCurrentDatabaseName("master");       // By default, "master"
         initVariables();
         accessCatalog();
-        updateRootNodeAndDatabasesList();
+        updateRootNodeAndNamesList();
     }
 
     private void initVariables() {
         this.databaseNames = new ArrayList<>();
+        this.tableNames = new ArrayList<>();
         this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
         this.sqlCommand = "";
         this.response = "";
@@ -209,7 +219,7 @@ public class ServerController {
 
 
         // Send updated databases list to client
-        this.updateRootNodeAndDatabasesList();
+        this.updateRootNodeAndNamesList();
         // Send to client database names list
     }
 
