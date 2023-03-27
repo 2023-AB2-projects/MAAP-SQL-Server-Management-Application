@@ -124,6 +124,7 @@ public class ServerController {
                 serverConnection.stop();
                 log.info("Client Disconnected");
                 serverConnection.start();
+                serverConnection.send(databaseNames.toString());
                 log.info("Client Connected");
             }
         }
