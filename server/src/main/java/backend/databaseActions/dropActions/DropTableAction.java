@@ -9,7 +9,7 @@ import backend.exceptions.ForeignKeyNotFound;
 import backend.exceptions.PrimaryKeyNotFound;
 import backend.exceptions.TableNameAlreadyExists;
 
-public class DropDatabaseAction implements DatabaseAction {
+public class DropTableAction implements DatabaseAction {
 
     @Override
     public void actionPerform() throws DatabaseNameAlreadyExists, TableNameAlreadyExists, DatabaseDoesntExist,
@@ -17,4 +17,5 @@ public class DropDatabaseAction implements DatabaseAction {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'actionPerform'");
     }
+    
 }
