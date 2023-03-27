@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -103,15 +104,15 @@ public class ServerController {
 
     /* Server startup */
     private void init() {
-        accessCatalog();
+        setCurrentDatabaseName("master");       // By default, "master"
         initVariables();
+        accessCatalog();
         updateRootNodeAndDatabasesList();
     }
 
     private void initVariables() {
         this.databaseNames = new ArrayList<>();
         this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-        this.currentDatabaseName = "master";
         this.sqlCommand = "";
         this.response = "";
     }
@@ -131,15 +132,22 @@ public class ServerController {
     }
 
     private void initCatalog(File catalog) throws IOException {
-        JsonNode rootNode = JsonNodeFactory.instance.objectNode();
-        JsonNode databasesNode = JsonNodeFactory.instance.objectNode();
-        JsonNode masterNode = JsonNodeFactory.instance.objectNode();
+        /* Build up basic catalog structure */
+        // Master node
+        ObjectNode masterNode = JsonNodeFactory.instance.objectNode();
+        ObjectNode masterNodeValue = JsonNodeFactory.instance.objectNode();
+        masterNodeValue.put("databaseName", this.currentDatabaseName);
+        masterNodeValue.set("tables", JsonNodeFactory.instance.arrayNode());
+        masterNode.set("database", masterNodeValue);
 
-        String jsonCreate = "{\"databases\":[{\"database\":{\"databaseName\":\"master\", \"tables\":[ ]}}]}";
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        // Databases node
+        ArrayNode databasesNode = JsonNodeFactory.instance.arrayNode();
+        databasesNode.add(masterNode);
 
-        Object jsonObject = mapper.readValue(jsonCreate, Object.class);
-        mapper.writeValue(catalog, jsonObject);
+        ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
+        rootNode.set("databases", databasesNode);
+
+        this.objectMapper.writeValue(catalog, rootNode);
     }
 
     public void start(int port) throws IOException {
