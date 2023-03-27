@@ -14,6 +14,8 @@ public class ServerController {
         log.info("Client Connected");
         String shutdownMsg = "SHUTDOWN";
 
+        
+
         while(true){
             try{
                 String msg;

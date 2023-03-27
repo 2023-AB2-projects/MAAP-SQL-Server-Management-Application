@@ -39,6 +39,7 @@ public class ServerController {
     }
 
     private void setDefaultDatabase() {
+        setCurrentDatabase("master");
     }
 
     private void loadDatabases() {
