@@ -132,6 +132,7 @@ public class ServerController {
     }
 
     private void initCatalog(File catalog) throws IOException {
+
         /* Build up basic catalog structure */
         // Master node
         ObjectNode masterNode = JsonNodeFactory.instance.objectNode();
