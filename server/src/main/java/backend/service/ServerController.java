@@ -163,7 +163,7 @@ public class ServerController {
         String shutdownMsg = "SHUTDOWN";
 
         serverConnection.send(databaseNames.toString());
-
+        log.info(databaseNames.toString());
         while(true){
             try{
                 String msg = serverConnection.receive();

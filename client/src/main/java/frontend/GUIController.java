@@ -2,6 +2,7 @@ package frontend;
 
 import control.ClientController;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
+@Slf4j
 public class GUIController extends JFrame implements ActionListener {
     // Reference to ClientController
     private final ClientController clientController;
@@ -123,11 +125,6 @@ public class GUIController extends JFrame implements ActionListener {
 
         } else if(event.getSource().equals(this.connectionButton)) {
             String ip = this.connectionFrame.getIP();
-//            String port = this.connectionFrame.getPort();
-
-//            System.out.println("Debug - 1. GUI Controller: Connect button pressed!");
-//            System.out.println("Debug - 2. GUI Controller: Delegating work to client controller!");
-//            System.out.println("Debug - 3. GUI Controller: IP: " + ip + " | Port: " + port);
 
             try {
                 this.clientController.establishConnection(ip);
@@ -138,6 +135,21 @@ public class GUIController extends JFrame implements ActionListener {
             } catch (IOException e) {
                 //change this later maybe
                 System.out.println("Server Not Running");
+            }
+        } else if(event.getSource().equals(menuController.getDatabaseSelector())) {
+            JComboBox<String> combo = (JComboBox<String>) event.getSource();
+            String selected = (String) combo.getSelectedItem();
+
+            log.info("USE " + selected + " command sent to server");
+
+
+            clientController.sendCommandToServer("USE " + selected);
+            try {
+                String response = clientController.receiveMessage();
+                outputTextArea.setText(response);
+            } catch (IOException e) {
+                System.out.println("Server is no longer running");
+                System.exit(0);
             }
         }
     }

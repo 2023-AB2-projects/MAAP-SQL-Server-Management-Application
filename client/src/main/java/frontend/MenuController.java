@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ import java.util.ArrayList;
 public class MenuController extends JMenuBar implements MouseListener {
     private JMenu selectMenu, createAlterMenu, dropDeleteMenu, insertUpdateMenu;
     private JButton sendCommandButton;
+
+    @Getter
     private JComboBox<String> databaseSelector;
     // References
     private GUIController guiController;
@@ -71,12 +75,14 @@ public class MenuController extends JMenuBar implements MouseListener {
     }
 
     private void addListeners() {
+        databaseSelector.addActionListener(guiController);
+
         for (Component menuItem : this.selectMenu.getMenuComponents()) {
             menuItem.addMouseListener(this);
         }
     }
 
-    public void addDatabaseNames(ArrayList<String> databaseNames){
+    public void addDatabaseNames(String[] databaseNames){
         for (String databaseName : databaseNames) {
             databaseSelector.addItem(databaseName);
         }
