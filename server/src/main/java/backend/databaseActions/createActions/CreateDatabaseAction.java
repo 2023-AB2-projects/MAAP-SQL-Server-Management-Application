@@ -1,7 +1,7 @@
-package backend.databaseactions.createactions;
+package backend.databaseActions.createActions;
 
 import backend.config.Config;
-import backend.databaseactions.DatabaseAction;
+import backend.databaseActions.DatabaseAction;
 import backend.exceptions.DatabaseNameAlreadyExists;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;

@@ -1,4 +1,4 @@
-package backend.databaseelements;
+package backend.databaseModels;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,11 +1,8 @@
-package backend.databaseactions.createactions;
+package backend.databaseActions.createActions;
 
 import backend.config.Config;
-import backend.databaseactions.DatabaseAction;
-import backend.databaseelements.Attribute;
-import backend.databaseelements.ForeignKey;
-import backend.databaseelements.IndexFile;
-import backend.databaseelements.PrimaryKey;
+import backend.databaseActions.DatabaseAction;
+import backend.databaseModels.*;
 import backend.exceptions.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -78,6 +75,10 @@ public class CreateTableAction implements DatabaseAction {
         }
 
         return null;
+    }
+
+    private boolean givenAttributesAreUnique() {
+        return this.attributes.stream().map(Attribute::attributeName).distinct().count() == this.attributes.size();
     }
 
     private boolean tableAlreadyExists(String tableName, JsonNode databaseNode) {
@@ -155,7 +156,7 @@ public class CreateTableAction implements DatabaseAction {
 
     @Override
     public void actionPerform() throws TableNameAlreadyExists, DatabaseDoesntExist,
-            PrimaryKeyNotFound, ForeignKeyNotFound, AttributeCantBeNull {
+            PrimaryKeyNotFound, ForeignKeyNotFound, AttributeCantBeNull, AttributesAreNotUnique {
         // File that contains the whole catalog
         File catalog = Config.getCatalogFile();
 
@@ -176,6 +177,12 @@ public class CreateTableAction implements DatabaseAction {
         if(databaseNode == null) {
             log.error("CreateTableAction -> Database doesn't exits: " + this.databaseName + "!");
             throw new DatabaseDoesntExist(this.databaseName);
+        }
+
+        // Check if given table attributes are not unique
+        if(!this.givenAttributesAreUnique()) {
+            log.error("CreateTableAction -> Attributes are not unique!");
+            throw new AttributesAreNotUnique(this.attributes);
         }
 
         // Check if table already exists in database

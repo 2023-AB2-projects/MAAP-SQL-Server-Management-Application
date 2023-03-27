@@ -2,72 +2,7 @@
   "databases" : [ {
     "database" : {
       "databaseName" : "master",
-      "tables" : [ {
-        "table" : {
-          "tableName" : "Cars",
-          "fileName" : "CarsTableFile",
-          "rowLength" : 100,
-          "attributes" : [ {
-            "attributeName" : "id",
-            "type" : "int",
-            "length" : 0,
-            "isNull" : false,
-            "isNullable" : false
-          }, {
-            "attributeName" : "name",
-            "type" : "char",
-            "length" : 100,
-            "isNull" : false,
-            "isNullable" : true
-          } ],
-          "primaryKey" : {
-            "primaryKeyAttributes" : [ "id" ]
-          },
-          "foreignKeys" : [ ],
-          "uniqueAttributes" : [ ],
-          "indexFiles" : [ ]
-        }
-      }, {
-        "table" : {
-          "tableName" : "People",
-          "fileName" : "PeopleTableFile",
-          "rowLength" : 50,
-          "attributes" : [ {
-            "attributeName" : "id",
-            "type" : "int",
-            "length" : 0,
-            "isNull" : false,
-            "isNullable" : false
-          }, {
-            "attributeName" : "name",
-            "type" : "char",
-            "length" : 100,
-            "isNull" : false,
-            "isNullable" : true
-          }, {
-            "attributeName" : "age",
-            "type" : "int",
-            "length" : 0,
-            "isNull" : false,
-            "isNullable" : true
-          }, {
-            "attributeName" : "height",
-            "type" : "int",
-            "length" : 0,
-            "isNull" : false,
-            "isNullable" : true
-          } ],
-          "primaryKey" : {
-            "primaryKeyAttributes" : [ "id" ]
-          },
-          "foreignKeys" : [ {
-            "referencedTable" : "Cars",
-            "referencedAttributes" : [ "id" ]
-          } ],
-          "uniqueAttributes" : [ "name" ],
-          "indexFiles" : [ ]
-        }
-      } ]
+      "tables" : [ ]
     }
   } ]
 }

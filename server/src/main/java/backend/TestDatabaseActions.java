@@ -1,10 +1,10 @@
 package backend;
 
-import backend.databaseactions.createactions.CreateTableAction;
-import backend.databaseelements.Attribute;
-import backend.databaseelements.ForeignKey;
-import backend.databaseelements.IndexFile;
-import backend.databaseelements.PrimaryKey;
+import backend.databaseActions.createActions.CreateTableAction;
+import backend.databaseModels.Attribute;
+import backend.databaseModels.ForeignKey;
+import backend.databaseModels.IndexFile;
+import backend.databaseModels.PrimaryKey;
 import backend.exceptions.*;
 
 import java.util.ArrayList;
@@ -44,6 +44,8 @@ public class TestDatabaseActions {
             System.out.println("Foreign key is not found in table attributes!");
         } catch (AttributeCantBeNull e) {
             System.out.println("Given primary key has nullable attributes!");
+        } catch (AttributesAreNotUnique e) {
+            System.out.println("Attributes are not unique!");
         }
     }
 
@@ -74,6 +76,8 @@ public class TestDatabaseActions {
             System.out.println("Foreign key is not found in table attributes!");
         } catch (AttributeCantBeNull e) {
             System.out.println("Given primary key has nullable attributes!");
+        } catch (AttributesAreNotUnique e) {
+            System.out.println("Attributes are not unique!");
         }
     }
 
@@ -89,7 +93,7 @@ public class TestDatabaseActions {
 
         // CreateTable
         TestDatabaseActions test = new TestDatabaseActions();
-        test.createPeopleTable();
-//        test.createCarsTable();
+        test.createCarsTable();
+//        test.createPeopleTable();
     }
 }
