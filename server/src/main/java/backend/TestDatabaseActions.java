@@ -1,6 +1,7 @@
 package backend;
 
 import backend.databaseActions.DatabaseAction;
+import backend.databaseActions.createActions.CreateIndexAction;
 import backend.databaseActions.createActions.CreateTableAction;
 import backend.databaseActions.dropActions.DropDatabaseAction;
 import backend.databaseActions.dropActions.DropTableAction;
@@ -8,7 +9,6 @@ import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.*;
 import backend.exceptions.*;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 
 public class TestDatabaseActions {
@@ -108,7 +108,7 @@ public class TestDatabaseActions {
 //        }
 
         // CreateTable
-        test.createCarsTable();
+//        test.createCarsTable();
 //        test.createPeopleTable();
 
         // Use Database
@@ -133,15 +133,30 @@ public class TestDatabaseActions {
 //        }
 
         // Drop table
-        DatabaseAction dropTable = new DropTableAction("Cars", "master");
+//        DatabaseAction dropTable = new DropTableAction("Cars", "master");
+//        try {
+//            dropTable.actionPerform();
+//        } catch (DatabaseDoesntExist e) {
+//            System.out.println("Database doesn't exist!");
+//        } catch (TableDoesntExist e) {
+//            System.out.println("Table doesn't exist!");
+//        } catch (Exception e) {
+//            System.out.println("ERROR -> DropTableAction should not invoke this exception!");
+//        }
+
+        // Create index file
+        DatabaseAction createIndex = new CreateIndexAction("Cars",  "master", new IndexFileModel(
+                "indexName", 10, true, "indexType",
+                new ArrayList<>()
+        ));
         try {
-            dropTable.actionPerform();
+            createIndex.actionPerform();
         } catch (DatabaseDoesntExist e) {
             System.out.println("Database doesn't exist!");
         } catch (TableDoesntExist e) {
             System.out.println("Table doesn't exist!");
-        } catch (Exception e) {
-            System.out.println("ERROR -> DropTableAction should not invoke this exception!");
+        } catch (Exception exception) {
+            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
         }
     }
 }
