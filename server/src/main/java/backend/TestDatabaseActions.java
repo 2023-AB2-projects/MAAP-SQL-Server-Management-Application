@@ -1,7 +1,5 @@
 package backend;
 
-import backend.databaseActions.DatabaseAction;
-import backend.databaseActions.createActions.CreateDatabaseAction;
 import backend.databaseActions.createActions.CreateTableAction;
 import backend.databaseModels.*;
 import backend.exceptions.*;
@@ -9,7 +7,7 @@ import backend.exceptions.*;
 import java.util.ArrayList;
 
 public class TestDatabaseActions {
-    public TableModel createPeopeTableModel() {
+    public TableModel createPeopleTableModel() {
         String tableName = "People", fileName = "PeopleTableFile";
         int rowLength = 50;
         ArrayList<AttributeModel> attributes = new ArrayList<>(){{
@@ -35,7 +33,7 @@ public class TestDatabaseActions {
     public void createPeopleTable() {
         String databaseName = "master";
         TestDatabaseActions temp = new TestDatabaseActions();
-        TableModel table = temp.createPeopeTableModel();
+        TableModel table = temp.createPeopleTableModel();
 
         CreateTableAction createTable = new CreateTableAction(table, databaseName);
         try {
