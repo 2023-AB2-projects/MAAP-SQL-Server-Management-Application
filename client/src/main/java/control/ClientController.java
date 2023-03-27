@@ -30,8 +30,6 @@ public class ClientController {
         this.messageHandler.establishConnection(ip);
         String databaseNames = messageHandler.receiveMessage();
 
-        //for testing purposes
-        databaseNames = "[asd1, asd2, asd3]";
         menuController.addDatabaseNames(databaseNames);
     }
 
