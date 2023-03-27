@@ -2,16 +2,21 @@ package frontend;
 
 import frontend.MenuItems.CommandMenuItem;
 import frontend.MenuItems.SelectMenuItem;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
+@Slf4j
 public class MenuController extends JMenuBar implements MouseListener {
     private JMenu selectMenu, createAlterMenu, dropDeleteMenu, insertUpdateMenu;
     private JButton sendCommandButton;
-
+    private JComboBox<String> databaseSelector;
     // References
     private GUIController guiController;
 
@@ -34,6 +39,11 @@ public class MenuController extends JMenuBar implements MouseListener {
 
     private void initMenus() {
         // Init sub menus
+
+        this.databaseSelector = new JComboBox<>();
+        databaseSelector.addItem("master");
+        databaseSelector.setSelectedIndex(0);
+
         this.selectMenu = new JMenu("SELECT");
         this.createAlterMenu = new JMenu("CREATE/ALTER");
         this.dropDeleteMenu = new JMenu("DROP/DELETE");
@@ -45,6 +55,7 @@ public class MenuController extends JMenuBar implements MouseListener {
     }
 
     private void addComponentsToMenuBar() {
+        this.add(this.databaseSelector);
         this.add(this.selectMenu);
         this.add(this.createAlterMenu);
         this.add(this.dropDeleteMenu);
@@ -62,6 +73,12 @@ public class MenuController extends JMenuBar implements MouseListener {
     private void addListeners() {
         for (Component menuItem : this.selectMenu.getMenuComponents()) {
             menuItem.addMouseListener(this);
+        }
+    }
+
+    public void addDatabaseNames(ArrayList<String> databaseNames){
+        for (String databaseName : databaseNames) {
+            databaseSelector.addItem(databaseName);
         }
     }
 

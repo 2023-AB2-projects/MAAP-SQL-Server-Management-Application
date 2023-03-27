@@ -1,6 +1,7 @@
 package frontend;
 
 import control.ClientController;
+import lombok.Getter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +17,8 @@ public class GUIController extends JFrame implements ActionListener {
 
     // Components
     private ConnectionFrame connectionFrame;
+
+    @Getter
     private MenuController menuController;
     private InputTextArea inputTextArea;
     private OutputTextArea outputTextArea;
@@ -24,10 +27,10 @@ public class GUIController extends JFrame implements ActionListener {
     private JButton sendCommandButton;
     private JButton connectionButton;
 
+
     public GUIController(ClientController clientController) {
         // Reference
         this.clientController = clientController;
-
         // Setup JFrame
         this.frameSetup();
 
