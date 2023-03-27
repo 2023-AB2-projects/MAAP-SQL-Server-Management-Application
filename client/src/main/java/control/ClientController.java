@@ -1,11 +1,43 @@
 package control;
 
+import backend.ConnectionManager;
 import frontend.GUIController;
 
+import java.io.IOException;
+
 public class ClientController {
+    /* ClientController has a reference to GUI, MessageHandler and ConnectionManager */
+    private GUIController guiController;
+    private MessageHandler messageHandler;
+
     public ClientController() {
+        // Init Client side components
+        this.initComponents();
+    }
+
+    private void initComponents() {
         // Init GUI
-        GUIController guiController = new GUIController();
+        this.guiController = new GUIController(this);
+
+        // Message handler
+        this.messageHandler = new MessageHandler(this);
+    }
+
+    /* Client controls */
+    public void establishConnection(String ip) throws IOException {
+        this.messageHandler.establishConnection(ip);
+    }
+
+    public void stopConnection() throws IOException {
+        this.messageHandler.stopConnection();
+    }
+
+    public void sendCommandToServer(String command) {
+        this.messageHandler.sendCommandToServer(command);
+    }
+
+    public String receiveMessage() throws IOException {
+        return messageHandler.receiveMessage();
     }
 
     public static void main(String[] args) {
