@@ -163,7 +163,7 @@ public class ServerController {
         String shutdownMsg = "SHUTDOWN";
 
         serverConnection.send(databaseNames.toString());
-        log.info(databaseNames.toString());
+
         while(true){
             try{
                 String msg = serverConnection.receive();
@@ -182,10 +182,7 @@ public class ServerController {
                 commandHandler.processCommand();
 
                 // build a response string, send to client
-                //
-                serverConnection.send(databaseNames.toString());
-                serverConnection.send(msg);
-                //serverConnection.send(getResponse());
+                serverConnection.send(getResponse());
 
 
             }catch (NullPointerException e){
