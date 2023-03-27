@@ -2,11 +2,13 @@ package backend.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Collections;
 import java.util.List;
 
 import backend.databaseActions.*;
 import backend.databaseActions.dropActions.*;
-import backend.databaseModels.DatabaseModel;
+import backend.databaseModels.*;
 import backend.exceptions.InvalidSQLCommand;
 import backend.exceptions.SQLParseException;
 import backend.databaseActions.createActions.*;
@@ -21,8 +23,13 @@ public class Parser {
         "insert", "into", "values",
         "delete", "from",
         "(", ")", ",",
-        "!=", "=", ">=", "<=", ">", "<"
+        "!=", "=", ">=", "<=", ">", "<",
+        "references"
     };
+    private static String[] ATTRIBUTE_TYPES = {
+        "int", "float", "bit", "date", "datetime", "varchar"
+    };
+
     /**
      * @param token
      * @return boolean if given token is keyword or not
@@ -34,9 +41,17 @@ public class Parser {
      * @param token
      * @return boolean if given token is comprised of alphanumeric characters only
      */
-    private static boolean isAlphaNumeric(String token) {
+    private boolean isAlphaNumeric(String token) {
         return token != null && token.matches("^[a-zA-Z]*$");
     }
+
+    /**
+     * @param token
+     * @return boolean if given token is a valid field type
+     */
+    private boolean isValidFieldType(String token) {
+        return Arrays.asList(ATTRIBUTE_TYPES).contains(token);
+    } 
 
     /**
      * @param token
@@ -104,11 +119,162 @@ public class Parser {
         return cda;
     }
 
+    private enum CreateTableStates {
+        GET_TABLE_NAME, GET_FIELD_NAME_TYPE, GET_FIELD_CONSTRAINTS, COMMA, CLOSING_BRACKET
+    }
     private CreateTableAction parseCreateTable(List<String> tokens, String databaseName) throws SQLParseException {
+        int i = 3;
 
-        throw(new SQLParseException("Unimplemented action \"Create Table\" for parser"));
-        //CreateTableAction cta = new CreateTableAction();
-        //return cta;
+        // Used for constructing multiple AttributeModels
+        String fieldName = "";
+        String fieldType = "";
+        int fieldLength = 0;
+
+        // used for constructing TableModel
+        String                      tableName           = null;
+        String                      fileName            = "";
+        int                         rowLength           = 0;
+        ArrayList<AttributeModel>   attributes          = new ArrayList<AttributeModel>();
+        PrimaryKeyModel             primaryKey          = null;
+        ArrayList<ForeignKeyModel>  foreignKeys         = new ArrayList<ForeignKeyModel>();
+        ArrayList<String>           uniqueAttributes    = new ArrayList<String>();
+        ArrayList<IndexFileModel>   indexFiles          = new ArrayList<IndexFileModel>();
+
+        // used for costructing PrimaryKeyModel
+        ArrayList<String>           primaryKeyAttributes = new ArrayList<String>();
+
+        CreateTableStates state = CreateTableStates.GET_TABLE_NAME;
+        try {
+            while (i < tokens.size()) {
+                switch (state) {
+                case GET_TABLE_NAME:
+                    // check if table name is valid
+                    if (checkName(tokens.get(i))) {
+                        tableName = tokens.get(i);
+                    }
+
+                    // if no more tokens after table name we can exit (table is specified without any fields, constraints)
+                    if (i+1 == tokens.size()) {
+                        i+=1;
+                        break;
+                    }
+                    // if there are more tokens but next one isn't a '(', invalid instruction
+                    else if (!tokens.get(i+1).equals("(")) {
+                        throw(new SQLParseException("Expected '(' after table name"));
+                    }
+                    // else skip the '(' and start reading fields
+                    else {
+                        i += 2;
+                        state = CreateTableStates.GET_FIELD_NAME_TYPE;
+                    }
+                    break;
+
+                case GET_FIELD_NAME_TYPE:
+                    // read field name and type - mandatory
+                    fieldName = tokens.get(i);
+                    fieldType = tokens.get(i+1);
+                    i += 2;
+
+                    if (!isValidFieldType(fieldType)) {
+                        throw(new SQLParseException("Invalid field type :" + fieldType));
+                    }
+                    // char field type needs to have following structure: (  num  )
+                    if (fieldType.equals("char")) {
+                        try {
+                            fieldLength = Integer.parseInt(tokens.get(i+1));
+                        } catch (NumberFormatException e) {
+                            throw(new SQLParseException("Invalid length of char: " + tokens.get(i+1)));
+                        }
+                        if (!tokens.get(i).equals("(") || !tokens.get(i+2).equals(")")) {
+                            throw(new SQLParseException("Expected length of char attribute in form -> (len)"));
+                        }
+                        i += 3;
+                    }
+                    else {
+                        fieldLength = 0;
+                    }
+
+                    if (tokens.get(i).equals(")")) {
+                        if (i+1 != tokens.size()) {
+                            throw(new SQLParseException("Too many tokens after closing ')'"));
+                        }
+                        // done
+                        else {
+                            state = CreateTableStates.CLOSING_BRACKET;
+                        }
+                    }
+                    if (tokens.get(i).equals(",")) {
+                        state = CreateTableStates.COMMA;
+                    }
+                    else {
+                        state = CreateTableStates.GET_FIELD_CONSTRAINTS;
+                    }
+                    break;
+                    
+                case GET_FIELD_CONSTRAINTS:
+                    if (tokens.get(i).equals("unique")) {
+                        uniqueAttributes.add(fieldName);
+                        i += 1;
+                        break;
+                    }
+                    else if (tokens.get(i).equals("primary")) {
+                        if (tokens.get(i+1).equals("key")) {
+                            primaryKeyAttributes.add(fieldName);
+                        }
+                        else {
+                            throw(new SQLParseException("Unknown constraint " + tokens.get(i) + " " + tokens.get(i+1)));
+                        }
+                        i += 2;
+                        break;
+                    }
+                    else if (tokens.get(i).equals("foreign")) {
+                        if (!tokens.get(i+1).equals("key") || !tokens.get(i+2).equals("references")) {
+                            throw(new SQLParseException("Unknown constraint " + tokens.get(i) + " " + tokens.get(i+1)));
+                        }
+                        i += 3;
+
+                        String foreignTable = tokens.get(i);
+                        String foreignField = tokens.get(i+2);
+                        if (!tokens.get(i+1).equals("(") || !tokens.get(i+3).equals(")")) {
+                            throw(new SQLParseException("Expected following structure for foreign key constraint -> foreign key references table(field)"));
+                        }
+                        var fkm = new ForeignKeyModel(foreignTable, new ArrayList<String>(Collections.singletonList(foreignField)));
+                        foreignKeys.add(fkm);
+                        i += 4;
+                        break;
+                    }
+                    else if (tokens.get(i).equals(",")) {
+                        state = CreateTableStates.COMMA;
+                        break;
+                    }
+                    else {
+                        throw (new SQLParseException("Unknown token " + tokens.get(i)));
+                    }
+                    
+                    //break;
+
+                case COMMA, CLOSING_BRACKET:
+                    attributes.add(new AttributeModel(fieldName, fieldType, fieldLength, false, false));
+                    i++;
+
+                    fieldName = "";
+                    fieldType = "";
+                    fieldLength = 0;
+                    break;
+
+                default:
+                    break;
+                }
+            }
+        } 
+        catch (IndexOutOfBoundsException e) {
+            throw (new SQLParseException("Unexpected end of string"));
+        }
+        
+        primaryKey = new PrimaryKeyModel(primaryKeyAttributes);
+        TableModel tableModel = new TableModel(tableName, fileName, rowLength, attributes, primaryKey, foreignKeys, uniqueAttributes, indexFiles);
+        CreateTableAction cta = new CreateTableAction(tableModel, databaseName);
+        return cta;
     }
 
     private DropDatabaseAction parseDropDatabase(List<String> tokens) throws SQLParseException {
