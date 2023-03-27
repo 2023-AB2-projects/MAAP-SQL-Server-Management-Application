@@ -3,10 +3,12 @@ package backend;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseActions.createActions.CreateTableAction;
 import backend.databaseActions.dropActions.DropDatabaseAction;
+import backend.databaseActions.dropActions.DropTableAction;
 import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.*;
 import backend.exceptions.*;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 
 public class TestDatabaseActions {
@@ -106,7 +108,7 @@ public class TestDatabaseActions {
 //        }
 
         // CreateTable
-//        test.createCarsTable();
+        test.createCarsTable();
 //        test.createPeopleTable();
 
         // Use Database
@@ -121,13 +123,25 @@ public class TestDatabaseActions {
 //        }
 
         // Drop database
-        DatabaseAction dropDatabase = new DropDatabaseAction(new DatabaseModel("master", new ArrayList<>()));
+//        DatabaseAction dropDatabase = new DropDatabaseAction(new DatabaseModel("master", new ArrayList<>()));
+//        try {
+//            dropDatabase.actionPerform();
+//        } catch (DatabaseDoesntExist e) {
+//            System.out.println("Database doesn't exist!");
+//        } catch (Exception exception) {
+//            System.out.println("ERROR -> DropDatabaseAction should not invoke this exception!");
+//        }
+
+        // Drop table
+        DatabaseAction dropTable = new DropTableAction("Cars", "master");
         try {
-            dropDatabase.actionPerform();
+            dropTable.actionPerform();
         } catch (DatabaseDoesntExist e) {
             System.out.println("Database doesn't exist!");
-        } catch (Exception exception) {
-            System.out.println("ERROR -> DropDatabaseAction should not invoke this exception!");
+        } catch (TableDoesntExist e) {
+            System.out.println("Table doesn't exist!");
+        } catch (Exception e) {
+            System.out.println("ERROR -> DropTableAction should not invoke this exception!");
         }
     }
 }
