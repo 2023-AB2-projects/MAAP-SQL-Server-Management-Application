@@ -1,5 +1,6 @@
 package frontend;
 
+import backend.MessageModes;
 import control.ClientController;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -107,8 +108,10 @@ public class GUIController extends JFrame implements ActionListener {
 //            System.out.println("Debug - 1. GUI Controller: Send button pressed!");
 //            System.out.println("Debug - 2. GUI Controller: Delegating work to client controller (-> MessageHandler)!");
 //            System.out.println("Debug - 3. GUI Controller: Command: " + command);
+            this.clientController.sendCommandToServer(command);
+            this.receiveMessageAndPerformAction(MessageModes.refreshDatabases);
+            this.receiveMessageAndPerformAction(MessageModes.setTextArea);
 
-            this.sendReceiveSetMessage(command);
 
         } else if(event.getSource().equals(this.connectionButton)) {
             String ip = this.connectionFrame.getIP();
@@ -120,7 +123,10 @@ public class GUIController extends JFrame implements ActionListener {
                 //change this later
                 connectionFrame.setVisible(false);
 
-                this.sendReceiveSetMessage("USE master");
+                this.clientController.sendCommandToServer("USE master");
+                this.receiveMessageAndPerformAction(MessageModes.refreshDatabases);
+                this.receiveMessageAndPerformAction(MessageModes.setTextArea);
+
             } catch (IOException e) {
                 //change this later maybe
                 System.out.println("Server Not Running");
@@ -131,24 +137,31 @@ public class GUIController extends JFrame implements ActionListener {
 
             log.info("USE " + selected + " command sent to server");
 
-            this.sendReceiveSetMessage("USE " + selected);
+            this.clientController.sendCommandToServer("USE " + selected);
+            this.receiveMessageAndPerformAction(MessageModes.refreshDatabases);
+            this.receiveMessageAndPerformAction(MessageModes.setTextArea);
         }
     }
 
     /* Setters */
     public void setInputTextAreaString(String string) { this.inputTextArea.setInputTextAreaString(string); }
 
-    //method: Send msg param to server, receives a message and sets text of outputTextArea, or terminates execution if the server is no longer running
-    public void sendReceiveSetMessage(String msg){
-        this.clientController.sendCommandToServer(msg);
+    //method receives message from server and performs action determined by mode param
+    public void receiveMessageAndPerformAction(int mode){
 
         try {
             String response = clientController.receiveMessage();
-            outputTextArea.setText(response);
+
             if(response.equals("SERVER DISCONNECTED")){
                 clientController.stopConnection();
                 System.out.println("Server was shut down");
                 System.exit(0);
+            }
+
+            if (mode == MessageModes.setTextArea){
+                outputTextArea.setText(response);
+            } else if(mode == MessageModes.refreshDatabases) {
+                this.menuController.addDatabaseNames(response);
             }
         } catch (IOException e) {
             System.out.println("Server is no longer running");

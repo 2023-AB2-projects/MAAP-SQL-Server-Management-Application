@@ -82,8 +82,16 @@ public class MenuController extends JMenuBar implements MouseListener {
         }
     }
 
-    public void addDatabaseNames(String[] databaseNames){
-        for (String databaseName : databaseNames) {
+    public void addDatabaseNames(String databaseNames){
+        databaseSelector.removeAllItems();
+        databaseSelector.addItem("master");
+        if(databaseNames.equals("[]")){
+            return;
+        }
+        databaseNames = databaseNames.substring(1, databaseNames.length() - 1);
+
+        String[] listOfDatabaseNames = databaseNames.split(",");
+        for (String databaseName : listOfDatabaseNames) {
             databaseSelector.addItem(databaseName);
         }
     }

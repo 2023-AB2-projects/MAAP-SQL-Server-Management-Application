@@ -31,13 +31,8 @@ public class ClientController {
         String databaseNames = messageHandler.receiveMessage();
 
         //for testing purposes
-        //databaseNames = "[asd1, asd2, asd3]";
-
-        if(databaseNames.equals("[]")){
-            return;
-        }
-        databaseNames = databaseNames.substring(1, databaseNames.length() - 1);
-        menuController.addDatabaseNames(databaseNames.split(","));
+        databaseNames = "[asd1, asd2, asd3]";
+        menuController.addDatabaseNames(databaseNames);
     }
 
     public void stopConnection() throws IOException {

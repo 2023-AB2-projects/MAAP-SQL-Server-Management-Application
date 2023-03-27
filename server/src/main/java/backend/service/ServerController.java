@@ -182,7 +182,10 @@ public class ServerController {
                 commandHandler.processCommand();
 
                 // build a response string, send to client
-                serverConnection.send(getResponse());
+                //
+                serverConnection.send(databaseNames.toString());
+                serverConnection.send(msg);
+                //serverConnection.send(getResponse());
 
 
             }catch (NullPointerException e){
