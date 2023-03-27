@@ -38,6 +38,8 @@ public class ServerController {
     @Getter
     private final int port = 4444;
 
+    private CommandHandler commandHandler;
+
     /* Utility */
     private JsonNode findDatabaseNodeFromRoot(String databaseName, JsonNode rootNode) {
         // Check if database exists
@@ -115,6 +117,7 @@ public class ServerController {
         this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
         this.sqlCommand = "";
         this.response = "";
+        this.commandHandler = new CommandHandler(this);
     }
 
     private void accessCatalog() {
@@ -175,10 +178,11 @@ public class ServerController {
 
                 // pass message to parser and receive the answer
                 setSqlCommand(msg);         // if the client message is a sql command, then execute it
-                invokeParser();             // parse the command, and perform the db_actions
+
+                commandHandler.processCommand();
 
                 // build a response string, send to client
-                serverConnection.send(msg);
+                serverConnection.send(getResponse());
 
 
             }catch (NullPointerException e){
