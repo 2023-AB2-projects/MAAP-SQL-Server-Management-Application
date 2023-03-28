@@ -121,9 +121,9 @@ public class GUIController extends JFrame implements ActionListener, ItemListene
                 //change this later
                 connectionFrame.setVisible(false);
 
-                this.clientController.sendCommandToServer("USE master");
-                this.receiveMessageAndPerformAction(MessageModes.refreshDatabases);
-                this.receiveMessageAndPerformAction(MessageModes.setTextArea);
+                //this.clientController.sendCommandToServer("USE master");
+                //this.receiveMessageAndPerformAction(MessageModes.refreshDatabases);
+                //this.receiveMessageAndPerformAction(MessageModes.setTextArea);
 
             } catch (IOException e) {
                 //change this later maybe

@@ -7,6 +7,7 @@ import backend.databaseActions.dropActions.DropDatabaseAction;
 import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.DatabaseModel;
 import backend.exceptions.*;
+import backend.parser.Parser;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,9 +21,6 @@ public class CommandHandler {
     }
 
     public void processCommand() {
-        // Ide jon a parser letrehozas, majd az visszaterit egy database actiont
-        //FIXME
-
         //Most csak kiprobalom egy USE database actionre
 
 /*        DatabaseAction createDatabase = new CreateDatabaseAction(new DatabaseModel("Adrienke adatbazisa", new ArrayList<>()));
@@ -56,10 +54,23 @@ public class CommandHandler {
             System.out.println("ERROR -> UseDatabase should not invoke this exception!");
         }*/
 
-        DatabaseAction databaseAction = new UseDatabaseAction(new DatabaseModel("master", new ArrayList<>())); // = parseCommand()
+        //FIXME
+        // clear up way of getting command to parser 
+        Parser parser = new Parser();
+        DatabaseAction da;
         try {
-            Object returnValue = databaseAction.actionPerform();
-            updateControllerNodes(databaseAction, returnValue);
+            da = parser.parseInput(serverController.getSqlCommand(), "master");
+        } catch (SQLParseException e) {
+            log.error(e.getMessage());
+            return;
+        } catch (InvalidSQLCommand e) {
+            log.error(e.getMessage());
+            return;
+        }
+
+        try {
+            Object returnValue = da.actionPerform();
+            updateControllerNodes(da, returnValue);
         } catch (AttributeCantBeNull e) {
             log.error("AttributeCantBeNull");
         } catch (AttributesAreNotUnique e) {
