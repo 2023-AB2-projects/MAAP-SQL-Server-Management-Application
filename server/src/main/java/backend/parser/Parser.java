@@ -24,7 +24,7 @@ public class Parser {
         "references"
     };
     private static String[] ATTRIBUTE_TYPES = {
-        "int", "float", "bit", "date", "datetime", "varchar"
+        "int", "float", "bit", "date", "datetime", "char"
     };
 
     /**
@@ -75,18 +75,18 @@ public class Parser {
         List<String> tokens = tokenize(input);
 
         if (tokens.get(0).equals("create")) {
-            if (Objects.equals(tokens.get(1), "database")) {
+            if (tokens.get(1).equals("database")) {
                 return parseCreateDatabase(tokens);
             }
-            if (Objects.equals(tokens.get(1), "table")) {
+            if (tokens.get(1).equals("table")) {
                 return parseCreateTable(tokens, databaseName);
             }
         }
-        if (Objects.equals(tokens.get(0), "drop")) {
-            if (Objects.equals(tokens.get(1), "database")) {
+        if (tokens.get(0).equals("drop")) {
+            if (tokens.get(1).equals("database")) {
                 return parseDropDatabase(tokens);
             }
-            if (Objects.equals(tokens.get(1), "table")) {
+            if (tokens.get(1).equals("table")) {
                 return parseDropTable(tokens, databaseName);
             }
         }
@@ -120,7 +120,7 @@ public class Parser {
         GET_TABLE_NAME, GET_FIELD_NAME_TYPE, GET_FIELD_CONSTRAINTS, COMMA, CLOSING_BRACKET
     }
     private CreateTableAction parseCreateTable(List<String> tokens, String databaseName) throws SQLParseException {
-        int i = 3;
+        int i = 2;
 
         // Used for constructing multiple AttributeModels
         String fieldName = "";
@@ -151,7 +151,7 @@ public class Parser {
                     }
 
                     // if no more tokens after table name we can exit (table is specified without any fields, constraints)
-                    if (i+1 == tokens.size()) {
+                    if (i+1 >= tokens.size()) {
                         i+=1;
                         break;
                     }
@@ -192,15 +192,13 @@ public class Parser {
                     }
 
                     if (tokens.get(i).equals(")")) {
-                        if (i+1 != tokens.size()) {
+                        if (i+1 < tokens.size()) {
                             throw(new SQLParseException("Too many tokens after closing ')'"));
                         }
                         // done
-                        else {
-                            state = CreateTableStates.CLOSING_BRACKET;
-                        }
+                        state = CreateTableStates.CLOSING_BRACKET;
                     }
-                    if (tokens.get(i).equals(",")) {
+                    else if (tokens.get(i).equals(",")) {
                         state = CreateTableStates.COMMA;
                     }
                     else {
@@ -245,7 +243,7 @@ public class Parser {
                         break;
                     }
                     else {
-                        throw (new SQLParseException("Unknown token " + tokens.get(i)));
+                        state = CreateTableStates.GET_FIELD_CONSTRAINTS;
                     }
                     
                     //break;

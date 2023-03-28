@@ -24,14 +24,13 @@ public class CommandHandler {
 
     public void processCommand() {
 
-
         DatabaseAction databaseAction = null;
         try {
             databaseAction = parser.parseInput(serverController.getSqlCommand(), serverController.getCurrentDatabaseName());
-        } catch (InvalidSQLCommand e) {
-            log.error("InvalidSQLCommand");
-        } catch (SQLParseException e) {
-            log.error("SQLParseException");
+        } catch (DatabaseNameAlreadyExists exception) {
+            System.out.println("Database name already exists");
+        } catch (Exception exception) {
+            System.out.println("ERROR -> CreateDabaseAction should not invoke this exception!");
         }
         try {
             Object returnValue = databaseAction.actionPerform();
