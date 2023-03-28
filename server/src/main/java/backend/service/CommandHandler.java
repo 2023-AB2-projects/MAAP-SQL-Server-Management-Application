@@ -11,62 +11,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CommandHandler {
     private final ServerController serverController;
+    private final Parser parser;
 
     public CommandHandler(ServerController serverController){
         this.serverController = serverController;
+        this.parser = new Parser();
     }
 
     public void processCommand() {
-        //Most csak kiprobalom egy USE database actionre
 
-/*        DatabaseAction createDatabase = new CreateDatabaseAction(new DatabaseModel("Adrienke adatbazisa", new ArrayList<>()));
+        DatabaseAction databaseAction = null;
         try {
-            createDatabase.actionPerform();
+            databaseAction = parser.parseInput(serverController.getSqlCommand(), serverController.getCurrentDatabaseName());
         } catch (DatabaseNameAlreadyExists exception) {
             System.out.println("Database name already exists");
         } catch (Exception exception) {
             System.out.println("ERROR -> CreateDabaseAction should not invoke this exception!");
         }
-
-        DatabaseAction createDatabase2 = new CreateDatabaseAction(new DatabaseModel("Adrienke adatbazisa2", new ArrayList<>()));
         try {
-            createDatabase.actionPerform();
-        } catch (DatabaseNameAlreadyExists exception) {
-            System.out.println("Database name already exists");
-        } catch (Exception exception) {
-            System.out.println("ERROR -> CreateDabaseAction should not invoke this exception!");
-        }*/
-
-       /* DatabaseAction databaseAction = new UseDatabaseAction(new DatabaseModel("Adrienke adatbazisa", new ArrayList<>()));
-        try {
-            String databaseName = (String) databaseAction.actionPerform();
-            serverController.setCurrentDatabaseName(databaseName);
-            serverController.setResponse("Database Created : " + databaseName);
-            updateControllerNodes(databaseAction);
-            System.out.println("Databasename=" + databaseName);
-        } catch (DatabaseDoesntExist e) {
-            System.out.println("Database doesn't exist!");
-        } catch (Exception exception) {
-            System.out.println("ERROR -> UseDatabase should not invoke this exception!");
-        }*/
-
-        //FIXME
-        // clear up way of getting command to parser 
-        Parser parser = new Parser();
-        DatabaseAction da;
-        try {
-            da = parser.parseInput(serverController.getSqlCommand(), "master");
-        } catch (SQLParseException e) {
-            log.error(e.getMessage());
-            return;
-        } catch (InvalidSQLCommand e) {
-            log.error(e.getMessage());
-            return;
-        }
-
-        try {
-            Object returnValue = da.actionPerform();
-            updateControllerNodes(da, returnValue);
+            Object returnValue = databaseAction.actionPerform();
+            updateControllerNodes(databaseAction, returnValue);
         } catch (AttributeCantBeNull e) {
             log.error("AttributeCantBeNull");
         } catch (AttributesAreNotUnique e) {

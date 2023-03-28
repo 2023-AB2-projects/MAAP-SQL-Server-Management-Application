@@ -1,10 +1,7 @@
 package backend.parser;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.Collections;
-import java.util.Collections;
-import java.util.List;
 
 import backend.databaseActions.*;
 import backend.databaseActions.dropActions.*;
