@@ -11,8 +11,10 @@ import backend.databaseActions.dropActions.*;
 import backend.databaseModels.*;
 import backend.exceptions.InvalidSQLCommand;
 import backend.exceptions.SQLParseException;
+import lombok.extern.slf4j.Slf4j;
 import backend.databaseActions.createActions.*;
 
+@Slf4j
 public class Parser {
     public Parser() {}
 
@@ -195,13 +197,15 @@ public class Parser {
                     }
 
                     if (tokens.get(i).equals(")")) {
-                        if (i+1 < tokens.size()) {
+                        /*if (i+1 >= tokens.size()) {
                             throw(new SQLParseException("Too many tokens after closing ')'"));
-                        }
+                        }*/
                         // done
+                        log.info("Finished reading all fields");
                         state = CreateTableStates.CLOSING_BRACKET;
                     }
                     else if (tokens.get(i).equals(",")) {
+                        log.info("Finished reading field");
                         state = CreateTableStates.COMMA;
                     }
                     else {
@@ -254,10 +258,18 @@ public class Parser {
                 case COMMA, CLOSING_BRACKET:
                     attributes.add(new AttributeModel(fieldName, fieldType, fieldLength, false, false));
                     i++;
+                    log.info("Added field " + fieldName + ", " + fieldType);
 
                     fieldName = "";
                     fieldType = "";
                     fieldLength = 0;
+
+                    if (state == CreateTableStates.CLOSING_BRACKET) {
+                        break;
+                    }
+                    else if (state == CreateTableStates.COMMA) {
+                        state = CreateTableStates.GET_FIELD_NAME_TYPE;
+                    }
                     break;
 
                 default:

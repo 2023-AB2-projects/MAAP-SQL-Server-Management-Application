@@ -1,17 +1,13 @@
 package backend.service;
 
 import backend.databaseActions.DatabaseAction;
-import backend.databaseActions.createActions.CreateDatabaseAction;
-import backend.databaseActions.createActions.CreateTableAction;
-import backend.databaseActions.dropActions.DropDatabaseAction;
+import backend.databaseActions.createActions.*;
+import backend.databaseActions.dropActions.*;
 import backend.databaseActions.miscActions.UseDatabaseAction;
-import backend.databaseModels.DatabaseModel;
 import backend.exceptions.*;
 import backend.parser.Parser;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 @Slf4j
 public class CommandHandler {
     private final ServerController serverController;
@@ -99,7 +95,15 @@ public class CommandHandler {
         }
         if (databaseAction instanceof DropDatabaseAction) {
             serverController.updateRootNodeAndNamesList();
-            serverController.setResponse("Database Deleted Successfully!");
+            serverController.setResponse("Database Dropped Successfully!");
+        }
+        if (databaseAction instanceof CreateTableAction) {
+            //serverController.updateRootNodeAndNamesList();
+            serverController.setResponse("Table Created Successfully!");
+        }
+        if (databaseAction instanceof DropTableAction) {
+            //serverController.updateRootNodeAndNamesList();
+            serverController.setResponse("Table Dropped Successfully!");
         }
         if (databaseAction instanceof UseDatabaseAction) {
             serverController.setCurrentDatabaseName((String) returnValue);
