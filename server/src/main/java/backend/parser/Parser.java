@@ -1,10 +1,7 @@
 package backend.parser;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.Collections;
-import java.util.Collections;
-import java.util.List;
 
 import backend.databaseActions.*;
 import backend.databaseActions.dropActions.*;
@@ -14,7 +11,7 @@ import backend.exceptions.SQLParseException;
 import backend.databaseActions.createActions.*;
 
 public class Parser {
-    Parser() {}
+    public Parser() {}
 
     private static String[] RESERVED_KEYWORDS = {
         "create", "drop", "database", "table",
@@ -77,19 +74,19 @@ public class Parser {
     public DatabaseAction parseInput(String input, String databaseName) throws InvalidSQLCommand, SQLParseException{
         List<String> tokens = tokenize(input);
 
-        if (tokens.get(0) == "create") {
-            if (tokens.get(1) == "database") {
+        if (tokens.get(0).equals("create")) {
+            if (Objects.equals(tokens.get(1), "database")) {
                 return parseCreateDatabase(tokens);
             }
-            if (tokens.get(1) == "table") {
+            if (Objects.equals(tokens.get(1), "table")) {
                 return parseCreateTable(tokens, databaseName);
             }
         }
-        if (tokens.get(0) == "drop") {
-            if (tokens.get(1) == "database") {
+        if (Objects.equals(tokens.get(0), "drop")) {
+            if (Objects.equals(tokens.get(1), "database")) {
                 return parseDropDatabase(tokens);
             }
-            if (tokens.get(1) == "table") {
+            if (Objects.equals(tokens.get(1), "table")) {
                 return parseDropTable(tokens, databaseName);
             }
         }
