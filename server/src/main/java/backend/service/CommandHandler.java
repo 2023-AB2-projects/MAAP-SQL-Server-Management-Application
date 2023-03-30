@@ -45,6 +45,8 @@ public class CommandHandler {
             log.error("TableNameAlreadyExists");
         } catch (DatabaseDoesntExist e) {
             log.error("DatabaseDoesntExist");
+        } catch (IndexAlreadyExists e) {
+            log.error("Index already exists!");
         }
 
 

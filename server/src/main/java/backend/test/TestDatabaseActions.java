@@ -1,13 +1,19 @@
 package backend.test;
 
 import backend.databaseActions.DatabaseAction;
+import backend.databaseActions.createActions.CreateDatabaseAction;
 import backend.databaseActions.createActions.CreateIndexAction;
 import backend.databaseActions.createActions.CreateTableAction;
+import backend.databaseActions.dropActions.DropDatabaseAction;
+import backend.databaseActions.dropActions.DropTableAction;
+import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.*;
 import backend.exceptions.databaseActionsExceptions.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 
+@Slf4j
 public class TestDatabaseActions {
     public TableModel createPeopleTableModel() {
         String tableName = "People", fileName = "PeopleTableFile";
@@ -94,7 +100,19 @@ public class TestDatabaseActions {
 
         // CreateTable
 //        test.createCarsTable();
-        test.createPeopleTable();
+//        test.createPeopleTable();
+
+        // Create Database
+//        DatabaseModel newDatabase = new DatabaseModel();
+//        newDatabase.setDatabaseName("akosksadfjlaskfjd");
+//        DatabaseAction createDatabase = new CreateDatabaseAction(newDatabase);
+//        try {
+//            createDatabase.actionPerform();
+//        } catch (DatabaseNameAlreadyExists e) {
+//            log.info("CreateDatabaseAction -> DatabaseAlreadyExists");
+//        } catch (Exception e) {
+//            log.error("ERROR -> CreateDatabaseAction should now throw this!");
+//        }
 
         // Use Database
 //        DatabaseAction useDatabase = new UseDatabaseAction(new DatabaseModel("master", new ArrayList<>()));
@@ -108,7 +126,7 @@ public class TestDatabaseActions {
 //        }
 
         // Drop database
-//        DatabaseAction dropDatabase = new DropDatabaseAction(new DatabaseModel("master", new ArrayList<>()));
+//        DatabaseAction dropDatabase = new DropDatabaseAction(new DatabaseModel("akosksadfjlaskfjd", new ArrayList<>()));
 //        try {
 //            dropDatabase.actionPerform();
 //        } catch (DatabaseDoesntExist e) {
@@ -140,6 +158,8 @@ public class TestDatabaseActions {
             System.out.println("Database doesn't exist!");
         } catch (TableDoesntExist e) {
             System.out.println("Table doesn't exist!");
+        } catch (IndexAlreadyExists e) {
+            System.out.println("Index with given name already exists!");
         } catch (Exception exception) {
             System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
         }
