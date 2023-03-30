@@ -47,6 +47,8 @@ public class CommandHandler {
             log.error("DatabaseDoesntExist");
         } catch (IndexAlreadyExists e) {
             log.error("Index already exists!");
+        } catch (ForeignKeyFieldNotFound e) {
+            log.error("Foreign key attribute is not in this table!");
         }
 
 

@@ -1,4 +1,4 @@
-package backend.test;
+package test.backend;
 
 
 import backend.service.ServerController;

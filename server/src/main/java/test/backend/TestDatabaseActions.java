@@ -1,4 +1,4 @@
-package backend.test;
+package test.backend;
 
 import backend.databaseActions.DatabaseAction;
 import backend.databaseActions.createActions.CreateDatabaseAction;
@@ -28,7 +28,9 @@ public class TestDatabaseActions {
         ArrayList<ForeignKeyModel> foreignKeys = new ArrayList<>(){{
             add(new ForeignKeyModel("Cars", new ArrayList<>() {{
                 add("id");
-            }}, new ArrayList<>()));
+            }}, new ArrayList<>(){{
+                add("idd");
+            }}));
         }};
         ArrayList<IndexFileModel> indexFiles = new ArrayList<>();
         ArrayList<String> uniqueAttributes = new ArrayList<>(){{
@@ -58,6 +60,8 @@ public class TestDatabaseActions {
             System.out.println("Given primary key has nullable attributes!");
         } catch (FieldsAreNotUnique e) {
             System.out.println("Attributes are not unique!");
+        } catch (ForeignKeyFieldNotFound e) {
+            log.error("Foreign key referencing fields are not in this table!");
         }
     }
 
@@ -92,6 +96,8 @@ public class TestDatabaseActions {
             System.out.println("Given primary key has nullable attributes!");
         } catch (FieldsAreNotUnique e) {
             System.out.println("Attributes are not unique!");
+        } catch (ForeignKeyFieldNotFound e) {
+            log.error("Foreign key referencing fields are not in this table!");
         }
     }
 
@@ -100,7 +106,7 @@ public class TestDatabaseActions {
 
         // CreateTable
 //        test.createCarsTable();
-//        test.createPeopleTable();
+        test.createPeopleTable();
 
         // Create Database
 //        DatabaseModel newDatabase = new DatabaseModel();
@@ -148,20 +154,20 @@ public class TestDatabaseActions {
 //        }
 
         // Create index file
-        DatabaseAction createIndex = new CreateIndexAction("Cars",  "master", new IndexFileModel(
-                "indexName", 10, true, "indexType",
-                new ArrayList<>()
-        ));
-        try {
-            createIndex.actionPerform();
-        } catch (DatabaseDoesntExist e) {
-            System.out.println("Database doesn't exist!");
-        } catch (TableDoesntExist e) {
-            System.out.println("Table doesn't exist!");
-        } catch (IndexAlreadyExists e) {
-            System.out.println("Index with given name already exists!");
-        } catch (Exception exception) {
-            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
-        }
+//        DatabaseAction createIndex = new CreateIndexAction("Cars",  "master", new IndexFileModel(
+//                "indexName", 10, true, "indexType",
+//                new ArrayList<>()
+//        ));
+//        try {
+//            createIndex.actionPerform();
+//        } catch (DatabaseDoesntExist e) {
+//            System.out.println("Database doesn't exist!");
+//        } catch (TableDoesntExist e) {
+//            System.out.println("Table doesn't exist!");
+//        } catch (IndexAlreadyExists e) {
+//            System.out.println("Index with given name already exists!");
+//        } catch (Exception exception) {
+//            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
+//        }
     }
 }

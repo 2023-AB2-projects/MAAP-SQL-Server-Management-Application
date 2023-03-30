@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Data
 @Slf4j
@@ -131,7 +133,7 @@ public class CreateTableAction implements DatabaseAction {
 
     @Override
     public Object actionPerform() throws TableNameAlreadyExists, DatabaseDoesntExist,
-            PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique {
+            PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique, ForeignKeyFieldNotFound {
         // File that contains the whole catalog
         File catalog = Config.getCatalogFile();
 
@@ -198,6 +200,19 @@ public class CreateTableAction implements DatabaseAction {
             } catch (DatabaseDoesntExist exception) {
                 log.error("CreateTableAction -> FK is referencing a table=" + foreignKey.getReferencedTable() + "in a non-existing database!");
                 throw new ForeignKeyNotFound(foreignKey.getReferencedTable(), foreignKey.getReferencedFields());
+            }
+        }
+
+        // Check if FK fields are present in table
+        ArrayList<String> fields = new ArrayList<>(this.table.getFields().stream().map(FieldModel::getFieldName).toList());
+
+        // For each foreign key -> Check if it's referencing fields are in this table
+        for(final ForeignKeyModel foreignKey : this.table.getForeignKeys()) {
+            for(final String foreignKeyField : foreignKey.getReferencingFields()) {
+                if(!fields.contains(foreignKeyField)) {
+                    log.error("CreateTableAction -> FK is referencing non existent attribute in this table!");
+                    throw new ForeignKeyFieldNotFound(foreignKeyField, this.table.getTableName());
+                }
             }
         }
 
