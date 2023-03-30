@@ -2,8 +2,8 @@ package backend.databaseActions.dropActions;
 
 import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
-import backend.exceptions.DatabaseDoesntExist;
-import backend.exceptions.TableDoesntExist;
+import backend.exceptions.databaseActionsExceptions.DatabaseDoesntExist;
+import backend.exceptions.databaseActionsExceptions.TableDoesntExist;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

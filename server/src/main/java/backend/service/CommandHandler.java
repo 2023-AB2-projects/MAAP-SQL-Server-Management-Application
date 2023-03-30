@@ -4,7 +4,7 @@ import backend.databaseActions.DatabaseAction;
 import backend.databaseActions.createActions.*;
 import backend.databaseActions.dropActions.*;
 import backend.databaseActions.miscActions.UseDatabaseAction;
-import backend.exceptions.*;
+import backend.exceptions.databaseActionsExceptions.*;
 import backend.parser.Parser;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,9 +29,9 @@ public class CommandHandler {
         try {
             Object returnValue = databaseAction.actionPerform();
             updateControllerNodes(databaseAction, returnValue);
-        } catch (AttributeCantBeNull e) {
+        } catch (FieldCantBeNull e) {
             log.error("AttributeCantBeNull");
-        } catch (AttributesAreNotUnique e) {
+        } catch (FieldsAreNotUnique e) {
             log.error("AttributesAreNotUnique");
         } catch (DatabaseNameAlreadyExists e) {
             log.error("DatabaseNameAlreadyExists");

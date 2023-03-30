@@ -12,17 +12,17 @@ public class ForeignKeyModel {
 
     @Getter
     @Setter
-    private ArrayList<String> referencedAttributes, referencingAttributes;
+    private ArrayList<String> referencedFields, referencingFields;
 
     public ForeignKeyModel() {
         this.referencedTable = "none";
-        this.referencedAttributes = new ArrayList<>();
-        this.referencingAttributes = new ArrayList<>();
+        this.referencedFields = new ArrayList<>();
+        this.referencingFields = new ArrayList<>();
     }
 
-    public ForeignKeyModel(String referencedTable, ArrayList<String> referencedAttributes, ArrayList<String> referencingAttributes) {
+    public ForeignKeyModel(String referencedTable, ArrayList<String> referencedFields, ArrayList<String> referencingFields) {
         this.referencedTable = referencedTable;
-        this.referencedAttributes = referencedAttributes;
-        this.referencingAttributes = referencingAttributes;
+        this.referencedFields = referencedFields;
+        this.referencingFields = referencingFields;
     }
 }

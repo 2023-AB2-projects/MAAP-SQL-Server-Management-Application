@@ -1,14 +1,10 @@
 package backend.test;
 
 import backend.databaseActions.DatabaseAction;
-import backend.databaseActions.createActions.CreateDatabaseAction;
 import backend.databaseActions.createActions.CreateIndexAction;
 import backend.databaseActions.createActions.CreateTableAction;
-import backend.databaseActions.dropActions.DropDatabaseAction;
-import backend.databaseActions.dropActions.DropTableAction;
-import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.*;
-import backend.exceptions.*;
+import backend.exceptions.databaseActionsExceptions.*;
 
 import java.util.ArrayList;
 
@@ -16,11 +12,11 @@ public class TestDatabaseActions {
     public TableModel createPeopleTableModel() {
         String tableName = "People", fileName = "PeopleTableFile";
         int rowLength = 50;
-        ArrayList<AttributeModel> attributes = new ArrayList<>(){{
-            add(new AttributeModel("id", "int", 0, false, false));
-            add(new AttributeModel("name", "char", 100, false, true));
-            add(new AttributeModel("age", "int", 0, false, true));
-            add(new AttributeModel("height", "int", 0, false, true));
+        ArrayList<FieldModel> fields = new ArrayList<>(){{
+            add(new FieldModel("id", "int", 0, false, false));
+            add(new FieldModel("name", "char", 100, false, true));
+            add(new FieldModel("age", "int", 0, false, true));
+            add(new FieldModel("height", "int", 0, false, true));
         }};
         PrimaryKeyModel primaryKey = new PrimaryKeyModel(new ArrayList<>(){{ add("id"); }});
         ArrayList<ForeignKeyModel> foreignKeys = new ArrayList<>(){{
@@ -32,7 +28,7 @@ public class TestDatabaseActions {
         ArrayList<String> uniqueAttributes = new ArrayList<>(){{
             add("name");
         }};
-        return new TableModel(tableName, fileName, rowLength, attributes, primaryKey,
+        return new TableModel(tableName, fileName, rowLength, fields, primaryKey,
                 foreignKeys, uniqueAttributes, indexFiles);
     }
 
@@ -52,9 +48,9 @@ public class TestDatabaseActions {
             System.out.println("Primary key is not found in table attributes!");
         } catch (ForeignKeyNotFound e) {
             System.out.println("Foreign key is not found in table attributes!");
-        } catch (AttributeCantBeNull e) {
+        } catch (FieldCantBeNull e) {
             System.out.println("Given primary key has nullable attributes!");
-        } catch (AttributesAreNotUnique e) {
+        } catch (FieldsAreNotUnique e) {
             System.out.println("Attributes are not unique!");
         }
     }
@@ -63,16 +59,16 @@ public class TestDatabaseActions {
         // Other table
         String databaseName = "master", tableName = "Cars", fileName = "CarsTableFile";
         int rowLength = 100;
-        ArrayList<AttributeModel> attributes = new ArrayList<>(){{
-            add(new AttributeModel("id", "int", 0, false, false));
-            add(new AttributeModel("name", "char", 100, false, true));
+        ArrayList<FieldModel> fields = new ArrayList<>(){{
+            add(new FieldModel("id", "int", 0, false, false));
+            add(new FieldModel("name", "char", 100, false, true));
         }};
         PrimaryKeyModel primaryKey = new PrimaryKeyModel(new ArrayList<>(){{ add("id"); }});
         ArrayList<ForeignKeyModel> foreignKeys = new ArrayList<>();
         ArrayList<IndexFileModel> indexFiles = new ArrayList<>();
         ArrayList<String> uniqueAttributes = new ArrayList<>();
 
-        TableModel table = new TableModel(tableName, fileName, rowLength, attributes, primaryKey,
+        TableModel table = new TableModel(tableName, fileName, rowLength, fields, primaryKey,
                 foreignKeys, uniqueAttributes, indexFiles);
 
         CreateTableAction createTable = new CreateTableAction(table, databaseName);
@@ -86,9 +82,9 @@ public class TestDatabaseActions {
             System.out.println("Primary key is not found in table attributes!");
         } catch (ForeignKeyNotFound e) {
             System.out.println("Foreign key is not found in table attributes!");
-        } catch (AttributeCantBeNull e) {
+        } catch (FieldCantBeNull e) {
             System.out.println("Given primary key has nullable attributes!");
-        } catch (AttributesAreNotUnique e) {
+        } catch (FieldsAreNotUnique e) {
             System.out.println("Attributes are not unique!");
         }
     }
@@ -97,8 +93,8 @@ public class TestDatabaseActions {
         TestDatabaseActions test = new TestDatabaseActions();
 
         // CreateTable
-        test.createCarsTable();
-//        test.createPeopleTable();
+//        test.createCarsTable();
+        test.createPeopleTable();
 
         // Use Database
 //        DatabaseAction useDatabase = new UseDatabaseAction(new DatabaseModel("master", new ArrayList<>()));

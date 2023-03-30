@@ -3,7 +3,7 @@ package backend.databaseActions.createActions;
 import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.*;
-import backend.exceptions.*;
+import backend.exceptions.databaseActionsExceptions.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -52,8 +52,8 @@ public class CreateTableAction implements DatabaseAction {
         return null;
     }
 
-    private boolean givenAttributesAreUnique() {
-        return this.table.getAttributes().stream().map(AttributeModel::getAttributeName).distinct().count() == this.table.getAttributes().size();
+    private boolean givenFieldsAreUnique() {
+        return this.table.getFields().stream().map(FieldModel::getFieldName).distinct().count() == this.table.getFields().size();
     }
 
     private boolean tableAlreadyExists(String tableName, JsonNode databaseNode) {
@@ -66,25 +66,25 @@ public class CreateTableAction implements DatabaseAction {
         return false;
     }
 
-    private boolean attributeExistsInThisTable(String attributeName) {
+    private boolean fieldExistsInThisTable(String fieldName) {
         // Iterate through all attributes and check if we have one with the given name
-        for(final AttributeModel attribute : this.table.getAttributes()) {
-            if(attribute.getAttributeName().equals(attributeName)) return true;
+        for(final FieldModel attribute : this.table.getFields()) {
+            if(attribute.getFieldName().equals(fieldName)) return true;
         }
         return false;
     }
 
-    private boolean attributeIsNullableInThisTable(String givenAttributeName) throws AttributeNotFound {
+    private boolean fieldIsNullableInThisTable(String givenFieldName) throws FieldNotFound {
         // Iterate though all given attributes
-        for(final AttributeModel attribute : this.table.getAttributes()) {
-            if(attribute.getAttributeName().equals(givenAttributeName)) {
+        for(final FieldModel attribute : this.table.getFields()) {
+            if(attribute.getFieldName().equals(givenFieldName)) {
                 // Check if it's null or not
                 return attribute.isNullable();
             }
         }
 
         // Throw exception -> Attribute doesn't exist in current table
-        throw new AttributeNotFound(givenAttributeName, this.table.getTableName());
+        throw new FieldNotFound(givenFieldName, this.table.getTableName());
     }
 
     private boolean foreignKeyExistsInTable(ForeignKeyModel foreignKey, JsonNode databaseNode) throws DatabaseDoesntExist {
@@ -112,10 +112,10 @@ public class CreateTableAction implements DatabaseAction {
         }
 
         // Now check if the referenced attributes are in the primary key of the referenced table
-        ArrayNode primaryKeyAttributes = (ArrayNode) databaseTableNode.get("table").get("primaryKey").get("primaryKeyAttributes");
-        for(final String foreignKeyAttribute : foreignKey.getReferencedAttributes()) {
+        ArrayNode primaryKeyFields = (ArrayNode) databaseTableNode.get("table").get("primaryKey").get("primaryKeyFields");
+        for(final String foreignKeyAttribute : foreignKey.getReferencedFields()) {
             boolean currentAttributeIsPresent = false;
-            for(final JsonNode primaryKeyAttributeNode : primaryKeyAttributes) {
+            for(final JsonNode primaryKeyAttributeNode : primaryKeyFields) {
                 if(primaryKeyAttributeNode.asText().equals(foreignKeyAttribute)) {
                     currentAttributeIsPresent = true;
                 }
@@ -131,7 +131,7 @@ public class CreateTableAction implements DatabaseAction {
 
     @Override
     public Object actionPerform() throws TableNameAlreadyExists, DatabaseDoesntExist,
-            PrimaryKeyNotFound, ForeignKeyNotFound, AttributeCantBeNull, AttributesAreNotUnique {
+            PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique {
         // File that contains the whole catalog
         File catalog = Config.getCatalogFile();
 
@@ -155,9 +155,9 @@ public class CreateTableAction implements DatabaseAction {
         }
 
         // Check if given table attributes are not unique
-        if(!this.givenAttributesAreUnique()) {
-            log.error("CreateTableAction -> Attributes are not unique!");
-            throw new AttributesAreNotUnique(this.table.getAttributes());
+        if(!this.givenFieldsAreUnique()) {
+            log.error("CreateTableAction -> Fields are not unique!");
+            throw new FieldsAreNotUnique(this.table.getFields());
         }
 
         // Check if table already exists in database
@@ -167,22 +167,22 @@ public class CreateTableAction implements DatabaseAction {
         }
 
         // PK check
-        for (final String pKAttribute : this.table.getPrimaryKey().getPrimaryKeyAttributes()) {
+        for (final String pkField : this.table.getPrimaryKey().getPrimaryKeyFields()) {
             // Check if PK attributes exist in table
-            if(!this.attributeExistsInThisTable(pKAttribute)) {
-                log.error("CreateTableAction -> PK doesn't exist in the table=" + this.table.getTableName() + ", pK=" + pKAttribute);
-                throw new PrimaryKeyNotFound(this.table.getTableName(), pKAttribute);
+            if(!this.fieldExistsInThisTable(pkField)) {
+                log.error("CreateTableAction -> PK doesn't exist in the table=" + this.table.getTableName() + ", pK=" + pkField);
+                throw new PrimaryKeyNotFound(this.table.getTableName(), pkField);
             }
 
             // Check if PK attributes are nullable (if they are, they can't be primary key attributes)
             try {
-                if(this.attributeIsNullableInThisTable(pKAttribute)) {
+                if(this.fieldIsNullableInThisTable(pkField)) {
                     log.error("CreateTableAction -> PK attribute can't be nullable!");
-                    throw new AttributeCantBeNull(pKAttribute);
+                    throw new FieldCantBeNull(pkField);
                 }
-            } catch (AttributeNotFound e) {
+            } catch (FieldNotFound e) {
                 log.error("CreateTableAction -> PK attribute (this is a problem since we checked above) doesn't exist" +
-                        " in table=" + this.table.getTableName() + ", pkAttribute=" + pKAttribute);
+                        " in table=" + this.table.getTableName() + ", pkAttribute=" + pkField);
                 throw new RuntimeException(e);
             }
         }
@@ -193,11 +193,11 @@ public class CreateTableAction implements DatabaseAction {
                 if(!this.foreignKeyExistsInTable(foreignKey, databaseNode)) {
                     log.error("CreateTableAction -> FK doesn't exits in table=" + foreignKey.getReferencedTable() + "," +
                             " referenced values=" + foreignKey.getReferencedTable());
-                    throw new ForeignKeyNotFound(foreignKey.getReferencedTable(), foreignKey.getReferencedAttributes());
+                    throw new ForeignKeyNotFound(foreignKey.getReferencedTable(), foreignKey.getReferencedFields());
                 }
             } catch (DatabaseDoesntExist exception) {
                 log.error("CreateTableAction -> FK is referencing a table=" + foreignKey.getReferencedTable() + "in a non-existing database!");
-                throw new ForeignKeyNotFound(foreignKey.getReferencedTable(), foreignKey.getReferencedAttributes());
+                throw new ForeignKeyNotFound(foreignKey.getReferencedTable(), foreignKey.getReferencedFields());
             }
         }
 

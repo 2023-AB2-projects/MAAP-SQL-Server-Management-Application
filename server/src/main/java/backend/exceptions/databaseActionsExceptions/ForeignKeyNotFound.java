@@ -1,4 +1,4 @@
-package backend.exceptions;
+package backend.exceptions.databaseActionsExceptions;
 
 import java.util.ArrayList;
 
