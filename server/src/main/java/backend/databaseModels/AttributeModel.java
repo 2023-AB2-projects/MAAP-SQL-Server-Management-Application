@@ -1,9 +1,34 @@
 package backend.databaseModels;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Getter;
+import lombok.Setter;
 
-@JsonSerialize
-public record AttributeModel(@JsonProperty String attributeName, @JsonProperty String type,
-                             @JsonProperty int length, @JsonProperty boolean isNull,
-                             @JsonProperty boolean isNullable) {}
+public class AttributeModel {
+    @Getter
+    @Setter
+    private String attributeName, type;
+
+    @Getter
+    @Setter
+    private int length;
+
+    @Getter
+    @Setter
+    private boolean isNull, isNullable;
+
+    public AttributeModel() {
+        this.attributeName = "none";
+        this.type = "none";
+        this.length = 0;
+        this.isNull = true;
+        this.isNullable = true;
+    }
+
+    public AttributeModel(String attributeName, String type, int length, boolean isNull, boolean isNullable) {
+        this.attributeName = attributeName;
+        this.type = type;
+        this.length = length;
+        this.isNull = isNull;
+        this.isNullable = isNullable;
+    }
+}

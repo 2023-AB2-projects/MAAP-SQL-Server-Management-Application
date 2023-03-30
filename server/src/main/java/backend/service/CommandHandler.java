@@ -23,8 +23,6 @@ public class CommandHandler {
         DatabaseAction databaseAction = null;
         try {
             databaseAction = parser.parseInput(serverController.getSqlCommand(), serverController.getCurrentDatabaseName());
-        } catch (DatabaseNameAlreadyExists exception) {
-            System.out.println("Database name already exists");
         } catch (Exception exception) {
             System.out.println("ERROR -> CreateDabaseAction should not invoke this exception!");
         }
@@ -71,7 +69,7 @@ public class CommandHandler {
         }
         if (databaseAction instanceof UseDatabaseAction) {
             serverController.setCurrentDatabaseName((String) returnValue);
-            serverController.setResponse("Now using " + (String) returnValue);
+            serverController.setResponse("Now using " + returnValue);
         }
     }
 }

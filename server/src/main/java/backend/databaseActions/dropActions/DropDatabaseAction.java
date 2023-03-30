@@ -51,7 +51,7 @@ public class DropDatabaseAction implements DatabaseAction {
             String currentDatabaseName = currentDatabaseNodeValue.asText();
 
             // If the current databaseName is equal to the deleted database
-            if(currentDatabaseName.equals(this.database.databaseName())) {
+            if(currentDatabaseName.equals(this.database.getDatabaseName())) {
                 // Remove database and write back
                 databasesArray.remove(removed_ind);
 
@@ -68,6 +68,6 @@ public class DropDatabaseAction implements DatabaseAction {
             // Next database index
             removed_ind += 1;
         }
-        throw new DatabaseDoesntExist(this.database.databaseName());
+        throw new DatabaseDoesntExist(this.database.getDatabaseName());
     }
 }

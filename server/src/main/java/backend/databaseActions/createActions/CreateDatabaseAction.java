@@ -56,7 +56,7 @@ public class CreateDatabaseAction implements DatabaseAction {
 
             // Check if a database exists with the given database name
             String currentDatabaseName = currentDatabaseNodeValue.asText();
-            if(currentDatabaseName.equals(this.database.databaseName())) {
+            if(currentDatabaseName.equals(this.database.getDatabaseName())) {
                 log.info("CreateDatabaseAction -> database already exists " + currentDatabaseName);
                 throw new DatabaseNameAlreadyExists(currentDatabaseName);
             }
