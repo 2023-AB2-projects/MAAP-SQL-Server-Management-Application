@@ -1,4 +1,4 @@
-package backend.exceptions;
+package backend.exceptions.databaseActionsExceptions;
 
 public class DatabaseNameAlreadyExists extends Exception {
     public DatabaseNameAlreadyExists(String databaseName) {

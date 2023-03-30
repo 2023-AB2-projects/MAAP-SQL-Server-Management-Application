@@ -24,22 +24,22 @@ public class IndexFileModel {
 
     @Getter
     @Setter
-    private ArrayList<String> indexAttributes;
+    private ArrayList<String> indexFields;
 
     public IndexFileModel() {
         this.indexName = "none";
         this.keyLength = 0;
         this.isUnique = false;
         this.indexType = "none";
-        this.indexAttributes = new ArrayList<>();
+        this.indexFields = new ArrayList<>();
     }
 
     public IndexFileModel(String indexName, int keyLength, boolean isUnique,
-                          String indexType, ArrayList<String> indexAttributes) {
+                          String indexType, ArrayList<String> indexFields) {
         this.indexName = indexName;
         this.keyLength = keyLength;
         this.isUnique = isUnique;
         this.indexType = indexType;
-        this.indexAttributes = indexAttributes;
+        this.indexFields = indexFields;
     }
 }

@@ -8,13 +8,13 @@ import java.util.ArrayList;
 public class PrimaryKeyModel {
     @Getter
     @Setter
-    private ArrayList<String> primaryKeyAttributes;
+    private ArrayList<String> primaryKeyFields;
 
     public PrimaryKeyModel() {
-        this.primaryKeyAttributes = new ArrayList<>();
+        this.primaryKeyFields = new ArrayList<>();
     }
 
-    public PrimaryKeyModel(ArrayList<String> primaryKeyAttributes) {
-        this.primaryKeyAttributes = primaryKeyAttributes;
+    public PrimaryKeyModel(ArrayList<String> primaryKeyFields) {
+        this.primaryKeyFields = primaryKeyFields;
     }
 }

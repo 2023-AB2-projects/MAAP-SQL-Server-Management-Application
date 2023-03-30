@@ -172,7 +172,7 @@ public class Parser {
         String                      tableName           = null;
         String                      fileName            = "";
         int                         rowLength           = 0;
-        ArrayList<AttributeModel>   attributes          = new ArrayList<AttributeModel>();
+        ArrayList<FieldModel>   attributes          = new ArrayList<FieldModel>();
         PrimaryKeyModel             primaryKey          = null;
         ArrayList<ForeignKeyModel>  foreignKeys         = new ArrayList<ForeignKeyModel>();
         ArrayList<String>           uniqueAttributes    = new ArrayList<String>();
@@ -297,7 +297,7 @@ public class Parser {
                     //break;
 
                 case COMMA, CLOSING_BRACKET:
-                    attributes.add(new AttributeModel(fieldName, fieldType, fieldLength, false, false));
+                    attributes.add(new FieldModel(fieldName, fieldType, fieldLength, false, false));
                     i++;
                     log.info("Added field " + fieldName + ", " + fieldType);
 

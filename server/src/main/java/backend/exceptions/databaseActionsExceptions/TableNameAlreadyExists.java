@@ -1,4 +1,4 @@
-package backend.exceptions;
+package backend.exceptions.databaseActionsExceptions;
 
 public class TableNameAlreadyExists extends Exception {
     public TableNameAlreadyExists(String tableName) {

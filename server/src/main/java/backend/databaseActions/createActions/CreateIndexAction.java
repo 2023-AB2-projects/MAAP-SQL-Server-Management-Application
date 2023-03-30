@@ -3,8 +3,10 @@ package backend.databaseActions.createActions;
 import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.IndexFileModel;
-import backend.exceptions.DatabaseDoesntExist;
-import backend.exceptions.TableNameAlreadyExists;
+import backend.exceptions.databaseActionsExceptions.DatabaseDoesntExist;
+import backend.exceptions.databaseActionsExceptions.IndexAlreadyExists;
+import backend.exceptions.databaseActionsExceptions.TableDoesntExist;
+import backend.exceptions.databaseActionsExceptions.TableNameAlreadyExists;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -63,7 +65,7 @@ public class CreateIndexAction implements DatabaseAction {
     }
 
     @Override
-    public Object actionPerform() throws DatabaseDoesntExist, TableNameAlreadyExists {
+    public Object actionPerform() throws DatabaseDoesntExist, TableDoesntExist, IndexAlreadyExists {
         // Object mapper with indented output
         ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
@@ -86,14 +88,25 @@ public class CreateIndexAction implements DatabaseAction {
         // Check if table exists in database
         JsonNode tableNode = this.findTableNode(this.tableName, databaseNode);
         if (tableNode == null) {
-            log.error("CreateIndexAction -> Table already exists in database=" + this.databaseName + " tableName=" + this.tableName);
-            throw new TableNameAlreadyExists(this.tableName);
+            log.error("CreateIndexAction -> Table doesn't exist in database=" + this.databaseName + " tableName=" + this.tableName);
+            throw new TableDoesntExist(this.tableName, this.databaseName);
         }
 
+        // Check if an index file with the same name already exists
+        ArrayNode indexFilesNode = (ArrayNode) tableNode.get("table").get("indexFiles");
+        for(final JsonNode indexFileNode : indexFilesNode) {
+            String currentIndexName = indexFileNode.get("indexFile").get("indexName").asText();
+            if(this.indexFile.getIndexName().equals(currentIndexName)) {
+                log.error("CreateIndexAction -> Index file with name=" + this.indexFile.getIndexName() +
+                        " already exists in table=" + this.tableName);
+                throw new IndexAlreadyExists(this.indexFile.getIndexName(), this.tableName);
+            }
+        }
+
+
         // Add index to table
-        ArrayNode indexNode = (ArrayNode) tableNode.get("table").get("indexFiles");
         JsonNode newIndex = JsonNodeFactory.instance.objectNode().putPOJO("indexFile", this.indexFile);
-        indexNode.add(newIndex);
+        indexFilesNode.add(newIndex);
 
         // Mapper -> Write entire catalog
         try {

@@ -16,7 +16,7 @@ public class TableModel {
 
     @Getter
     @Setter
-    private ArrayList<AttributeModel> attributes;
+    private ArrayList<FieldModel> fields;
 
     @Getter
     @Setter
@@ -28,7 +28,7 @@ public class TableModel {
 
     @Getter
     @Setter
-    private ArrayList<String> uniqueAttributes;
+    private ArrayList<String> uniqueFields;
 
     @Getter
     @Setter
@@ -38,24 +38,24 @@ public class TableModel {
         this.tableName = "none";
         this.fileName = "none";
         this.rowLength = 0;
-        this.attributes = new ArrayList<>();
+        this.fields = new ArrayList<>();
         this.primaryKey = new PrimaryKeyModel();
         this.foreignKeys = new ArrayList<>();
-        this.uniqueAttributes = new ArrayList<>();
+        this.uniqueFields = new ArrayList<>();
         this.indexFiles = new ArrayList<>();
     }
 
     public TableModel(String tableName, String fileName,
-                      int rowLength, ArrayList<AttributeModel> attributes,
+                      int rowLength, ArrayList<FieldModel> fields,
                       PrimaryKeyModel primaryKey, ArrayList<ForeignKeyModel> foreignKeys,
-                      ArrayList<String> uniqueAttributes,  ArrayList<IndexFileModel> indexFiles) {
+                      ArrayList<String> uniqueFields, ArrayList<IndexFileModel> indexFiles) {
         this.tableName = tableName;
         this.fileName = fileName;
         this.rowLength = rowLength;
-        this.attributes = attributes;
+        this.fields = fields;
         this.primaryKey = primaryKey;
         this.foreignKeys = foreignKeys;
-        this.uniqueAttributes = uniqueAttributes;
+        this.uniqueFields = uniqueFields;
         this.indexFiles = indexFiles;
     }
 }

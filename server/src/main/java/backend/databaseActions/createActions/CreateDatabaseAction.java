@@ -3,7 +3,7 @@ package backend.databaseActions.createActions;
 import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.DatabaseModel;
-import backend.exceptions.DatabaseNameAlreadyExists;
+import backend.exceptions.databaseActionsExceptions.DatabaseNameAlreadyExists;
 import backend.service.CommandHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

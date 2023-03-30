@@ -1,4 +1,4 @@
-package backend.test;
+package test.backend;
 
 import backend.databaseActions.DatabaseAction;
 import backend.databaseActions.createActions.CreateDatabaseAction;
@@ -8,31 +8,35 @@ import backend.databaseActions.dropActions.DropDatabaseAction;
 import backend.databaseActions.dropActions.DropTableAction;
 import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.*;
-import backend.exceptions.*;
+import backend.exceptions.databaseActionsExceptions.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 
+@Slf4j
 public class TestDatabaseActions {
     public TableModel createPeopleTableModel() {
         String tableName = "People", fileName = "PeopleTableFile";
         int rowLength = 50;
-        ArrayList<AttributeModel> attributes = new ArrayList<>(){{
-            add(new AttributeModel("id", "int", 0, false, false));
-            add(new AttributeModel("name", "char", 100, false, true));
-            add(new AttributeModel("age", "int", 0, false, true));
-            add(new AttributeModel("height", "int", 0, false, true));
+        ArrayList<FieldModel> fields = new ArrayList<>(){{
+            add(new FieldModel("id", "int", 0, false, false));
+            add(new FieldModel("name", "char", 100, false, true));
+            add(new FieldModel("age", "int", 0, false, true));
+            add(new FieldModel("height", "int", 0, false, true));
         }};
         PrimaryKeyModel primaryKey = new PrimaryKeyModel(new ArrayList<>(){{ add("id"); }});
         ArrayList<ForeignKeyModel> foreignKeys = new ArrayList<>(){{
             add(new ForeignKeyModel("Cars", new ArrayList<>() {{
                 add("id");
-            }}, new ArrayList<>()));
+            }}, new ArrayList<>(){{
+                add("idd");
+            }}));
         }};
         ArrayList<IndexFileModel> indexFiles = new ArrayList<>();
         ArrayList<String> uniqueAttributes = new ArrayList<>(){{
             add("name");
         }};
-        return new TableModel(tableName, fileName, rowLength, attributes, primaryKey,
+        return new TableModel(tableName, fileName, rowLength, fields, primaryKey,
                 foreignKeys, uniqueAttributes, indexFiles);
     }
 
@@ -52,10 +56,12 @@ public class TestDatabaseActions {
             System.out.println("Primary key is not found in table attributes!");
         } catch (ForeignKeyNotFound e) {
             System.out.println("Foreign key is not found in table attributes!");
-        } catch (AttributeCantBeNull e) {
+        } catch (FieldCantBeNull e) {
             System.out.println("Given primary key has nullable attributes!");
-        } catch (AttributesAreNotUnique e) {
+        } catch (FieldsAreNotUnique e) {
             System.out.println("Attributes are not unique!");
+        } catch (ForeignKeyFieldNotFound e) {
+            log.error("Foreign key referencing fields are not in this table!");
         }
     }
 
@@ -63,16 +69,16 @@ public class TestDatabaseActions {
         // Other table
         String databaseName = "master", tableName = "Cars", fileName = "CarsTableFile";
         int rowLength = 100;
-        ArrayList<AttributeModel> attributes = new ArrayList<>(){{
-            add(new AttributeModel("id", "int", 0, false, false));
-            add(new AttributeModel("name", "char", 100, false, true));
+        ArrayList<FieldModel> fields = new ArrayList<>(){{
+            add(new FieldModel("id", "int", 0, false, false));
+            add(new FieldModel("name", "char", 100, false, true));
         }};
         PrimaryKeyModel primaryKey = new PrimaryKeyModel(new ArrayList<>(){{ add("id"); }});
         ArrayList<ForeignKeyModel> foreignKeys = new ArrayList<>();
         ArrayList<IndexFileModel> indexFiles = new ArrayList<>();
         ArrayList<String> uniqueAttributes = new ArrayList<>();
 
-        TableModel table = new TableModel(tableName, fileName, rowLength, attributes, primaryKey,
+        TableModel table = new TableModel(tableName, fileName, rowLength, fields, primaryKey,
                 foreignKeys, uniqueAttributes, indexFiles);
 
         CreateTableAction createTable = new CreateTableAction(table, databaseName);
@@ -86,10 +92,12 @@ public class TestDatabaseActions {
             System.out.println("Primary key is not found in table attributes!");
         } catch (ForeignKeyNotFound e) {
             System.out.println("Foreign key is not found in table attributes!");
-        } catch (AttributeCantBeNull e) {
+        } catch (FieldCantBeNull e) {
             System.out.println("Given primary key has nullable attributes!");
-        } catch (AttributesAreNotUnique e) {
+        } catch (FieldsAreNotUnique e) {
             System.out.println("Attributes are not unique!");
+        } catch (ForeignKeyFieldNotFound e) {
+            log.error("Foreign key referencing fields are not in this table!");
         }
     }
 
@@ -97,8 +105,20 @@ public class TestDatabaseActions {
         TestDatabaseActions test = new TestDatabaseActions();
 
         // CreateTable
-        test.createCarsTable();
-//        test.createPeopleTable();
+//        test.createCarsTable();
+        test.createPeopleTable();
+
+        // Create Database
+//        DatabaseModel newDatabase = new DatabaseModel();
+//        newDatabase.setDatabaseName("akosksadfjlaskfjd");
+//        DatabaseAction createDatabase = new CreateDatabaseAction(newDatabase);
+//        try {
+//            createDatabase.actionPerform();
+//        } catch (DatabaseNameAlreadyExists e) {
+//            log.info("CreateDatabaseAction -> DatabaseAlreadyExists");
+//        } catch (Exception e) {
+//            log.error("ERROR -> CreateDatabaseAction should now throw this!");
+//        }
 
         // Use Database
 //        DatabaseAction useDatabase = new UseDatabaseAction(new DatabaseModel("master", new ArrayList<>()));
@@ -112,7 +132,7 @@ public class TestDatabaseActions {
 //        }
 
         // Drop database
-//        DatabaseAction dropDatabase = new DropDatabaseAction(new DatabaseModel("master", new ArrayList<>()));
+//        DatabaseAction dropDatabase = new DropDatabaseAction(new DatabaseModel("akosksadfjlaskfjd", new ArrayList<>()));
 //        try {
 //            dropDatabase.actionPerform();
 //        } catch (DatabaseDoesntExist e) {
@@ -134,18 +154,20 @@ public class TestDatabaseActions {
 //        }
 
         // Create index file
-        DatabaseAction createIndex = new CreateIndexAction("Cars",  "master", new IndexFileModel(
-                "indexName", 10, true, "indexType",
-                new ArrayList<>()
-        ));
-        try {
-            createIndex.actionPerform();
-        } catch (DatabaseDoesntExist e) {
-            System.out.println("Database doesn't exist!");
-        } catch (TableDoesntExist e) {
-            System.out.println("Table doesn't exist!");
-        } catch (Exception exception) {
-            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
-        }
+//        DatabaseAction createIndex = new CreateIndexAction("Cars",  "master", new IndexFileModel(
+//                "indexName", 10, true, "indexType",
+//                new ArrayList<>()
+//        ));
+//        try {
+//            createIndex.actionPerform();
+//        } catch (DatabaseDoesntExist e) {
+//            System.out.println("Database doesn't exist!");
+//        } catch (TableDoesntExist e) {
+//            System.out.println("Table doesn't exist!");
+//        } catch (IndexAlreadyExists e) {
+//            System.out.println("Index with given name already exists!");
+//        } catch (Exception exception) {
+//            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
+//        }
     }
 }

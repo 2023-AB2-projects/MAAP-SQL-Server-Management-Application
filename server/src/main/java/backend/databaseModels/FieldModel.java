@@ -3,10 +3,10 @@ package backend.databaseModels;
 import lombok.Getter;
 import lombok.Setter;
 
-public class AttributeModel {
+public class FieldModel {
     @Getter
     @Setter
-    private String attributeName, type;
+    private String fieldName, type;
 
     @Getter
     @Setter
@@ -16,16 +16,16 @@ public class AttributeModel {
     @Setter
     private boolean isNull, isNullable;
 
-    public AttributeModel() {
-        this.attributeName = "none";
+    public FieldModel() {
+        this.fieldName = "none";
         this.type = "none";
         this.length = 0;
         this.isNull = true;
         this.isNullable = true;
     }
 
-    public AttributeModel(String attributeName, String type, int length, boolean isNull, boolean isNullable) {
-        this.attributeName = attributeName;
+    public FieldModel(String fieldName, String type, int length, boolean isNull, boolean isNullable) {
+        this.fieldName = fieldName;
         this.type = type;
         this.length = length;
         this.isNull = isNull;
