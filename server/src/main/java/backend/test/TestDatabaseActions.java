@@ -1,6 +1,7 @@
-package backend;
+package backend.test;
 
 import backend.databaseActions.DatabaseAction;
+import backend.databaseActions.createActions.CreateDatabaseAction;
 import backend.databaseActions.createActions.CreateIndexAction;
 import backend.databaseActions.createActions.CreateTableAction;
 import backend.databaseActions.dropActions.DropDatabaseAction;
@@ -25,7 +26,7 @@ public class TestDatabaseActions {
         ArrayList<ForeignKeyModel> foreignKeys = new ArrayList<>(){{
             add(new ForeignKeyModel("Cars", new ArrayList<>() {{
                 add("id");
-            }}));
+            }}, new ArrayList<>()));
         }};
         ArrayList<IndexFileModel> indexFiles = new ArrayList<>();
         ArrayList<String> uniqueAttributes = new ArrayList<>(){{
@@ -95,27 +96,15 @@ public class TestDatabaseActions {
     public static void main(String[] args) {
         TestDatabaseActions test = new TestDatabaseActions();
 
-        // CreateDatabase
-//        DatabaseAction createDatabase = new CreateDatabaseAction(new DatabaseModel("Adrienke adatbazisa", new ArrayList<>() {{
-//            add(test.createPeopeTableModel());
-//        }}));
-//        try {
-//            createDatabase.actionPerform();
-//        } catch (DatabaseNameAlreadyExists exception) {
-//            System.out.println("Database name already exists");
-//        } catch (Exception exception) {
-//            System.out.println("ERROR -> CreateDabaseAction should not invoke this exception!");
-//        }
-
         // CreateTable
-//        test.createCarsTable();
+        test.createCarsTable();
 //        test.createPeopleTable();
 
         // Use Database
-//        DatabaseAction useDatabase = new UseDatabaseAction(new DatabaseModel("master1", new ArrayList<>()));
+//        DatabaseAction useDatabase = new UseDatabaseAction(new DatabaseModel("master", new ArrayList<>()));
 //        try {
 //            String databaseName = (String) useDatabase.actionPerform();
-//            System.out.println("Databasename=" + databaseName);
+//            System.out.println("DatabaseName=" + databaseName);
 //        } catch (DatabaseDoesntExist e) {
 //            System.out.println("Database doesn't exist!");
 //        } catch (Exception exception) {

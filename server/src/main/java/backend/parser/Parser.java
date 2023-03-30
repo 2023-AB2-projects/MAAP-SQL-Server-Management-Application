@@ -277,7 +277,11 @@ public class Parser {
                         if (!tokens.get(i+1).equals("(") || !tokens.get(i+3).equals(")")) {
                             throw(new SQLParseException("Expected following structure for foreign key constraint -> foreign key references table(field)"));
                         }
-                        var fkm = new ForeignKeyModel(foreignTable, new ArrayList<String>(Collections.singletonList(foreignField)));
+
+                        String finalFieldName = fieldName; //TODO
+                        var fkm = new ForeignKeyModel(foreignTable, new ArrayList<String>(Collections.singletonList(foreignField)), new ArrayList<>(){{
+                            add(finalFieldName);
+                        }});
                         foreignKeys.add(fkm);
                         i += 4;
                         break;

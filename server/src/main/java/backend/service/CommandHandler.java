@@ -57,7 +57,7 @@ public class CommandHandler {
         }
         if (databaseAction instanceof UseDatabaseAction) {
             serverController.setCurrentDatabaseName((String) returnValue);
-            serverController.setResponse("Now using " + (String) returnValue);
+            serverController.setResponse("Now using " + returnValue);
         }
     }
 

@@ -51,12 +51,12 @@ public class UseDatabaseAction implements DatabaseAction {
 
             // Check if a database exists with the given database name
             String currentDatabaseName = currentDatabaseNodeValue.asText();
-            if(currentDatabaseName.equals(this.database.databaseName())) {
-                return this.database.databaseName();
+            if(currentDatabaseName.equals(this.database.getDatabaseName())) {
+                return this.database.getDatabaseName();
             }
         }
 
         // Database doesn't exists
-        throw new DatabaseDoesntExist(this.database.databaseName());
+        throw new DatabaseDoesntExist(this.database.getDatabaseName());
     }
 }

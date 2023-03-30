@@ -1,7 +1,20 @@
 package backend.databaseModels;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 
-public record PrimaryKeyModel(@JsonProperty ArrayList<String> primaryKeyAttributes) {}
+public class PrimaryKeyModel {
+    @Getter
+    @Setter
+    private ArrayList<String> primaryKeyAttributes;
+
+    public PrimaryKeyModel() {
+        this.primaryKeyAttributes = new ArrayList<>();
+    }
+
+    public PrimaryKeyModel(ArrayList<String> primaryKeyAttributes) {
+        this.primaryKeyAttributes = primaryKeyAttributes;
+    }
+}
