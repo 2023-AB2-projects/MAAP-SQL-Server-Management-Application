@@ -1,15 +1,15 @@
 package backend.parser;
 
 import java.util.*;
-import java.util.Collections;
 
-import backend.databaseActions.*;
+import backend.databaseActions.DatabaseAction;
+import backend.databaseActions.createActions.*;
 import backend.databaseActions.dropActions.*;
+import backend.databaseActions.miscActions.*;
 import backend.databaseModels.*;
 import backend.exceptions.InvalidSQLCommand;
 import backend.exceptions.SQLParseException;
 import lombok.extern.slf4j.Slf4j;
-import backend.databaseActions.createActions.*;
 
 @Slf4j
 public class Parser {
@@ -23,7 +23,7 @@ public class Parser {
         "delete", "from",
         "(", ")", ",",
         "!=", "=", ">=", "<=", ">", "<",
-        "references"
+        "foreign", "primary", "key", "unique", "references"
     };
     private static String[] ATTRIBUTE_TYPES = {
         "int", "float", "bit", "date", "datetime", "char"
@@ -41,7 +41,7 @@ public class Parser {
      * @return boolean if given token is comprised of alphanumeric characters only
      */
     private boolean isAlphaNumeric(String token) {
-        return token != null && token.matches("^[a-zA-Z]*$");
+        return token != null && token.matches("^[a-zA-Z0-9_]*$");
     }
 
     /**
@@ -57,12 +57,22 @@ public class Parser {
      * @return checks if token is valid name for database/table/column
      * @throws SQLParseException
      */
-    private boolean checkName(String token) throws SQLParseException {
+    private enum NAME_TYPE {
+        DATABASE("database"), TABLE("table"), COLUMN("column");
+        private final String value;
+        private NAME_TYPE(String value) {
+            this.value = value;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
+    private boolean checkName(String token, NAME_TYPE nt) throws SQLParseException {
         if (isKeyword(token)) {
-            throw(new SQLParseException("Invalid name " + token + " (Reserved keyword)"));
+            throw(new SQLParseException("Invalid name for " + nt.getValue() + ": " + token + " - Reserved keyword"));
         }
         if (!isAlphaNumeric(token)) {
-            throw(new SQLParseException("Invalid name " + token + " (Name can only contain alphanumeric characters)"));
+            throw(new SQLParseException("Invalid name for " + nt.getValue() + ": " + token + " - Name can only contain alphanumeric characters"));
         }
         return true;
     } 
@@ -73,27 +83,56 @@ public class Parser {
      * @return database action corresponding to string
      * @throws InvalidSQLCommand
      */
-    public DatabaseAction parseInput(String input, String databaseName) throws InvalidSQLCommand, SQLParseException{
+    public DatabaseAction parseInput(String input, String databaseName) throws SQLParseException {
         List<String> tokens = tokenize(input);
 
-        if (tokens.get(0).equals("create")) {
-            if (tokens.get(1).equals("database")) {
-                return parseCreateDatabase(tokens);
+        try {
+            if (tokens.get(0).equals("create")) {
+                if (tokens.get(1).equals("database")) {
+                    return parseCreateDatabase(tokens);
+                }
+                if (tokens.get(1).equals("table")) {
+                    return parseCreateTable(tokens, databaseName);
+                }
             }
-            if (tokens.get(1).equals("table")) {
-                return parseCreateTable(tokens, databaseName);
+            if (tokens.get(0).equals("drop")) {
+                if (tokens.get(1).equals("database")) {
+                    return parseDropDatabase(tokens);
+                }
+                if (tokens.get(1).equals("table")) {
+                    return parseDropTable(tokens, databaseName);
+                }
+            }
+            if (tokens.get(0).equals(("use"))) {
+                return parseUseDatabase(tokens);
             }
         }
-        if (tokens.get(0).equals("drop")) {
-            if (tokens.get(1).equals("database")) {
-                return parseDropDatabase(tokens);
-            }
-            if (tokens.get(1).equals("table")) {
-                return parseDropTable(tokens, databaseName);
-            }
+        catch (IndexOutOfBoundsException e) {
+            throw(new SQLParseException("Missing token after `" + tokens.get(tokens.size() - 1) + "`"));
         }
 
-        throw(new InvalidSQLCommand("Unimplemented SQL command"));
+        throw (new SQLParseException("Invalid SQL command"));
+    }
+
+    /**
+     * @param tokens
+     * @return
+     * @throws SQLParseException
+     */
+    private UseDatabaseAction parseUseDatabase(List<String> tokens) throws SQLParseException{
+        if (tokens.size() < 2) {
+            throw(new SQLParseException("Missing token for database name"));
+        }
+        if (tokens.size() > 2) {
+            throw(new SQLParseException("Too many tokens after `" + tokens.get(1) + "`"));
+        }
+
+        String databaseName = tokens.get(1);
+        checkName(databaseName, NAME_TYPE.DATABASE);
+        
+        DatabaseModel databaseModel = new DatabaseModel(databaseName, new ArrayList<>());
+        UseDatabaseAction uda = new UseDatabaseAction(databaseModel);
+        return uda;
     }
 
     /**
@@ -110,7 +149,7 @@ public class Parser {
         }
 
         String databaseName = tokens.get(2);
-        checkName(databaseName);
+        checkName(databaseName, NAME_TYPE.DATABASE);
         
         DatabaseModel databaseModel = new DatabaseModel(databaseName, new ArrayList<>());
 
@@ -148,7 +187,7 @@ public class Parser {
                 switch (state) {
                 case GET_TABLE_NAME:
                     // check if table name is valid
-                    if (checkName(tokens.get(i))) {
+                    if (checkName(tokens.get(i), NAME_TYPE.TABLE)) {
                         tableName = tokens.get(i);
                     }
 
@@ -173,6 +212,7 @@ public class Parser {
                     fieldName = tokens.get(i);
                     fieldType = tokens.get(i+1);
                     i += 2;
+                    checkName(fieldName, NAME_TYPE.COLUMN);
 
                     if (!isValidFieldType(fieldType)) {
                         throw(new SQLParseException("Invalid field type :" + fieldType));
@@ -297,7 +337,7 @@ public class Parser {
         }
 
         String databaseName = tokens.get(2);
-        checkName(databaseName);
+        checkName(databaseName, NAME_TYPE.DATABASE);
 
         DatabaseModel databaseModel = new DatabaseModel(databaseName, new ArrayList<>());
 
@@ -314,7 +354,7 @@ public class Parser {
         }
 
         String tableName = tokens.get(2);
-        checkName(tableName);
+        checkName(tableName, NAME_TYPE.TABLE);
 
         DropTableAction dta = new DropTableAction(tableName, databaseName);
         return dta;

@@ -23,35 +23,20 @@ public class CommandHandler {
         DatabaseAction databaseAction = null;
         try {
             databaseAction = parser.parseInput(serverController.getSqlCommand(), serverController.getCurrentDatabaseName());
-        } catch (Exception exception) {
-            System.out.println("ERROR -> CreateDabaseAction should not invoke this exception!");
+        } catch (SQLParseException e) {
+            log.error(e.getMessage());
+            updateControllerNodes(e);
+            return;
         }
         try {
             Object returnValue = databaseAction.actionPerform();
             updateControllerNodes(databaseAction, returnValue);
-        } catch (FieldCantBeNull e) {
-            log.error("AttributeCantBeNull");
-        } catch (FieldsAreNotUnique e) {
-            log.error("AttributesAreNotUnique");
-        } catch (DatabaseNameAlreadyExists e) {
-            log.error("DatabaseNameAlreadyExists");
-        } catch (PrimaryKeyNotFound e) {
-            log.error("PrimaryKeyNotFound");
-        } catch (TableDoesntExist e) {
-            log.error("TableDoesntExist");
-        } catch (ForeignKeyNotFound e) {
-            log.error("ForeignKeyNotFound");
-        } catch (TableNameAlreadyExists e) {
-            log.error("TableNameAlreadyExists");
-        } catch (DatabaseDoesntExist e) {
-            log.error("DatabaseDoesntExist");
-        } catch (IndexAlreadyExists e) {
-            log.error("Index already exists!");
-        } catch (ForeignKeyFieldNotFound e) {
-            log.error("Foreign key attribute is not in this table!");
+            
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            updateControllerNodes(e);
+            return;
         }
-
-
     }
 
     private void updateControllerNodes(DatabaseAction databaseAction, Object returnValue) {
@@ -75,5 +60,9 @@ public class CommandHandler {
             serverController.setCurrentDatabaseName((String) returnValue);
             serverController.setResponse("Now using " + returnValue);
         }
+    }
+
+    private void updateControllerNodes(Exception e) {
+        serverController.setResponse(e.getMessage());
     }
 }
