@@ -4,6 +4,7 @@ import backend.databaseActions.DatabaseAction;
 import backend.databaseActions.createActions.*;
 import backend.databaseActions.dropActions.*;
 import backend.databaseActions.miscActions.UseDatabaseAction;
+import backend.exceptions.SQLParseException;
 import backend.exceptions.databaseActionsExceptions.*;
 import backend.parser.Parser;
 import lombok.extern.slf4j.Slf4j;

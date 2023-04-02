@@ -3,6 +3,7 @@ package frontend;
 import backend.MessageModes;
 import control.ClientController;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -11,8 +12,9 @@ import java.awt.event.*;
 import java.io.IOException;
 
 @Slf4j
-public class GUIController extends JFrame implements ActionListener, ItemListener {
+public class GUIController extends JFrame implements ActionListener {
     // Reference to ClientController
+    @Getter
     private final ClientController clientController;
 
     // Components
@@ -20,6 +22,8 @@ public class GUIController extends JFrame implements ActionListener, ItemListene
 
     @Getter
     private MenuController menuController;
+    @Getter
+    @Setter
     private String selectedDatabase;
     private InputTextArea inputTextArea;
     private OutputTextArea outputTextArea;
@@ -30,6 +34,7 @@ public class GUIController extends JFrame implements ActionListener, ItemListene
 
 
     public GUIController(ClientController clientController) {
+        selectedDatabase = "master";
         // Reference
         this.clientController = clientController;
         // Setup JFrame
@@ -159,20 +164,4 @@ public class GUIController extends JFrame implements ActionListener, ItemListene
         }
     }
 
-    @Override
-    public void itemStateChanged(ItemEvent event) {
-        if(event.getSource().equals(menuController.getDatabaseSelector())) {
-            JComboBox<String> combo = (JComboBox<String>) event.getSource();
-            String selected = (String) combo.getSelectedItem();
-            if(selected == null){
-                return;
-            }
-
-            log.info("USE " + selected + " command sent to server");
-
-            this.clientController.sendCommandToServer("USE " + selected);
-            this.receiveMessageAndPerformAction(MessageModes.refreshDatabases);
-            this.receiveMessageAndPerformAction(MessageModes.setTextArea);
-        }
-    }
 }

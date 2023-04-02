@@ -1,5 +1,7 @@
 package frontend;
 
+import backend.MessageModes;
+import control.ClientController;
 import frontend.MenuItems.CommandMenuItem;
 import frontend.MenuItems.SelectMenuItem;
 import lombok.Getter;
@@ -17,7 +19,7 @@ import java.util.ArrayList;
 @Slf4j
 public class MenuController extends JMenuBar implements MouseListener {
     private JMenu selectMenu, createAlterMenu, dropDeleteMenu, insertUpdateMenu;
-    private JButton sendCommandButton;
+    private JButton sendCommandButton, useButton;
 
     @Getter
     private JComboBox<String> databaseSelector;
@@ -56,9 +58,12 @@ public class MenuController extends JMenuBar implements MouseListener {
         // Init button
         this.sendCommandButton = new JButton("Run command");
         this.sendCommandButton.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+
+        this.useButton = new JButton("USE: ");
     }
 
     private void addComponentsToMenuBar() {
+        this.add(this.useButton);
         this.add(this.databaseSelector);
         this.add(this.selectMenu);
         this.add(this.createAlterMenu);
@@ -75,7 +80,7 @@ public class MenuController extends JMenuBar implements MouseListener {
     }
 
     private void addListeners() {
-        databaseSelector.addActionListener(guiController);
+        useButton.addMouseListener(this);
 
         for (Component menuItem : this.selectMenu.getMenuComponents()) {
             menuItem.addMouseListener(this);
@@ -84,7 +89,6 @@ public class MenuController extends JMenuBar implements MouseListener {
 
     public void addDatabaseNames(String databaseNames){
         databaseSelector.removeAllItems();
-        databaseSelector.addItem("master");
         if(databaseNames.equals("[]")){
             return;
         }
@@ -94,19 +98,31 @@ public class MenuController extends JMenuBar implements MouseListener {
         for (String databaseName : listOfDatabaseNames) {
             databaseSelector.addItem(databaseName);
         }
+        databaseSelector.setSelectedItem(guiController.getSelectedDatabase());
     }
 
     /* Getters */
     public JButton getSendCommandButton() { return this.sendCommandButton; }
 
     @Override
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {
+        if(e.getSource().equals(useButton)){
+            ClientController clientController = guiController.getClientController();
+            clientController.sendCommandToServer("USE " + databaseSelector.getSelectedItem());
+            guiController.receiveMessageAndPerformAction(MessageModes.none);
+            guiController.receiveMessageAndPerformAction(MessageModes.none);
+            guiController.setSelectedDatabase((String) databaseSelector.getSelectedItem());
+        }
+    }
 
     @Override
     public void mousePressed(MouseEvent event) {
-        // Get event source and set text input area to that string
-        CommandMenuItem menuItem = (CommandMenuItem) event.getSource();
-        this.guiController.setInputTextAreaString(menuItem.getCommandString());
+        if(!event.getSource().equals(useButton)){
+            // Get event source and set text input area to that string
+            CommandMenuItem menuItem = (CommandMenuItem) event.getSource();
+            this.guiController.setInputTextAreaString(menuItem.getCommandString());
+        }
+
     }
 
     @Override
