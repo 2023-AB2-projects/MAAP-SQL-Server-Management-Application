@@ -1,11 +1,15 @@
 package control;
 
 import backend.MessageModes;
+import com.formdev.flatlaf.FlatDarculaLaf;
 import frontend3.ClientFrame;
 import frontend3.ConnectionFrame;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
+import javax.swing.LookAndFeel;
+import javax.swing.UnsupportedLookAndFeelException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -14,24 +18,34 @@ public class ClientController {
     private ClientFrame clientFrame;
     private ConnectionFrame connectionFrame;
     private MessageHandler messageHandler;
-//    private MenuController menuController;
 
     // Other variables
+    private LookAndFeel lookAndFeel;
     private ArrayList<String> databaseNames;
 
     public ClientController() {
         // Init Client side components
         this.initComponents();
-
+        
         // Init controler variables
         this.initVariables();
     }
 
+    /* Utility */
     private void initComponents() {
         // Init GUI
-        this.clientFrame = new ClientFrame(this);   // Hidden by default
+        this.lookAndFeel = new FlatDarculaLaf();
+        
+        // Do not touch this (ffs)
+        try {
+            javax.swing.UIManager.setLookAndFeel(this.lookAndFeel);
+        } catch (UnsupportedLookAndFeelException ex) {
+            log.error("FlatLafDark is not supported!");
+        }
+        
         this.connectionFrame = new ConnectionFrame(this);
-
+        this.clientFrame = new ClientFrame(this);   // Hidden by default
+        
         // Message handler
         this.messageHandler = new MessageHandler(this);
     }
@@ -41,13 +55,30 @@ public class ClientController {
         this.databaseNames = new ArrayList<>();
     }
 
+    private void updateCurrentDatabases(String databasesString) {
+        // Clear current database names
+        this.databaseNames.clear();
+
+        // Split up received string
+        StringTokenizer tokenizer = new StringTokenizer(databasesString, ",");
+        while (tokenizer.hasMoreTokens()) {
+            this.databaseNames.add(tokenizer.nextToken());
+        }
+
+        // Update Tree node
+        this.clientFrame.updateDatabaseNamesTree(this.databaseNames);
+
+        System.out.println("Initial database names: " + this.databaseNames);
+    }
+    /* / Utility */
+
     /* Client controls */
     public void establishConnection(String ip) throws IOException {
         this.messageHandler.establishConnection(ip);
-        String databaseNames = messageHandler.receiveMessage();
 
-        System.out.println("Initial database names: " + databaseNames);
-        this.databaseNames.add(databaseNames);
+        // Update current databases list
+        String databasesString = messageHandler.receiveMessage();
+        this.updateCurrentDatabases(databasesString);
     }
 
     public void stopConnection() throws IOException {
@@ -63,7 +94,7 @@ public class ClientController {
     }
     
     /* Message logic */
-    //method receives message from server and performs action determined by mode param
+    // method receives message from server and performs action determined by mode param
     public void receiveMessageAndPerformAction(int mode) {
         try {
             String response = this.receiveMessage();
@@ -76,14 +107,9 @@ public class ClientController {
             }
 
             switch(mode) {
-                case MessageModes.setTextArea:
-                    
-                    break;
-                   
-                case MessageModes.refreshDatabases:
-                    this.databaseNames.clear();
-                    this.databaseNames.add(response);
-                    break;
+                case MessageModes.setTextArea -> this.setOutputAreaString(response);
+                case MessageModes.refreshDatabases -> this.updateCurrentDatabases(response);
+
             }
             
         } catch (IOException e) {
@@ -97,6 +123,11 @@ public class ClientController {
         this.clientFrame.setVisible(visibility);
     }
     
+    public void setOutputAreaString(String string) {
+        this.clientFrame.setOutputAreaString(string);
+    }
+    
+    /* Main */
     public static void main(String[] args) {
         new ClientController();
     }

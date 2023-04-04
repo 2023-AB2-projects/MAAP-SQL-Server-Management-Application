@@ -1,10 +1,8 @@
 package frontend3;
 
 import backend.MessageModes;
-import com.formdev.flatlaf.FlatDarkLaf;
 import control.ClientController;
 import java.io.IOException;
-import javax.swing.UnsupportedLookAndFeelException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -15,15 +13,15 @@ public class ConnectionFrame extends javax.swing.JFrame {
     public ConnectionFrame(ClientController clientController) {
         // Reference
         this.clientController = clientController;
+
+        // Look and feel
+//        try {
+//            javax.swing.UIManager.setLookAndFeel(this.clientController.getLookAndFeel());
+//        } catch (UnsupportedLookAndFeelException ex) {
+//            log.error("FlatLafDark is not supported!");
+//        }
         
         initComponents();
-        
-        // Look and feel
-        try {
-            javax.swing.UIManager.setLookAndFeel(new FlatDarkLaf());
-        } catch (UnsupportedLookAndFeelException ex) {
-            log.error("FlatLafDark is not supported!");
-        }
 
         /* Create and display the form */
         this.setVisible(true);
@@ -40,10 +38,10 @@ public class ConnectionFrame extends javax.swing.JFrame {
 
         ipTextField = new javax.swing.JTextField();
         sQLLabel = new javax.swing.JLabel();
-        connectButton = new javax.swing.JToggleButton();
         portTextField = new javax.swing.JTextField();
         ipLabel = new javax.swing.JLabel();
         portLabel = new javax.swing.JLabel();
+        connectButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Connect to Server");
@@ -59,14 +57,6 @@ public class ConnectionFrame extends javax.swing.JFrame {
         sQLLabel.setText("SQL Server Connection");
         sQLLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
-        connectButton.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        connectButton.setText("Connect To Server");
-        connectButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                connectButtonMousePressed(evt);
-            }
-        });
-
         portTextField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         portTextField.setEnabled(false);
         portTextField.addActionListener(new java.awt.event.ActionListener() {
@@ -79,14 +69,18 @@ public class ConnectionFrame extends javax.swing.JFrame {
 
         portLabel.setText("Port:");
 
+        connectButton.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        connectButton.setText("Connect To Server");
+        connectButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(110, 110, 110)
-                .addComponent(connectButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -97,11 +91,15 @@ public class ConnectionFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(ipLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(portLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(portTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
-                            .addComponent(ipTextField))
+                            .addComponent(ipTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
+                            .addComponent(portTextField))
                         .addGap(42, 42, 42))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(103, 103, 103)
+                .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -116,9 +114,9 @@ public class ConnectionFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(portTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(portLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addGap(33, 33, 33)
                 .addComponent(connectButton)
-                .addGap(38, 38, 38))
+                .addContainerGap(39, Short.MAX_VALUE))
         );
 
         pack();
@@ -132,15 +130,16 @@ public class ConnectionFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_portTextFieldActionPerformed
 
-    private void connectButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_connectButtonMousePressed
+    private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
+        // TODO add your handling code here:
         String ip = this.ipTextField.getText();
 
         try {
             this.clientController.establishConnection(ip);
-            
+
             // Main SQL window should be visible
             this.clientController.setClientFrameVisibility(true);
-            
+
             // change this later? (why)
             this.setVisible(false);
 
@@ -152,10 +151,10 @@ public class ConnectionFrame extends javax.swing.JFrame {
             //change this later maybe
             log.error("Connection button pressed -> Couldn't connect to server!");
         }
-    }//GEN-LAST:event_connectButtonMousePressed
+    }//GEN-LAST:event_connectButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JToggleButton connectButton;
+    private javax.swing.JButton connectButton;
     private javax.swing.JLabel ipLabel;
     private javax.swing.JTextField ipTextField;
     private javax.swing.JLabel portLabel;

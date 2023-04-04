@@ -1,10 +1,9 @@
 package frontend3;
 
-import com.formdev.flatlaf.FlatDarkLaf;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import control.ClientController;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
 
 
 @Slf4j
@@ -15,15 +14,8 @@ public class ClientFrame extends javax.swing.JFrame {
     public ClientFrame(ClientController clientController) {
         // Reference
         this.clientController = clientController;
-
-        initComponents();
         
-        // Look and feel
-        try {
-            javax.swing.UIManager.setLookAndFeel(new FlatDarkLaf());
-        } catch (UnsupportedLookAndFeelException ex) {
-            log.error("FlatLafDark is not supported!");
-        }
+        initComponents();
     }
     
     /**
@@ -35,7 +27,7 @@ public class ClientFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        objectExplorerPanel1 = new frontend3.ObjectExplorerPanel();
+        objectExplorerPanel1 = new frontend3.object_explorer.ObjectExplorerPanel();
         centerClientPanel1 = new frontend3.center_panel.CenterClientPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -61,8 +53,14 @@ public class ClientFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /* Setters */
+    public void updateDatabaseNamesTree(ArrayList<String> databaseNames) { this.objectExplorerPanel1.updateDatabases(databaseNames);}
+    public void setOutputAreaString(String string) {
+        this.centerClientPanel1.setOutputAreaString(string);
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private frontend3.center_panel.CenterClientPanel centerClientPanel1;
-    private frontend3.ObjectExplorerPanel objectExplorerPanel1;
+    private frontend3.object_explorer.ObjectExplorerPanel objectExplorerPanel1;
     // End of variables declaration//GEN-END:variables
 }

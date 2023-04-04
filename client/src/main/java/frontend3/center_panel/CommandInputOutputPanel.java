@@ -1,8 +1,5 @@
 package frontend3.center_panel;
 
-import javax.swing.JSplitPane;
-
-
 public class CommandInputOutputPanel extends javax.swing.JPanel {
 
     public CommandInputOutputPanel() {
@@ -37,6 +34,7 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
 
         CommandSplitPane.setTopComponent(CommandInputPane);
 
+        CommandOutputArea.setEditable(false);
         CommandOutputArea.setColumns(20);
         CommandOutputArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         CommandOutputArea.setRows(5);
@@ -57,6 +55,11 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    /* Setters */
+    public void setOutputAreaString(String string) {
+        this.CommandOutputArea.setText(string);
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea CommandInputArea;

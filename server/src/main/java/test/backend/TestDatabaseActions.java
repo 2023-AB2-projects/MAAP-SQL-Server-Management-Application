@@ -29,7 +29,7 @@ public class TestDatabaseActions {
             add(new ForeignKeyModel("Cars", new ArrayList<>() {{
                 add("id");
             }}, new ArrayList<>(){{
-                add("idd");
+                add("id");
             }}));
         }};
         ArrayList<IndexFileModel> indexFiles = new ArrayList<>();
@@ -106,19 +106,19 @@ public class TestDatabaseActions {
 
         // CreateTable
 //        test.createCarsTable();
-        test.createPeopleTable();
+//        test.createPeopleTable();
 
         // Create Database
-//        DatabaseModel newDatabase = new DatabaseModel();
-//        newDatabase.setDatabaseName("akosksadfjlaskfjd");
-//        DatabaseAction createDatabase = new CreateDatabaseAction(newDatabase);
-//        try {
-//            createDatabase.actionPerform();
-//        } catch (DatabaseNameAlreadyExists e) {
-//            log.info("CreateDatabaseAction -> DatabaseAlreadyExists");
-//        } catch (Exception e) {
-//            log.error("ERROR -> CreateDatabaseAction should now throw this!");
-//        }
+        DatabaseModel newDatabase = new DatabaseModel();
+        newDatabase.setDatabaseName("OtherDatabase2");
+        DatabaseAction createDatabase = new CreateDatabaseAction(newDatabase);
+        try {
+            createDatabase.actionPerform();
+        } catch (DatabaseNameAlreadyExists e) {
+            log.info("CreateDatabaseAction -> DatabaseAlreadyExists");
+        } catch (Exception e) {
+            log.error("ERROR -> CreateDatabaseAction should now throw this!");
+        }
 
         // Use Database
 //        DatabaseAction useDatabase = new UseDatabaseAction(new DatabaseModel("master", new ArrayList<>()));

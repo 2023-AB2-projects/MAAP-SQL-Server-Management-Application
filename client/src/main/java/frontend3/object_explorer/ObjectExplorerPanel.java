@@ -1,11 +1,35 @@
-package frontend3;
+package frontend3.object_explorer;
+
+import java.util.ArrayList;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 public class ObjectExplorerPanel extends javax.swing.JPanel {
-
+    private DefaultMutableTreeNode jTreeDatabasesNode;
+    private DefaultTreeModel objectExplorerJTree;
+    
     public ObjectExplorerPanel() {
+        // Init variables
+        this.initVariables();
+        
         initComponents();
     }
+    
+    private void initVariables() {
+        this.jTreeDatabasesNode = new DefaultMutableTreeNode(new ObjectExplorerJTree(new ArrayList<>()));
+        this.objectExplorerJTree = new DefaultTreeModel(this.jTreeDatabasesNode);
+    }
 
+    public void updateDatabases(ArrayList<String> databaseNames) {
+        this.jTreeDatabasesNode.removeAllChildren();
+
+        for(final String databaseName : databaseNames) {
+            this.jTreeDatabasesNode.add(new DefaultMutableTreeNode(databaseName));
+        }
+
+        this.objectExplorerJTree.setRoot(this.jTreeDatabasesNode);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -31,6 +55,7 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
 
         TreeDatabases.setBorder(null);
         TreeDatabases.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        TreeDatabases.setModel(objectExplorerJTree);
         TreeScrollPane.setViewportView(TreeDatabases);
 
         javax.swing.GroupLayout DatabasesPanelLayout = new javax.swing.GroupLayout(DatabasesPanel);
@@ -63,7 +88,6 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel DatabasesPanel;

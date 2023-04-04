@@ -56,6 +56,11 @@ public class CenterClientPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
 
+    /* Setters */
+    public void setOutputAreaString(String string) {
+        this.commandInputOutputPanel1.setOutputAreaString(string);
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane clientTabbedPane;
     private frontend3.center_panel.CommandInputOutputPanel commandInputOutputPanel1;
