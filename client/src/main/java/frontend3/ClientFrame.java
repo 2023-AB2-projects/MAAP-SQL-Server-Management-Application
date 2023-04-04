@@ -24,9 +24,6 @@ public class ClientFrame extends javax.swing.JFrame {
         } catch (UnsupportedLookAndFeelException ex) {
             log.error("FlatLafDark is not supported!");
         }
-
-        /* Create and display the form */
-        this.setVisible(true);
     }
     
     /**
@@ -63,10 +60,6 @@ public class ClientFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * @param args the command line arguments
-     */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private frontend3.center_panel.CenterClientPanel centerClientPanel1;
