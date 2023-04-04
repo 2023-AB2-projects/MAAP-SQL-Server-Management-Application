@@ -2,14 +2,20 @@ package frontend3;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import control.ClientController;
 import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
 public class ClientFrame extends javax.swing.JFrame {
+    // References
+    private final ClientController clientController;
 
+    public ClientFrame(ClientController clientController) {
+        // Reference
+        this.clientController = clientController;
 
-    public ClientFrame() {
         initComponents();
         
         // Look and feel
@@ -20,11 +26,7 @@ public class ClientFrame extends javax.swing.JFrame {
         }
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ClientFrame().setVisible(true);
-            }
-        });
+        this.setVisible(true);
     }
     
     /**
