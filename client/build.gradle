@@ -7,7 +7,7 @@ plugins {
 // apply from: '../lint.gradle'
 
 application {
-    mainClass = "control.ClientController"
+    mainClass = "frontend3.ClientFrame"
 }
 
 repositories {
@@ -40,4 +40,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: '3.0.4'
+
+    // https://mvnrepository.com/artifact/com.formdev/flatlaf
+    implementation group: 'com.formdev', name: 'flatlaf', version: '0.38'
 }

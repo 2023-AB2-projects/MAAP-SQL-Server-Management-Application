@@ -1,6 +1,5 @@
 package control;
 
-import backend.ConnectionManager;
 import frontend.GUIController;
 import frontend.MenuController;
 
