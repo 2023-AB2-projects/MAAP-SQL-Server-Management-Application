@@ -8,13 +8,25 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ClientFrame extends javax.swing.JFrame {
 
-    /**
-     * Creates new form ClientFrame
-     */
+
     public ClientFrame() {
         initComponents();
-    }
+        
+        // Look and feel
+        try {
+            javax.swing.UIManager.setLookAndFeel(new FlatDarkLaf());
+        } catch (UnsupportedLookAndFeelException ex) {
+            log.error("FlatLafDark is not supported!");
+        }
 
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new ClientFrame().setVisible(true);
+            }
+        });
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -25,7 +37,7 @@ public class ClientFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         objectExplorerPanel1 = new frontend3.ObjectExplorerPanel();
-        centerClientPanel1 = new frontend3.CenterClientPanel();
+        centerClientPanel1 = new frontend3.center_panel.CenterClientPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Client side application");
@@ -53,23 +65,9 @@ public class ClientFrame extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-    try {
-        javax.swing.UIManager.setLookAndFeel(new FlatDarkLaf());
-    } catch (UnsupportedLookAndFeelException ex) {
-        log.error("FlatLafDark is not supported!");
-    }
-
-    /* Create and display the form */
-    java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-            new ClientFrame().setVisible(true);
-        }
-    });
-}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private frontend3.CenterClientPanel centerClientPanel1;
+    private frontend3.center_panel.CenterClientPanel centerClientPanel1;
     private frontend3.ObjectExplorerPanel objectExplorerPanel1;
     // End of variables declaration//GEN-END:variables
 }
