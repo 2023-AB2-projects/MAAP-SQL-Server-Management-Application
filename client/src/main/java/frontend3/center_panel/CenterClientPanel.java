@@ -1,12 +1,8 @@
 package frontend3.center_panel;
 
 import control.ClientController;
-import lombok.Getter;
-import lombok.Setter;
 
 public class CenterClientPanel extends javax.swing.JPanel {
-    @Setter
-    @Getter
     private ClientController clientController;
 
     public CenterClientPanel() {
@@ -14,7 +10,6 @@ public class CenterClientPanel extends javax.swing.JPanel {
 
         // Set references
         this.commandInputOutputPanel1.setCenterClientPanel(this);
-        this.commandPanel1.setCenterClientPanel(this);
     }
     
     /**
@@ -68,8 +63,15 @@ public class CenterClientPanel extends javax.swing.JPanel {
 
 
     /* Setters */
+    public void setInputTextAreaString(String string) {this.commandInputOutputPanel1.setInputTextAreaString(string);}
+
     public void setOutputAreaString(String string) {
         this.commandInputOutputPanel1.setOutputAreaString(string);
+    }
+
+    public void setClientController(ClientController clientController) {
+        this.clientController = clientController;
+        this.commandPanel1.setClientController(clientController);
     }
 
     /* Getters */

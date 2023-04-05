@@ -2,13 +2,14 @@ package frontend3.center_panel;
 
 import backend.MessageModes;
 import control.ClientController;
+import frontend3.center_panel.command_templates.*;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CommandPanel extends javax.swing.JPanel {
     @Setter
-    private CenterClientPanel centerClientPanel;
+    private ClientController clientController;
 
     public CommandPanel() {
         initComponents();
@@ -23,7 +24,7 @@ public class CommandPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        selectComboxBox = new javax.swing.JComboBox<>();
+        selectComboBox = new javax.swing.JComboBox<>();
         createAlterComboBox = new javax.swing.JComboBox<>();
         dropDeleteComboBox = new javax.swing.JComboBox<>();
         insertUpdateComboBox = new javax.swing.JComboBox<>();
@@ -33,15 +34,15 @@ public class CommandPanel extends javax.swing.JPanel {
 
         setPreferredSize(new java.awt.Dimension(1000, 42));
 
-        selectComboxBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SELECT" }));
-        selectComboxBox.setToolTipText("");
-        selectComboxBox.addActionListener(new java.awt.event.ActionListener() {
+        selectComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SELECT", "DEFAULT SELECT", "FULL SELECT" }));
+        selectComboBox.setToolTipText("");
+        selectComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                selectComboxBoxActionPerformed(evt);
+                selectComboBoxActionPerformed(evt);
             }
         });
 
-        createAlterComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "CREATE/ALTER" }));
+        createAlterComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "CREATE/ALTER", "CREATE DATABASE", "CREATE TABLE", "ALTER TABLE" }));
         createAlterComboBox.setToolTipText("");
         createAlterComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -49,7 +50,7 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
-        dropDeleteComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "DROP/DELETE" }));
+        dropDeleteComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "DROP/DELETE", "DROP DATABASE", "DROP TABLE" }));
         dropDeleteComboBox.setToolTipText("");
         dropDeleteComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -57,7 +58,7 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
-        insertUpdateComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "INSERT/UPDATE" }));
+        insertUpdateComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "INSERT/UPDATE", "INSERT INTO TABLE", "UPDATE TABLE" }));
         insertUpdateComboBox.setToolTipText("");
         insertUpdateComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -79,8 +80,13 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
-        useComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "USE" }));
+        useComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "USE", "USE DATABASE" }));
         useComboBox.setToolTipText("");
+        useComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                useComboBoxItemStateChanged(evt);
+            }
+        });
         useComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 useComboBoxActionPerformed(evt);
@@ -92,17 +98,17 @@ public class CommandPanel extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(useComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(useComboBox, 0, 82, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(selectComboxBox, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(selectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
-                .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
-                .addComponent(dropDeleteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addComponent(insertUpdateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(337, 337, 337)
+                .addComponent(dropDeleteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(insertUpdateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(306, 306, 306)
                 .addComponent(horizontalFiller, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addComponent(runCommandButton))
@@ -114,17 +120,14 @@ public class CommandPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(selectComboxBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(selectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(useComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
-                        .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(5, 5, 5)
-                        .addComponent(dropDeleteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(5, 5, 5)
-                        .addComponent(insertUpdateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(dropDeleteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(insertUpdateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(horizontalFiller, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -135,39 +138,75 @@ public class CommandPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void selectComboxBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectComboxBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_selectComboxBoxActionPerformed
-
-    private void createAlterComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createAlterComboBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_createAlterComboBoxActionPerformed
-
-    private void dropDeleteComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dropDeleteComboBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_dropDeleteComboBoxActionPerformed
-
-    private void insertUpdateComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertUpdateComboBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_insertUpdateComboBoxActionPerformed
-
     private void runCommandButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runCommandButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_runCommandButtonActionPerformed
 
     private void runCommandButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_runCommandButtonMousePressed
-        String command = this.centerClientPanel.getInputAreaText();
+        String command = this.clientController.getInputTextAreaString();
         log.info("Command to be sent to server:\n" + command);
 
-        ClientController clientController = this.centerClientPanel.getClientController();
-        clientController.sendCommandToServer(command);
-        clientController.receiveMessageAndPerformAction(MessageModes.refreshDatabases);
-        clientController.receiveMessageAndPerformAction(MessageModes.setTextArea);
+        this.clientController.sendCommandToServer(command);
+        this.clientController.receiveMessageAndPerformAction(MessageModes.refreshDatabases);
+        this.clientController.receiveMessageAndPerformAction(MessageModes.setTextArea);
     }//GEN-LAST:event_runCommandButtonMousePressed
 
+    private void insertUpdateComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertUpdateComboBoxActionPerformed
+        switch (this.insertUpdateComboBox.getSelectedIndex()) {
+            case 1 -> this.clientController.setInputTextAreaString(new InsertIntoTableTemplate().toString());
+            case 2 -> this.clientController.setInputTextAreaString(new UpdateTableTemplate().toString());
+        }
+
+        // Reset to basic index
+        this.insertUpdateComboBox.setSelectedIndex(0);
+    }//GEN-LAST:event_insertUpdateComboBoxActionPerformed
+
+    private void dropDeleteComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dropDeleteComboBoxActionPerformed
+        switch (this.dropDeleteComboBox.getSelectedIndex()) {
+            case 1 -> this.clientController.setInputTextAreaString(new DropDatabaseTemplate().toString());
+            case 2 -> this.clientController.setInputTextAreaString(new DropTableTemplate().toString());
+        }
+
+        // Reset to basic index
+        this.dropDeleteComboBox.setSelectedIndex(0);
+    }//GEN-LAST:event_dropDeleteComboBoxActionPerformed
+
+    private void createAlterComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createAlterComboBoxActionPerformed
+        switch (this.createAlterComboBox.getSelectedIndex()) {
+            case 1 -> this.clientController.setInputTextAreaString(new CreateDatabaseTemplate().toString());
+            case 2 -> this.clientController.setInputTextAreaString(new CreateTableTemplate().toString());
+            case 3 -> this.clientController.setInputTextAreaString(new AlterTableTemplate().toString());
+        }
+
+        // Reset to basic index
+        this.createAlterComboBox.setSelectedIndex(0);
+    }//GEN-LAST:event_createAlterComboBoxActionPerformed
+
+    private void selectComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectComboBoxActionPerformed
+        switch (this.selectComboBox.getSelectedIndex()) {
+            case 1 -> this.clientController.setInputTextAreaString(new DefaultSelectTemplate().toString());
+            case 2 -> this.clientController.setInputTextAreaString(new FullSelectTemplate().toString());
+        }
+
+        // Reset to basic index
+        this.selectComboBox.setSelectedIndex(0);
+    }//GEN-LAST:event_selectComboBoxActionPerformed
+
     private void useComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_useComboBoxActionPerformed
-        // TODO add your handling code here:
+        int selected = this.useComboBox.getSelectedIndex();
+
+        if (selected == 1) {
+            this.clientController.setInputTextAreaString(new UseDatabaseTemplate().toString());
+        }
+
+        // Reset to basic index
+        this.useComboBox.setSelectedIndex(0);
     }//GEN-LAST:event_useComboBoxActionPerformed
+
+    private void useComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_useComboBoxItemStateChanged
+        // TODO add your handling code here:
+        // Ignore this one
+    }//GEN-LAST:event_useComboBoxItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -176,7 +215,7 @@ public class CommandPanel extends javax.swing.JPanel {
     private javax.swing.Box.Filler horizontalFiller;
     private javax.swing.JComboBox<String> insertUpdateComboBox;
     private javax.swing.JButton runCommandButton;
-    private javax.swing.JComboBox<String> selectComboxBox;
+    private javax.swing.JComboBox<String> selectComboBox;
     private javax.swing.JComboBox<String> useComboBox;
     // End of variables declaration//GEN-END:variables
 }

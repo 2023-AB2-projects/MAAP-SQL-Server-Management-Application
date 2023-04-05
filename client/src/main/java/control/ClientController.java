@@ -129,14 +129,15 @@ public class ClientController {
     }
 
     /* Setters */
-    public void setClientFrameVisibility(boolean visibility) {
-        this.clientFrame.setVisible(visibility);
-    }
+    public void setClientFrameVisibility(boolean visibility) { this.clientFrame.setVisible(visibility); }
+
+    public void setInputTextAreaString(String inputTextAreaString) { this.clientFrame.setInputTextAreaString(inputTextAreaString);}
     
-    public void setOutputAreaString(String string) {
-        this.clientFrame.setOutputAreaString(string);
-    }
-    
+    public void setOutputAreaString(String string) { this.clientFrame.setOutputAreaString(string); }
+
+    /* Getters */
+    public String getInputTextAreaString() { return this.clientFrame.getInputTextAreaString(); }
+
     /* Main */
     public static void main(String[] args) {
         new ClientController();

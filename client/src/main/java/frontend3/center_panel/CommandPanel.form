@@ -22,17 +22,17 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <EmptySpace max="32767" attributes="0"/>
-              <Component id="useComboBox" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="selectComboxBox" min="-2" pref="82" max="-2" attributes="0"/>
+              <Component id="useComboBox" pref="82" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="selectComboBox" min="-2" pref="82" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-              <Component id="createAlterComboBox" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="5" pref="5" max="-2" attributes="0"/>
-              <Component id="dropDeleteComboBox" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="5" pref="5" max="-2" attributes="0"/>
-              <Component id="insertUpdateComboBox" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="337" max="-2" attributes="0"/>
+              <Component id="createAlterComboBox" min="-2" pref="126" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+              <Component id="dropDeleteComboBox" min="-2" pref="123" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="insertUpdateComboBox" min="-2" pref="123" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="306" max="-2" attributes="0"/>
               <Component id="horizontalFiller" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="5" pref="5" max="-2" attributes="0"/>
               <Component id="runCommandButton" min="-2" max="-2" attributes="0"/>
@@ -46,21 +46,17 @@
                   <Group type="102" attributes="0">
                       <EmptySpace min="5" pref="5" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="selectComboxBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="selectComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="useComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" attributes="0">
                       <EmptySpace min="5" pref="5" max="-2" attributes="0"/>
-                      <Component id="createAlterComboBox" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="5" pref="5" max="-2" attributes="0"/>
-                      <Component id="dropDeleteComboBox" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="5" pref="5" max="-2" attributes="0"/>
-                      <Component id="insertUpdateComboBox" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="createAlterComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="dropDeleteComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="insertUpdateComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                   <Group type="102" attributes="0">
                       <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
@@ -77,17 +73,19 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JComboBox" name="selectComboxBox">
+    <Component class="javax.swing.JComboBox" name="selectComboBox">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="1">
+          <StringArray count="3">
             <StringItem index="0" value="SELECT"/>
+            <StringItem index="1" value="DEFAULT SELECT"/>
+            <StringItem index="2" value="FULL SELECT"/>
           </StringArray>
         </Property>
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectComboxBoxActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectComboBoxActionPerformed"/>
       </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -96,8 +94,11 @@
     <Component class="javax.swing.JComboBox" name="createAlterComboBox">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="1">
+          <StringArray count="4">
             <StringItem index="0" value="CREATE/ALTER"/>
+            <StringItem index="1" value="CREATE DATABASE"/>
+            <StringItem index="2" value="CREATE TABLE"/>
+            <StringItem index="3" value="ALTER TABLE"/>
           </StringArray>
         </Property>
         <Property name="toolTipText" type="java.lang.String" value=""/>
@@ -112,8 +113,10 @@
     <Component class="javax.swing.JComboBox" name="dropDeleteComboBox">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="1">
+          <StringArray count="3">
             <StringItem index="0" value="DROP/DELETE"/>
+            <StringItem index="1" value="DROP DATABASE"/>
+            <StringItem index="2" value="DROP TABLE"/>
           </StringArray>
         </Property>
         <Property name="toolTipText" type="java.lang.String" value=""/>
@@ -128,8 +131,10 @@
     <Component class="javax.swing.JComboBox" name="insertUpdateComboBox">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="1">
+          <StringArray count="3">
             <StringItem index="0" value="INSERT/UPDATE"/>
+            <StringItem index="1" value="INSERT INTO TABLE"/>
+            <StringItem index="2" value="UPDATE TABLE"/>
           </StringArray>
         </Property>
         <Property name="toolTipText" type="java.lang.String" value=""/>
@@ -165,13 +170,15 @@
     <Component class="javax.swing.JComboBox" name="useComboBox">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="1">
+          <StringArray count="2">
             <StringItem index="0" value="USE"/>
+            <StringItem index="1" value="USE DATABASE"/>
           </StringArray>
         </Property>
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
       <Events>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="useComboBoxItemStateChanged"/>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="useComboBoxActionPerformed"/>
       </Events>
       <AuxValues>

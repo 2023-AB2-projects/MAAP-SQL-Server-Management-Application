@@ -16,6 +16,7 @@ public class ClientFrame extends javax.swing.JFrame {
         this.clientController = clientController;
 
         initComponents();
+
         // Set references
         this.centerClientPanel1.setClientController(this.clientController);
     }
@@ -33,7 +34,7 @@ public class ClientFrame extends javax.swing.JFrame {
         centerClientPanel1 = new frontend3.center_panel.CenterClientPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Client side application");
+        setTitle("MAAP SQL Server Management Application");
         setResizable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -57,9 +58,15 @@ public class ClientFrame extends javax.swing.JFrame {
 
     /* Setters */
     public void updateDatabaseNamesTree(ArrayList<String> databaseNames) { this.objectExplorerPanel1.updateDatabases(databaseNames); }
+
+    public void setInputTextAreaString(String string) { this.centerClientPanel1.setInputTextAreaString(string); }
+
     public void setOutputAreaString(String string) { this.centerClientPanel1.setOutputAreaString(string); }
 
     public void setCurrentDatabaseName(String databaseName) { this.objectExplorerPanel1.updateCurrentDatabase(databaseName); }
+
+    /* Getters */
+    public String getInputTextAreaString() { return this.centerClientPanel1.getInputAreaText(); }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private frontend3.center_panel.CenterClientPanel centerClientPanel1;

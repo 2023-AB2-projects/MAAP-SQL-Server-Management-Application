@@ -59,9 +59,9 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     /* Setters */
-    public void setOutputAreaString(String string) {
-        this.outputArea.setText(string);
-    }
+    public void setInputTextAreaString(String string) { this.inputArea.setText(string); }
+
+    public void setOutputAreaString(String string) { this.outputArea.setText(string); }
 
     /* Getters */
     public String getInputAreaText() { return this.inputArea.getText(); }
