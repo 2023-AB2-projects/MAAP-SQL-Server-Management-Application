@@ -1,4 +1,4 @@
-package frontend3;
+package frontend;
 
 import control.ClientController;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +30,8 @@ public class ClientFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        objectExplorerPanel1 = new frontend3.object_explorer.ObjectExplorerPanel();
-        centerClientPanel1 = new frontend3.center_panel.CenterClientPanel();
+        objectExplorerPanel1 = new frontend.object_explorer.ObjectExplorerPanel();
+        centerClientPanel1 = new frontend.center_panel.CenterClientPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("MAAP SQL Server Management Application");
@@ -69,7 +69,7 @@ public class ClientFrame extends javax.swing.JFrame {
     public String getInputTextAreaString() { return this.centerClientPanel1.getInputAreaText(); }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private frontend3.center_panel.CenterClientPanel centerClientPanel1;
-    private frontend3.object_explorer.ObjectExplorerPanel objectExplorerPanel1;
+    private frontend.center_panel.CenterClientPanel centerClientPanel1;
+    private frontend.object_explorer.ObjectExplorerPanel objectExplorerPanel1;
     // End of variables declaration//GEN-END:variables
 }

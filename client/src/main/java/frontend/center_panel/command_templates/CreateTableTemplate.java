@@ -1,4 +1,4 @@
-package frontend3.center_panel.command_templates;
+package frontend.center_panel.command_templates;
 
 public class CreateTableTemplate {
     @Override

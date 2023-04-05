@@ -1,4 +1,4 @@
-package frontend3.object_explorer;
+package frontend.object_explorer;
 
 import java.util.ArrayList;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -53,9 +53,11 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
 
         objectExplorerTag.setBackground(java.awt.Color.darkGray);
         objectExplorerTag.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        objectExplorerTag.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         objectExplorerTag.setLabelFor(this);
         objectExplorerTag.setText("Object Explorer");
         objectExplorerTag.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        objectExplorerTag.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         objectExplorerTag.setOpaque(true);
 
         treeDatabases.setBorder(null);

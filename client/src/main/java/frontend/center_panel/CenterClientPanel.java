@@ -1,4 +1,4 @@
-package frontend3.center_panel;
+package frontend.center_panel;
 
 import control.ClientController;
 
@@ -23,9 +23,11 @@ public class CenterClientPanel extends javax.swing.JPanel {
 
         clientTabbedPane = new javax.swing.JTabbedPane();
         jSplitPane1 = new javax.swing.JSplitPane();
-        commandPanel1 = new frontend3.center_panel.CommandPanel();
-        commandInputOutputPanel1 = new frontend3.center_panel.CommandInputOutputPanel();
-        visualQueryDesignerPanel = new frontend3.visual_query.VisualQueryDesigner();
+        commandPanel1 = new frontend.center_panel.CommandPanel();
+        commandInputOutputPanel1 = new frontend.center_panel.CommandInputOutputPanel();
+        visualSelectDesignerPanel = new frontend.visual_designers.VisualSelectDesigner();
+        visualDeleteDesignerPanel = new frontend.visual_designers.VisualDeleteDesigner();
+        visualInsertDesigner1 = new frontend.visual_designers.VisualInsertDesigner();
 
         clientTabbedPane.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         clientTabbedPane.setMinimumSize(new java.awt.Dimension(900, 900));
@@ -36,18 +38,32 @@ public class CenterClientPanel extends javax.swing.JPanel {
 
         clientTabbedPane.addTab("SQL Command Execution", jSplitPane1);
 
-        javax.swing.GroupLayout visualQueryDesignerPanelLayout = new javax.swing.GroupLayout(visualQueryDesignerPanel);
-        visualQueryDesignerPanel.setLayout(visualQueryDesignerPanelLayout);
-        visualQueryDesignerPanelLayout.setHorizontalGroup(
-            visualQueryDesignerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout visualSelectDesignerPanelLayout = new javax.swing.GroupLayout(visualSelectDesignerPanel);
+        visualSelectDesignerPanel.setLayout(visualSelectDesignerPanelLayout);
+        visualSelectDesignerPanelLayout.setHorizontalGroup(
+            visualSelectDesignerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 996, Short.MAX_VALUE)
         );
-        visualQueryDesignerPanelLayout.setVerticalGroup(
-            visualQueryDesignerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        visualSelectDesignerPanelLayout.setVerticalGroup(
+            visualSelectDesignerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 865, Short.MAX_VALUE)
         );
 
-        clientTabbedPane.addTab("Visual Query Designer", visualQueryDesignerPanel);
+        clientTabbedPane.addTab("Visual Select Designer", visualSelectDesignerPanel);
+
+        javax.swing.GroupLayout visualDeleteDesignerPanelLayout = new javax.swing.GroupLayout(visualDeleteDesignerPanel);
+        visualDeleteDesignerPanel.setLayout(visualDeleteDesignerPanelLayout);
+        visualDeleteDesignerPanelLayout.setHorizontalGroup(
+            visualDeleteDesignerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1000, Short.MAX_VALUE)
+        );
+        visualDeleteDesignerPanelLayout.setVerticalGroup(
+            visualDeleteDesignerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 865, Short.MAX_VALUE)
+        );
+
+        clientTabbedPane.addTab("Visual Delete Designer", visualDeleteDesignerPanel);
+        clientTabbedPane.addTab("tab4", visualInsertDesigner1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -79,9 +95,11 @@ public class CenterClientPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane clientTabbedPane;
-    private frontend3.center_panel.CommandInputOutputPanel commandInputOutputPanel1;
-    private frontend3.center_panel.CommandPanel commandPanel1;
+    private frontend.center_panel.CommandInputOutputPanel commandInputOutputPanel1;
+    private frontend.center_panel.CommandPanel commandPanel1;
     private javax.swing.JSplitPane jSplitPane1;
-    private frontend3.visual_query.VisualQueryDesigner visualQueryDesignerPanel;
+    private frontend.visual_designers.VisualDeleteDesigner visualDeleteDesignerPanel;
+    private frontend.visual_designers.VisualInsertDesigner visualInsertDesigner1;
+    private frontend.visual_designers.VisualSelectDesigner visualSelectDesignerPanel;
     // End of variables declaration//GEN-END:variables
 }

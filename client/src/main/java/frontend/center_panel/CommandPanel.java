@@ -1,8 +1,8 @@
-package frontend3.center_panel;
+package frontend.center_panel;
 
 import backend.MessageModes;
 import control.ClientController;
-import frontend3.center_panel.command_templates.*;
+import frontend.center_panel.command_templates.*;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 

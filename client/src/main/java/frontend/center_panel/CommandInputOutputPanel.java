@@ -1,4 +1,4 @@
-package frontend3.center_panel;
+package frontend.center_panel;
 
 import lombok.Setter;
 

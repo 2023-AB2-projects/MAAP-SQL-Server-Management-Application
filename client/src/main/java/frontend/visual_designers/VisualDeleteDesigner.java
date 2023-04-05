@@ -2,18 +2,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-package frontend3.visual_query;
+package frontend.visual_designers;
 
 /**
  *
  * @author lorin
  */
-public class VisualQueryDesigner extends javax.swing.JPanel {
+public class VisualDeleteDesigner extends javax.swing.JPanel {
 
     /**
      * Creates new form VisualQueryDesigner
      */
-    public VisualQueryDesigner() {
+    public VisualDeleteDesigner() {
         initComponents();
     }
 

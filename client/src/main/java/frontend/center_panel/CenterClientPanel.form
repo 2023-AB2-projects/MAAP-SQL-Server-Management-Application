@@ -54,14 +54,14 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout"/>
           <SubComponents>
-            <Component class="frontend3.center_panel.CommandPanel" name="commandPanel1">
+            <Component class="frontend.center_panel.CommandPanel" name="commandPanel1">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
                   <JSplitPaneConstraints position="top"/>
                 </Constraint>
               </Constraints>
             </Component>
-            <Component class="frontend3.center_panel.CommandInputOutputPanel" name="commandInputOutputPanel1">
+            <Component class="frontend.center_panel.CommandInputOutputPanel" name="commandInputOutputPanel1">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
                   <JSplitPaneConstraints position="right"/>
@@ -70,11 +70,11 @@
             </Component>
           </SubComponents>
         </Container>
-        <Container class="frontend3.visual_query.VisualQueryDesigner" name="visualQueryDesignerPanel">
+        <Container class="frontend.visual_designers.VisualSelectDesigner" name="visualSelectDesignerPanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Visual Query Designer">
-                <Property name="tabTitle" type="java.lang.String" value="Visual Query Designer"/>
+              <JTabbedPaneConstraints tabName="Visual Select Designer">
+                <Property name="tabTitle" type="java.lang.String" value="Visual Select Designer"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -92,6 +92,37 @@
             </DimensionLayout>
           </Layout>
         </Container>
+        <Container class="frontend.visual_designers.VisualDeleteDesigner" name="visualDeleteDesignerPanel">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Visual Delete Designer">
+                <Property name="tabTitle" type="java.lang.String" value="Visual Delete Designer"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="1000" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="865" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+        <Component class="frontend.visual_designers.VisualInsertDesigner" name="visualInsertDesigner1">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="tab4">
+                <Property name="tabTitle" type="java.lang.String" value="tab4"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+        </Component>
       </SubComponents>
     </Container>
   </SubComponents>

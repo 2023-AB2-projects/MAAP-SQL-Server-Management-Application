@@ -41,9 +41,9 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="frontend3.object_explorer.ObjectExplorerPanel" name="objectExplorerPanel1">
+    <Component class="frontend.object_explorer.ObjectExplorerPanel" name="objectExplorerPanel1">
     </Component>
-    <Component class="frontend3.center_panel.CenterClientPanel" name="centerClientPanel1">
+    <Component class="frontend.center_panel.CenterClientPanel" name="centerClientPanel1">
     </Component>
   </SubComponents>
 </Form>

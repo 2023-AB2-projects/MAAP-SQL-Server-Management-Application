@@ -2,8 +2,8 @@ package control;
 
 import backend.MessageModes;
 import com.formdev.flatlaf.FlatDarculaLaf;
-import frontend3.ClientFrame;
-import frontend3.ConnectionFrame;
+import frontend.ClientFrame;
+import frontend.ConnectionFrame;
 
 import java.io.IOException;
 import java.util.ArrayList;
