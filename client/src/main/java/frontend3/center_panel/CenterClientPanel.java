@@ -1,9 +1,20 @@
 package frontend3.center_panel;
 
+import control.ClientController;
+import lombok.Getter;
+import lombok.Setter;
+
 public class CenterClientPanel extends javax.swing.JPanel {
+    @Setter
+    @Getter
+    private ClientController clientController;
 
     public CenterClientPanel() {
         initComponents();
+
+        // Set references
+        this.commandInputOutputPanel1.setCenterClientPanel(this);
+        this.commandPanel1.setCenterClientPanel(this);
     }
     
     /**
@@ -19,7 +30,7 @@ public class CenterClientPanel extends javax.swing.JPanel {
         jSplitPane1 = new javax.swing.JSplitPane();
         commandPanel1 = new frontend3.center_panel.CommandPanel();
         commandInputOutputPanel1 = new frontend3.center_panel.CommandInputOutputPanel();
-        visualQueryDesignerPanel = new frontend3.VisualQueryDesigner();
+        visualQueryDesignerPanel = new frontend3.visual_query.VisualQueryDesigner();
 
         clientTabbedPane.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         clientTabbedPane.setMinimumSize(new java.awt.Dimension(900, 900));
@@ -60,12 +71,15 @@ public class CenterClientPanel extends javax.swing.JPanel {
     public void setOutputAreaString(String string) {
         this.commandInputOutputPanel1.setOutputAreaString(string);
     }
-    
+
+    /* Getters */
+    public String getInputAreaText() { return this.commandInputOutputPanel1.getInputAreaText(); }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane clientTabbedPane;
     private frontend3.center_panel.CommandInputOutputPanel commandInputOutputPanel1;
     private frontend3.center_panel.CommandPanel commandPanel1;
     private javax.swing.JSplitPane jSplitPane1;
-    private frontend3.VisualQueryDesigner visualQueryDesignerPanel;
+    private frontend3.visual_query.VisualQueryDesigner visualQueryDesignerPanel;
     // End of variables declaration//GEN-END:variables
 }

@@ -21,13 +21,14 @@ public class ClientController {
 
     // Other variables
     private LookAndFeel lookAndFeel;
+    private String currentDatabaseName;
     private ArrayList<String> databaseNames;
 
     public ClientController() {
         // Init Client side components
         this.initComponents();
         
-        // Init controler variables
+        // Init controller variables
         this.initVariables();
     }
 
@@ -98,7 +99,7 @@ public class ClientController {
     public void receiveMessageAndPerformAction(int mode) {
         try {
             String response = this.receiveMessage();
-            log.info(response + " received from server");
+            log.info("Received message: " + response);
             
             if (response.equals("SERVER DISCONNECTED")) {
                 this.stopConnection();
@@ -107,7 +108,16 @@ public class ClientController {
             }
 
             switch(mode) {
-                case MessageModes.setTextArea -> this.setOutputAreaString(response);
+                case MessageModes.setTextArea -> {
+                    this.setOutputAreaString(response);
+
+                    // Check if we need to update current database
+                    if(response.contains("Now using")) {
+                        String currentDatabaseName = response.split("Now using ")[1];
+                        log.info("Current database name: " + currentDatabaseName);
+                        this.clientFrame.setCurrentDatabaseName(currentDatabaseName);
+                    }
+                }
                 case MessageModes.refreshDatabases -> this.updateCurrentDatabases(response);
 
             }

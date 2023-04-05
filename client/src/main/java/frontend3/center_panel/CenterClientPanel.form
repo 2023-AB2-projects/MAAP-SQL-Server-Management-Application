@@ -70,7 +70,7 @@
             </Component>
           </SubComponents>
         </Container>
-        <Container class="frontend3.VisualQueryDesigner" name="visualQueryDesignerPanel">
+        <Container class="frontend3.visual_query.VisualQueryDesigner" name="visualQueryDesignerPanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Visual Query Designer">

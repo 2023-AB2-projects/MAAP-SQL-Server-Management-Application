@@ -1,6 +1,10 @@
 package frontend3.center_panel;
 
+import lombok.Setter;
+
 public class CommandInputOutputPanel extends javax.swing.JPanel {
+    @Setter
+    private CenterClientPanel centerClientPanel;
 
     public CommandInputOutputPanel() {
         initComponents();
@@ -15,57 +19,59 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        CommandSplitPane = new javax.swing.JSplitPane();
-        CommandInputPane = new javax.swing.JScrollPane();
-        CommandInputArea = new javax.swing.JTextArea();
-        CommandOutputPane = new javax.swing.JScrollPane();
-        CommandOutputArea = new javax.swing.JTextArea();
+        commandSplitPane = new javax.swing.JSplitPane();
+        inputScrollPanel = new javax.swing.JScrollPane();
+        inputArea = new javax.swing.JTextArea();
+        outputScrollPanel = new javax.swing.JScrollPane();
+        outputArea = new javax.swing.JTextArea();
 
         setMinimumSize(new java.awt.Dimension(900, 1000));
         setPreferredSize(new java.awt.Dimension(900, 900));
 
-        CommandSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        commandSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
-        CommandInputArea.setColumns(20);
-        CommandInputArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        CommandInputArea.setRows(5);
-        CommandInputArea.setText("COMMAND INPUT");
-        CommandInputPane.setViewportView(CommandInputArea);
+        inputArea.setColumns(20);
+        inputArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        inputArea.setRows(5);
+        inputScrollPanel.setViewportView(inputArea);
 
-        CommandSplitPane.setTopComponent(CommandInputPane);
+        commandSplitPane.setTopComponent(inputScrollPanel);
 
-        CommandOutputArea.setEditable(false);
-        CommandOutputArea.setColumns(20);
-        CommandOutputArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        CommandOutputArea.setRows(5);
-        CommandOutputArea.setText("COMMAND OUTPUT");
-        CommandOutputPane.setViewportView(CommandOutputArea);
+        outputArea.setEditable(false);
+        outputArea.setColumns(20);
+        outputArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        outputArea.setRows(5);
+        outputArea.setText("COMMAND OUTPUT");
+        outputScrollPanel.setViewportView(outputArea);
 
-        CommandSplitPane.setRightComponent(CommandOutputPane);
+        commandSplitPane.setRightComponent(outputScrollPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(CommandSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
+            .addComponent(commandSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(CommandSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE)
+            .addComponent(commandSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
     /* Setters */
     public void setOutputAreaString(String string) {
-        this.CommandOutputArea.setText(string);
+        this.outputArea.setText(string);
     }
+
+    /* Getters */
+    public String getInputAreaText() { return this.inputArea.getText(); }
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextArea CommandInputArea;
-    private javax.swing.JScrollPane CommandInputPane;
-    private javax.swing.JTextArea CommandOutputArea;
-    private javax.swing.JScrollPane CommandOutputPane;
-    private javax.swing.JSplitPane CommandSplitPane;
+    private javax.swing.JSplitPane commandSplitPane;
+    private javax.swing.JTextArea inputArea;
+    private javax.swing.JScrollPane inputScrollPanel;
+    private javax.swing.JTextArea outputArea;
+    private javax.swing.JScrollPane outputScrollPanel;
     // End of variables declaration//GEN-END:variables
 }

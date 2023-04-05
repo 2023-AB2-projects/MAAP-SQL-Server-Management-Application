@@ -1,18 +1,15 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package frontend3.center_panel;
 
-/**
- *
- * @author lorin
- */
-public class CommandPanel extends javax.swing.JPanel {
+import backend.MessageModes;
+import control.ClientController;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-    /**
-     * Creates new form CommandPanel
-     */
+@Slf4j
+public class CommandPanel extends javax.swing.JPanel {
+    @Setter
+    private CenterClientPanel centerClientPanel;
+
     public CommandPanel() {
         initComponents();
     }
@@ -30,8 +27,9 @@ public class CommandPanel extends javax.swing.JPanel {
         createAlterComboBox = new javax.swing.JComboBox<>();
         dropDeleteComboBox = new javax.swing.JComboBox<>();
         insertUpdateComboBox = new javax.swing.JComboBox<>();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        horizontalFiller = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         runCommandButton = new javax.swing.JButton();
+        useComboBox = new javax.swing.JComboBox<>();
 
         setPreferredSize(new java.awt.Dimension(1000, 42));
 
@@ -81,21 +79,31 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
+        useComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "USE" }));
+        useComboBox.setToolTipText("");
+        useComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                useComboBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(selectComboxBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(useComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(selectComboxBox, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addComponent(dropDeleteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addComponent(insertUpdateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(415, 415, 415)
-                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(337, 337, 337)
+                .addComponent(horizontalFiller, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addComponent(runCommandButton))
         );
@@ -105,7 +113,9 @@ public class CommandPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
-                        .addComponent(selectComboxBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(selectComboxBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(useComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
                         .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -117,7 +127,7 @@ public class CommandPanel extends javax.swing.JPanel {
                         .addComponent(insertUpdateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(horizontalFiller, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
                         .addComponent(runCommandButton)))
@@ -146,17 +156,27 @@ public class CommandPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_runCommandButtonActionPerformed
 
     private void runCommandButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_runCommandButtonMousePressed
-        // TODO add your handling code here:
-        System.out.println("Run Command Button pressed!");
+        String command = this.centerClientPanel.getInputAreaText();
+        log.info("Command to be sent to server:\n" + command);
+
+        ClientController clientController = this.centerClientPanel.getClientController();
+        clientController.sendCommandToServer(command);
+        clientController.receiveMessageAndPerformAction(MessageModes.refreshDatabases);
+        clientController.receiveMessageAndPerformAction(MessageModes.setTextArea);
     }//GEN-LAST:event_runCommandButtonMousePressed
+
+    private void useComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_useComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_useComboBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> createAlterComboBox;
     private javax.swing.JComboBox<String> dropDeleteComboBox;
-    private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler horizontalFiller;
     private javax.swing.JComboBox<String> insertUpdateComboBox;
     private javax.swing.JButton runCommandButton;
     private javax.swing.JComboBox<String> selectComboxBox;
+    private javax.swing.JComboBox<String> useComboBox;
     // End of variables declaration//GEN-END:variables
 }

@@ -5,8 +5,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 public class ObjectExplorerPanel extends javax.swing.JPanel {
-    private DefaultMutableTreeNode jTreeDatabasesNode;
-    private DefaultTreeModel objectExplorerJTree;
+    private DefaultMutableTreeNode databasesNode;
+    private DefaultTreeModel jTreeNode;
     
     public ObjectExplorerPanel() {
         // Init variables
@@ -16,20 +16,23 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
     }
     
     private void initVariables() {
-        this.jTreeDatabasesNode = new DefaultMutableTreeNode(new ObjectExplorerJTree(new ArrayList<>()));
-        this.objectExplorerJTree = new DefaultTreeModel(this.jTreeDatabasesNode);
+        this.databasesNode = new DefaultMutableTreeNode("Databases");
+        this.jTreeNode = new DefaultTreeModel(this.databasesNode);
     }
 
     public void updateDatabases(ArrayList<String> databaseNames) {
-        this.jTreeDatabasesNode.removeAllChildren();
+        this.databasesNode.removeAllChildren();
 
         for(final String databaseName : databaseNames) {
-            this.jTreeDatabasesNode.add(new DefaultMutableTreeNode(databaseName));
+            this.databasesNode.add(new DefaultMutableTreeNode(databaseName));
         }
 
-        this.objectExplorerJTree.setRoot(this.jTreeDatabasesNode);
+        this.jTreeNode.setRoot(this.databasesNode);
     }
-    
+
+    /* Setters */
+    public void updateCurrentDatabase(String databaseName) {this.usingDatabaseField.setText(databaseName);}
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -39,60 +42,83 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        ObjectExplorerTag = new javax.swing.JLabel();
-        DatabasesPanel = new javax.swing.JPanel();
-        TreeScrollPane = new javax.swing.JScrollPane();
-        TreeDatabases = new javax.swing.JTree();
+        objectExplorerTag = new javax.swing.JLabel();
+        databasesPanel = new javax.swing.JPanel();
+        treeScrollPanel = new javax.swing.JScrollPane();
+        treeDatabases = new javax.swing.JTree();
+        usingDatabaseLabel = new javax.swing.JLabel();
+        usingDatabaseField = new javax.swing.JTextField();
 
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        ObjectExplorerTag.setBackground(java.awt.Color.gray);
-        ObjectExplorerTag.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
-        ObjectExplorerTag.setLabelFor(this);
-        ObjectExplorerTag.setText("Object Explorer");
-        ObjectExplorerTag.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        ObjectExplorerTag.setOpaque(true);
+        objectExplorerTag.setBackground(java.awt.Color.darkGray);
+        objectExplorerTag.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        objectExplorerTag.setLabelFor(this);
+        objectExplorerTag.setText("Object Explorer");
+        objectExplorerTag.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        objectExplorerTag.setOpaque(true);
 
-        TreeDatabases.setBorder(null);
-        TreeDatabases.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        TreeDatabases.setModel(objectExplorerJTree);
-        TreeScrollPane.setViewportView(TreeDatabases);
+        treeDatabases.setBorder(null);
+        treeDatabases.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        treeDatabases.setModel(jTreeNode);
+        treeDatabases.setToolTipText("");
+        treeScrollPanel.setViewportView(treeDatabases);
 
-        javax.swing.GroupLayout DatabasesPanelLayout = new javax.swing.GroupLayout(DatabasesPanel);
-        DatabasesPanel.setLayout(DatabasesPanelLayout);
-        DatabasesPanelLayout.setHorizontalGroup(
-            DatabasesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(TreeScrollPane, javax.swing.GroupLayout.Alignment.TRAILING)
+        usingDatabaseLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        usingDatabaseLabel.setText("Using database:");
+
+        usingDatabaseField.setEditable(false);
+        usingDatabaseField.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+
+        javax.swing.GroupLayout databasesPanelLayout = new javax.swing.GroupLayout(databasesPanel);
+        databasesPanel.setLayout(databasesPanelLayout);
+        databasesPanelLayout.setHorizontalGroup(
+            databasesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(treeScrollPanel)
+            .addGroup(databasesPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(usingDatabaseLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                .addComponent(usingDatabaseField, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-        DatabasesPanelLayout.setVerticalGroup(
-            DatabasesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(TreeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
+        databasesPanelLayout.setVerticalGroup(
+            databasesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, databasesPanelLayout.createSequentialGroup()
+                .addGroup(databasesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(usingDatabaseField, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(databasesPanelLayout.createSequentialGroup()
+                        .addGap(3, 3, 3)
+                        .addComponent(usingDatabaseLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(treeScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 813, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(ObjectExplorerTag, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
+            .addComponent(objectExplorerTag, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(DatabasesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(databasesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(ObjectExplorerTag, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(objectExplorerTag, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(DatabasesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(databasesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel DatabasesPanel;
-    private javax.swing.JLabel ObjectExplorerTag;
-    private javax.swing.JTree TreeDatabases;
-    private javax.swing.JScrollPane TreeScrollPane;
+    private javax.swing.JPanel databasesPanel;
+    private javax.swing.JLabel objectExplorerTag;
+    private javax.swing.JTree treeDatabases;
+    private javax.swing.JScrollPane treeScrollPanel;
+    private javax.swing.JTextField usingDatabaseField;
+    private javax.swing.JLabel usingDatabaseLabel;
     // End of variables declaration//GEN-END:variables
 }

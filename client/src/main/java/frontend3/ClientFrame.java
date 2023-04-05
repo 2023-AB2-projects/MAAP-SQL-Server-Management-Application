@@ -14,8 +14,10 @@ public class ClientFrame extends javax.swing.JFrame {
     public ClientFrame(ClientController clientController) {
         // Reference
         this.clientController = clientController;
-        
+
         initComponents();
+        // Set references
+        this.centerClientPanel1.setClientController(this.clientController);
     }
     
     /**
@@ -54,10 +56,10 @@ public class ClientFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /* Setters */
-    public void updateDatabaseNamesTree(ArrayList<String> databaseNames) { this.objectExplorerPanel1.updateDatabases(databaseNames);}
-    public void setOutputAreaString(String string) {
-        this.centerClientPanel1.setOutputAreaString(string);
-    }
+    public void updateDatabaseNamesTree(ArrayList<String> databaseNames) { this.objectExplorerPanel1.updateDatabases(databaseNames); }
+    public void setOutputAreaString(String string) { this.centerClientPanel1.setOutputAreaString(string); }
+
+    public void setCurrentDatabaseName(String databaseName) { this.objectExplorerPanel1.updateCurrentDatabase(databaseName); }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private frontend3.center_panel.CenterClientPanel centerClientPanel1;
