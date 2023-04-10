@@ -13,8 +13,10 @@ public class test {
         asd.add("1");
         asd.add("1.2");
         asd.add("20");
-        asd.add("stange");
-        recordHandler.insert(asd, 1);
+        asd.add("strange");
+        asd.add("true");
+        //recordHandler.insert(asd, 0);
+        System.out.println(recordHandler.readLine(2));
         recordHandler.close();
     }
 }

@@ -11,22 +11,23 @@ import java.util.regex.Pattern;
 
 @Slf4j
 public class RecordHandler {
-    private String tableName, fileLocation;
     private long recordSize;
-    private ArrayList<String> tableStructure;
-    private RandomAccessFile io;
+    private final ArrayList<String> tableStructure;
+    private final RandomAccessFile io;
 
     public RecordHandler(String tableName) throws IOException {
-        this.tableName = tableName;
+        //some json magic here
         //fileLocation = getFileLocation(tableName)
-        fileLocation = "records/testFile.bin";
+        String fileLocation = "records/testFile.bin";
 
+        //some other json magic here :)
         //tableStructure = getTableStructure(tableName)
         tableStructure = new ArrayList<>();
         tableStructure.add("int");
         tableStructure.add("float");
         tableStructure.add("long");
         tableStructure.add("char(10)");
+        tableStructure.add("bool");
 
         recordSize = 1;
         for (String type : tableStructure) {
@@ -43,8 +44,8 @@ public class RecordHandler {
         long offset = line * recordSize;
         io.seek(offset);
         if(io.length() > offset){
-            boolean b = io.readBoolean();
-            if(b){
+            boolean deletionByte = io.readBoolean();
+            if(deletionByte){
                 log.info("Invalid location for write");
                 return;
             }
@@ -55,6 +56,29 @@ public class RecordHandler {
         for(int i = 0; i < values.size(); i++){
             io.write(toBytes(tableStructure.get(i), values.get(i)));
         }
+    }
+
+    public ArrayList<String> readLine(int line) throws IOException {
+        ArrayList<String> values = new ArrayList<>();
+
+        long offset = line * recordSize;
+        if(offset >= io.length()){
+            log.info("offset too long");
+            return values;
+        }
+        boolean deletionByte = io.readBoolean();
+        if(!deletionByte){
+            log.info("Line is not written");
+            return values;
+        }
+
+        for(String type : tableStructure){
+            byte[] bytes = new byte[(int)sizeof(type)];
+            io.readFully(bytes);
+            values.add(decode(type, bytes));
+        }
+
+        return values;
     }
 
     public void close() throws IOException {
@@ -68,6 +92,7 @@ public class RecordHandler {
             case "float" -> { return Float.BYTES; }
             case "double" -> { return Double.BYTES; }
             case "char" -> { return Character.BYTES; }
+            case "bool" -> { return 1;}
             default -> {
                 Pattern pattern = Pattern.compile("char\\((\\d+)\\)");
                 Matcher matcher = pattern.matcher(type);
@@ -110,6 +135,13 @@ public class RecordHandler {
                 buffer.putChar(value.charAt(0));
                 return buffer.array();
             }
+            case "bool" -> {
+                byte[] b = new byte[1];
+                if (value.equals("true") || value.equals("1")) {
+                    b[0] = 1;
+                }
+                return b;
+            }
             default -> {
                 Pattern pattern = Pattern.compile("char\\((\\d+)\\)");
                 Matcher matcher = pattern.matcher(type);
@@ -121,10 +153,45 @@ public class RecordHandler {
                     } else {
                         formattedStr = String.format("%-" + size + "s", value);
                     }
-
                     return formattedStr.getBytes(StandardCharsets.US_ASCII);
                 } else {
                     return new byte[0];
+                }
+            }
+        }
+    }
+
+    private String decode(String type, byte[] bytes){
+        ByteBuffer buffer;
+        switch (type) {
+            case "int" -> {
+                return Integer.toString(ByteBuffer.wrap(bytes).getInt());
+            }
+            case "long" -> {
+                return Long.toString(ByteBuffer.wrap(bytes).getLong());
+            }
+            case "float" -> {
+                return Float.toString(ByteBuffer.wrap(bytes).getFloat());
+            }
+            case "double" -> {
+                return Double.toString(ByteBuffer.wrap(bytes).getDouble());
+            }
+            case "char" -> {
+                return Character.toString(ByteBuffer.wrap(bytes).getChar());
+            }
+            case "bool" -> {
+                if(bytes[0] == 0){
+                    return "false";
+                }
+                return "true";
+            }
+            default -> {
+                Pattern pattern = Pattern.compile("char\\((\\d+)\\)");
+                Matcher matcher = pattern.matcher(type);
+                if (matcher.find()) {
+                    return new String(bytes, StandardCharsets.US_ASCII);
+                } else {
+                    return "";
                 }
             }
         }
