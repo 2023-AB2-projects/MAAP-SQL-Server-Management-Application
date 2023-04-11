@@ -30,4 +30,8 @@ public class RecordInserter {
         // append index file later
 
     }
+
+    public void close() throws IOException {
+        recordHandler.close();
+    }
 }

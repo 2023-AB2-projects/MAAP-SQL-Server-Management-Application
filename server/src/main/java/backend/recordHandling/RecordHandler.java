@@ -1,5 +1,7 @@
 package backend.recordHandling;
 
+import backend.exceptions.recordHandlingExceptions.InvalidReadException;
+import backend.exceptions.recordHandlingExceptions.InvalidTypeException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -14,15 +16,14 @@ public class RecordHandler {
     private long recordSize;
     private final ArrayList<String> tableStructure;
     private final RandomAccessFile io;
-
     public RecordHandler(String databaseName, String tableName) throws FileNotFoundException {
         //some json magic here
-        //fileLocation = getFileLocation(tableName)
+        //fileLocation = getFileLocation(databaseName, tableName)
         //remove this
         String fileLocation = "records/testFile.bin";
 
         //some other json magic here :)
-        //tableStructure = getTableStructure(tableName)
+        //tableStructure = getTableStructure(databaseName, tableName)
         //remove this
         tableStructure = new ArrayList<>();
         tableStructure.add("int");
@@ -37,7 +38,6 @@ public class RecordHandler {
         }
         io = new RandomAccessFile(fileLocation, "rw");
     }
-
     public void insert(ArrayList<String> values, int line) throws IOException {
         if(values.size() != tableStructure.size()){
             log.info("Wrong length of values");
@@ -76,18 +76,16 @@ public class RecordHandler {
         io.seek(offset);
         io.writeBoolean(false);
     }
-    public ArrayList<String> readLine(int line) throws IOException {
+    public ArrayList<String> readLine(int line) throws IOException, InvalidReadException {
         ArrayList<String> values = new ArrayList<>();
 
         long offset = line * recordSize;
         if(offset >= io.length()){
-            log.info("offset too long");
-            return values;
+            throw new InvalidReadException();
         }
         boolean deletionByte = io.readBoolean();
         if(!deletionByte){
-            log.info("Line is not written");
-            return values;
+            throw new InvalidReadException();
         }
 
         for(String type : tableStructure){
@@ -163,20 +161,12 @@ public class RecordHandler {
                 return b;
             }
             default -> {
-                Pattern pattern = Pattern.compile("char\\((\\d+)\\)");
-                Matcher matcher = pattern.matcher(type);
-                if (matcher.find()) {
-                    long size = Long.parseLong(matcher.group(1));
-                    String formattedStr;
-                    if (size < value.length()) {
-                        formattedStr = value.substring(0, (int) size - 1);
-                    } else {
-                        formattedStr = String.format("%-" + size + "s", value);
-                    }
-                    return formattedStr.getBytes(StandardCharsets.US_ASCII);
-                } else {
+                try {
+                    return RecordStandardizer.formatString(value, type).getBytes(StandardCharsets.US_ASCII);
+                }catch (InvalidTypeException e){
                     return new byte[0];
                 }
+
             }
         }
     }
