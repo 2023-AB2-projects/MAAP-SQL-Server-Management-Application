@@ -15,13 +15,15 @@ public class RecordHandler {
     private final ArrayList<String> tableStructure;
     private final RandomAccessFile io;
 
-    public RecordHandler(String tableName) throws IOException {
+    public RecordHandler(String databaseName, String tableName) throws FileNotFoundException {
         //some json magic here
         //fileLocation = getFileLocation(tableName)
+        //remove this
         String fileLocation = "records/testFile.bin";
 
         //some other json magic here :)
         //tableStructure = getTableStructure(tableName)
+        //remove this
         tableStructure = new ArrayList<>();
         tableStructure.add("int");
         tableStructure.add("float");
@@ -96,8 +98,8 @@ public class RecordHandler {
 
         return values;
     }
-    public long getFileSize() throws IOException {
-        return io.length();
+    public long getRecordCount() throws IOException {
+        return io.length() / recordSize;
     }
     public void close() throws IOException {
         io.close();

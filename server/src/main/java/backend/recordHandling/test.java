@@ -8,16 +8,17 @@ import java.util.ArrayList;
 @Slf4j
 public class test {
     public static void main(String[] args) throws IOException {
-        RecordHandler recordHandler = new RecordHandler("asd");
-        ArrayList<String> asd = new ArrayList<>();
-        asd.add("1");
-        asd.add("1.2");
-        asd.add("20");
-        asd.add("strange");
-        asd.add("true");
-        recordHandler.insert(asd, 0);
-        //System.out.println(recordHandler.readLine(2));
-        //recordHandler.deleteLine(0);
-        recordHandler.close();
+//        RecordHandler recordHandler = new RecordHandler("asd");
+//        ArrayList<String> asd = new ArrayList<>();
+//        asd.add("1");
+//        asd.add("1.2");
+//        asd.add("20");
+//        asd.add("strange");
+//        asd.add("true");
+//        recordHandler.insert(asd, 0);
+//        //System.out.println(recordHandler.readLine(2));
+//        //recordHandler.deleteLine(0);
+//        recordHandler.close();
+
     }
 }
