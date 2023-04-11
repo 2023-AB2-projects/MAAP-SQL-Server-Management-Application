@@ -57,4 +57,8 @@ public class RecordFinder {
         }
         return true;
     }
+
+    public void close() throws IOException {
+        recordHandler.close();
+    }
 }
