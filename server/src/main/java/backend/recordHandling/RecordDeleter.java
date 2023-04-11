@@ -19,6 +19,7 @@ public class RecordDeleter {
         recordHandler.deleteLine(line);
 
         // addLineToDeletedLines(line)
+        // remove entry from index file
     }
 
     public void close() throws IOException {

@@ -11,14 +11,10 @@ public class RecordInserter {
         this.databaseName = databaseName;
         this.tableName = tableName;
         recordHandler = new RecordHandler(databaseName, tableName);
-
     }
 
     public void insert(ArrayList<String> values) throws IOException {
-        //check if values fit structure
-
-        ArrayList<Integer> emptyLines; //= getEmptyLines(databaseName, tableName)
-
+//        ArrayList<Integer> emptyLines = getEmptyLines(databaseName, tableName);
 //        if(emptyLines.size() != 0){
 //            recordHandler.insert(values, emptyLines.get(0));
 //            removeEmptyLine(databaseName, tableName, emptyLines.ger(0));

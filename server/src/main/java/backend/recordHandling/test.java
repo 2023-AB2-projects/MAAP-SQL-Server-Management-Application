@@ -11,17 +11,17 @@ import java.util.ArrayList;
 public class test {
     public static void main(String[] args) throws IOException, InvalidReadException, RecordNotFoundException {
         RecordInserter recordInserter = new RecordInserter("asd", "asd");
-        ArrayList<String> asd = new ArrayList<>();
+        ArrayList<String> record = new ArrayList<>();
         ArrayList<String> key = new ArrayList<>();
-        asd.add("2");
+        record.add("2");
         key.add("2");
-        asd.add("1.2");
-        asd.add("20");
-        asd.add("monkey");
+        record.add("1.2");
+        record.add("20");
+        record.add("monkey");
         key.add("monkey");
-        asd.add("true");
+        record.add("true");
 
-        //recordInserter.insert(asd);
+        //recordInserter.insert(record);
 
         RecordHandler recordHandler = new RecordHandler("asd", "asd");
         RecordDeleter recordDeleter = new RecordDeleter("asd", "asd");
