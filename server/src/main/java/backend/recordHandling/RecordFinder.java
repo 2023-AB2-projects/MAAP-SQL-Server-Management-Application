@@ -10,18 +10,23 @@ import java.util.ArrayList;
 public class RecordFinder {
     private RecordHandler recordHandler;
     private ArrayList<Integer> keyColumnIndexes;
+    private ArrayList<String> keyColumnTypes;
     public RecordFinder(String databaseName, String tableName) throws FileNotFoundException {
         recordHandler = new RecordHandler(databaseName, tableName);
         keyColumnIndexes = new ArrayList<>();
-
+        keyColumnTypes = new ArrayList<>();
         // ArrayList<String> keyColumnNames, columnNames;
         // keyColumnNames = getPrimaryKey(databaseName, tableName)
         // columnNames = getColumnNames(databaseName, tableName)
         // keyColumnIndexes = getIndexesToKeyColumns(keyColumnNames, columnNames)
+        // keyColumnTypes = getPrimaryKetColumnTypes
 
         // remove later
         keyColumnIndexes.add(0);
-        keyColumnIndexes.add(1);
+        keyColumnIndexes.add(3);
+        keyColumnTypes.add("int");
+        keyColumnTypes.add("char(10)");
+
     }
     public int findByPrimaryKey(ArrayList<String> keyValues) throws RecordNotFoundException, IOException {
         // check if index exists on primaryKey
@@ -50,8 +55,9 @@ public class RecordFinder {
         }
     }
     private boolean matchesPrimaryKey(ArrayList<String> record, ArrayList<String> keyValues){
-        for(int i = 0; i < keyValues.size(); i++){
-            if(!keyValues.get(i).equals(record.get(keyColumnIndexes.get(i)))){
+        ArrayList<String> standardizedKeyValues = RecordStandardizer.standardizeValues(keyValues, keyColumnTypes);
+        for(int i = 0; i < standardizedKeyValues.size(); i++){
+            if(!standardizedKeyValues.get(i).equals(record.get(keyColumnIndexes.get(i)))){
                 return false;
             }
         }

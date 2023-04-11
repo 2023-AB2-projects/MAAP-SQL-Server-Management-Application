@@ -16,20 +16,26 @@ public class test {
         asd.add("2");
         key.add("2");
         asd.add("1.2");
-        key.add("1.2");
         asd.add("20");
         asd.add("monkey");
+        key.add("monkey");
         asd.add("true");
 
-        recordInserter.insert(asd);
+        //recordInserter.insert(asd);
 
         RecordHandler recordHandler = new RecordHandler("asd", "asd");
-        RecordFinder recordFinder = new RecordFinder("asd", "Asd");
-        System.out.println(recordFinder.findByPrimaryKey(key));
-        System.out.println(recordHandler.readLine(0));
+        RecordDeleter recordDeleter = new RecordDeleter("asd", "asd");
 
-        recordFinder.close();
+
+        try {
+            recordDeleter.deleteByPrimaryKey(key);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+
         recordInserter.close();
         recordHandler.close();
+        recordDeleter.close();
     }
 }

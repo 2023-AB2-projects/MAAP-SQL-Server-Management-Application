@@ -78,11 +78,12 @@ public class RecordHandler {
     }
     public ArrayList<String> readLine(int line) throws IOException, InvalidReadException {
         ArrayList<String> values = new ArrayList<>();
-
         long offset = line * recordSize;
         if(offset >= io.length()){
             throw new InvalidReadException();
         }
+
+        io.seek(offset);
         boolean deletionByte = io.readBoolean();
         if(!deletionByte){
             throw new InvalidReadException();

@@ -11,11 +11,14 @@ public class RecordDeleter {
     private RecordFinder recordFinder;
     public RecordDeleter(String databaseName, String tableName) throws FileNotFoundException {
         recordHandler = new RecordHandler(databaseName, tableName);
+        recordFinder = new RecordFinder(databaseName, tableName);
     }
 
     public void deleteByPrimaryKey(ArrayList<String> keyValues) throws RecordNotFoundException, IOException {
         int line = recordFinder.findByPrimaryKey(keyValues);
         recordHandler.deleteLine(line);
+
+        // addLineToDeletedLines(line)
     }
 
     public void close() throws IOException {
