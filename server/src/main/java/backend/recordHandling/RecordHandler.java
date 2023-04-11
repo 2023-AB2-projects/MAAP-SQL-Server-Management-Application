@@ -57,7 +57,23 @@ public class RecordHandler {
             io.write(toBytes(tableStructure.get(i), values.get(i)));
         }
     }
+    public void deleteLine(int line) throws IOException {
+        long offset = line * recordSize;
 
+        if(offset >= io.length()){
+            log.info("offset too long");
+        }
+
+        io.seek(offset);
+        boolean deletionByte = io.readBoolean();
+        if(!deletionByte){
+            log.info("Line is not written");
+            return;
+        }
+
+        io.seek(offset);
+        io.writeBoolean(false);
+    }
     public ArrayList<String> readLine(int line) throws IOException {
         ArrayList<String> values = new ArrayList<>();
 
@@ -80,7 +96,9 @@ public class RecordHandler {
 
         return values;
     }
-
+    public long getFileSize() throws IOException {
+        return io.length();
+    }
     public void close() throws IOException {
         io.close();
     }

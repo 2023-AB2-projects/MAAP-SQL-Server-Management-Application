@@ -15,8 +15,9 @@ public class test {
         asd.add("20");
         asd.add("strange");
         asd.add("true");
-        //recordHandler.insert(asd, 0);
-        System.out.println(recordHandler.readLine(2));
+        recordHandler.insert(asd, 0);
+        //System.out.println(recordHandler.readLine(2));
+        //recordHandler.deleteLine(0);
         recordHandler.close();
     }
 }
