@@ -1,20 +1,35 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package frontend.visual_designers;
+
+import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
 
 /**
  *
  * @author lorin
  */
 public class VisualInsertDesigner extends javax.swing.JPanel {
+    private final int DEFAULT_ROW_COUNT = 10;
 
-    /**
-     * Creates new form VisualQueryDesigner
-     */
+    // References
+    private final DefaultTableModel tableModel;
+
     public VisualInsertDesigner() {
         initComponents();
+
+        // Init table model
+        this.tableModel = new DefaultTableModel();
+        this.insertTable.setModel(this.tableModel);
+
+        this.setColumnsAndRowCount(new ArrayList<>(){{
+            add("Elso");
+            add("Masodik");
+            add("Harmadik");
+        }}, DEFAULT_ROW_COUNT);
+    }
+
+    private void setColumnsAndRowCount(ArrayList<String> columnNames, int rowCount) {
+        this.tableModel.setColumnIdentifiers(columnNames.toArray());
+        this.tableModel.setRowCount(rowCount);
     }
 
     /**
@@ -44,6 +59,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
         splitInsertPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         insertTable.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        insertTable.setForeground(new java.awt.Color(255, 51, 0));
         insertTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -55,6 +71,9 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        insertTable.setInheritsPopupMenu(true);
+        insertTable.setName(""); // NOI18N
+        insertTable.setShowGrid(true);
         tableScrollPanel.setViewportView(insertTable);
 
         splitInsertPanel.setTopComponent(tableScrollPanel);
