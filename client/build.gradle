@@ -7,7 +7,6 @@ plugins {
 // apply from: '../lint.gradle'
 
 application {
-//    mainClass = "frontend3.ClientFrame"
     mainClass = "control.ClientController"
 }
 
