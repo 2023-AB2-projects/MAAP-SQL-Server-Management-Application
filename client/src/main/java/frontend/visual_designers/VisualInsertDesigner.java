@@ -28,13 +28,14 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
 
         generateCodeButton = new javax.swing.JButton();
         tabelNameLabel = new javax.swing.JLabel();
-        tableNameField = new javax.swing.JTextField();
         splitInsertPanel = new javax.swing.JSplitPane();
         tableScrollPanel = new javax.swing.JScrollPane();
         insertTable = new javax.swing.JTable();
         generatedCodeScrollPanel = new javax.swing.JScrollPane();
         generatedCodeTextArea = new javax.swing.JTextArea();
+        tableSelectComboBox = new javax.swing.JComboBox<>();
 
+        generateCodeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         generateCodeButton.setText("Generate Code");
 
         tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -42,6 +43,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
 
         splitInsertPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
+        insertTable.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         insertTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -59,10 +61,14 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
 
         generatedCodeTextArea.setEditable(false);
         generatedCodeTextArea.setColumns(20);
+        generatedCodeTextArea.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         generatedCodeTextArea.setRows(5);
         generatedCodeScrollPanel.setViewportView(generatedCodeTextArea);
 
         splitInsertPanel.setRightComponent(generatedCodeScrollPanel);
+
+        tableSelectComboBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        tableSelectComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "table_1", "table_2", "table_3", "table_4" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -72,11 +78,11 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tableNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 359, Short.MAX_VALUE)
+                .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(generateCodeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addComponent(splitInsertPanel, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(splitInsertPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 822, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -84,10 +90,11 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(generateCodeButton)
-                    .addComponent(tabelNameLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tableNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(splitInsertPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 860, Short.MAX_VALUE))
+                .addComponent(splitInsertPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -99,7 +106,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
     private javax.swing.JTable insertTable;
     private javax.swing.JSplitPane splitInsertPanel;
     private javax.swing.JLabel tabelNameLabel;
-    private javax.swing.JTextField tableNameField;
     private javax.swing.JScrollPane tableScrollPanel;
+    private javax.swing.JComboBox<String> tableSelectComboBox;
     // End of variables declaration//GEN-END:variables
 }

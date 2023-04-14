@@ -20,12 +20,12 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="tabelNameLabel" min="-2" pref="87" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="tableNameField" min="-2" pref="223" max="-2" attributes="0"/>
-              <EmptySpace pref="359" max="32767" attributes="0"/>
+              <Component id="tableSelectComboBox" min="-2" pref="150" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
               <Component id="generateCodeButton" min="-2" pref="135" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
-          <Component id="splitInsertPanel" alignment="1" max="32767" attributes="0"/>
+          <Component id="splitInsertPanel" alignment="1" pref="822" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -34,11 +34,13 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="generateCodeButton" min="-2" max="-2" attributes="0"/>
-                  <Component id="tabelNameLabel" alignment="1" min="-2" pref="27" max="-2" attributes="0"/>
-                  <Component id="tableNameField" alignment="0" min="-2" pref="27" max="-2" attributes="0"/>
+                  <Group type="103" alignment="1" groupAlignment="3" attributes="0">
+                      <Component id="tabelNameLabel" alignment="3" min="-2" pref="27" max="-2" attributes="0"/>
+                      <Component id="tableSelectComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="splitInsertPanel" pref="860" max="32767" attributes="0"/>
+              <Component id="splitInsertPanel" pref="856" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -46,6 +48,9 @@
   <SubComponents>
     <Component class="javax.swing.JButton" name="generateCodeButton">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Generate Code"/>
       </Properties>
     </Component>
@@ -56,8 +61,6 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Table Name:"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tableNameField">
     </Component>
     <Container class="javax.swing.JSplitPane" name="splitInsertPanel">
       <Properties>
@@ -80,6 +83,9 @@
           <SubComponents>
             <Component class="javax.swing.JTable" name="insertTable">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Segoe UI" size="14" style="0"/>
+                </Property>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                   <Table columnCount="4" rowCount="4">
                     <Column editable="true" title="Title 1" type="java.lang.Object"/>
@@ -108,6 +114,9 @@
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="columns" type="int" value="20"/>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Segoe UI" size="14" style="0"/>
+                </Property>
                 <Property name="rows" type="int" value="5"/>
               </Properties>
             </Component>
@@ -115,5 +124,23 @@
         </Container>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JComboBox" name="tableSelectComboBox">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="4">
+            <StringItem index="0" value="table_1"/>
+            <StringItem index="1" value="table_2"/>
+            <StringItem index="2" value="table_3"/>
+            <StringItem index="3" value="table_4"/>
+          </StringArray>
+        </Property>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+      </AuxValues>
+    </Component>
   </SubComponents>
 </Form>
