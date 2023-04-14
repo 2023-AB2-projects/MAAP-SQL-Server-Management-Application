@@ -8,17 +8,21 @@ import java.util.ArrayList;
  * @author lorin
  */
 public class VisualInsertDesigner extends javax.swing.JPanel {
-    private final int DEFAULT_ROW_COUNT = 10;
+    // Constants
+    private final int DEFAULT_ROW_COUNT = 15;
 
-    // References
+    // Logic
     private final DefaultTableModel tableModel;
+    private final ArrayList<String> tableValues;
 
     public VisualInsertDesigner() {
         initComponents();
 
-        // Init table model
+        // Init table model and other variables
         this.tableModel = new DefaultTableModel();
         this.insertTable.setModel(this.tableModel);
+
+        this.tableValues = new ArrayList<>();
 
         this.setColumnsAndRowCount(new ArrayList<>(){{
             add("Elso");
@@ -30,6 +34,57 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
     private void setColumnsAndRowCount(ArrayList<String> columnNames, int rowCount) {
         this.tableModel.setColumnIdentifiers(columnNames.toArray());
         this.tableModel.setRowCount(rowCount);
+    }
+
+    private void updateValuesList() {
+        // Clear current values
+        this.tableValues.clear();
+
+        // Iterate over the data in the table
+        for(int rowCount = 0; rowCount < this.insertTable.getRowCount(); ++rowCount) {
+            // Iterate over the columns and check if the row is full
+            boolean rowIsFull = true;
+            for(int columnCount = 0; columnCount < this.insertTable.getColumnCount(); ++columnCount) {
+                if(this.insertTable.getValueAt(rowCount, columnCount) == null) {
+                    rowIsFull = false;
+                }
+            }
+
+            // We will only put in the data where all the rows are full
+            if(!rowIsFull) break;
+
+            for(int columnCount = 0; columnCount < this.insertTable.getColumnCount(); ++columnCount) {
+                // Add values to list (after conversion)
+                this.tableValues.add((String) this.insertTable.getValueAt(rowCount, columnCount));
+            }
+        }
+    }
+
+    private String generateInsertCommand(String tableName) {
+        StringBuilder commandBuilder = new StringBuilder("INSERT INTO " + tableName + "\nVALUES ");
+
+        // Every 'columnCount' go to new line
+        int columnCount = this.insertTable.getColumnCount();
+        int rowCount = 0, counter = 0;
+        for(final String value : this.tableValues) {
+            // Add value according to where it is in the table
+            if (counter % columnCount == 0) {
+                // First in row case
+                if(rowCount != 0) commandBuilder.append(",\n             ");
+                commandBuilder.append("(").append(value);
+            } else if(counter % columnCount == columnCount - 1) {
+                // Last in row case
+                commandBuilder.append(", ").append(value).append(")");
+                rowCount++;         // Increase row count
+            } else {
+                // In row case
+                commandBuilder.append(", ").append(value);
+            }
+
+            counter++;              // Update counter
+        }
+
+        return commandBuilder.toString();
     }
 
     /**
@@ -52,6 +107,11 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
 
         generateCodeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         generateCodeButton.setText("Generate Code");
+        generateCodeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                generateCodeButtonMousePressed(evt);
+            }
+        });
 
         tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tabelNameLabel.setText("Table Name:");
@@ -59,7 +119,6 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
         splitInsertPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         insertTable.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        insertTable.setForeground(new java.awt.Color(255, 51, 0));
         insertTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -116,6 +175,16 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
                 .addComponent(splitInsertPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void generateCodeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generateCodeButtonMousePressed
+        // Update the arraylist that stores all the table values
+        this.updateValuesList();
+
+        // Now turn this into an SQL insert command and set command output text area
+        String tableName = (String) this.tableSelectComboBox.getSelectedItem();
+        this.generatedCodeTextArea.setText(this.generateInsertCommand(tableName));
+
+    }//GEN-LAST:event_generateCodeButtonMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
