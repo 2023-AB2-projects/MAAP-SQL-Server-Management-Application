@@ -8,8 +8,11 @@ import java.util.ArrayList;
  * @author lorin
  */
 public class VisualInsertDesigner extends javax.swing.JPanel {
+    // References
+
     // Constants
-    private final int DEFAULT_ROW_COUNT = 15;
+    private final int DEFAULT_ROW_COUNT = 3;
+    private final int MAX_ROW_COUNT = 20;
 
     // Logic
     private final DefaultTableModel tableModel;
@@ -104,6 +107,9 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
         generatedCodeScrollPanel = new javax.swing.JScrollPane();
         generatedCodeTextArea = new javax.swing.JTextArea();
         tableSelectComboBox = new javax.swing.JComboBox<>();
+        minusRowButton = new javax.swing.JButton();
+        plusRowButton = new javax.swing.JButton();
+        executeButton = new javax.swing.JButton();
 
         generateCodeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         generateCodeButton.setText("Generate Code");
@@ -148,6 +154,30 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
         tableSelectComboBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tableSelectComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "table_1", "table_2", "table_3", "table_4" }));
 
+        minusRowButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        minusRowButton.setText("-");
+        minusRowButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                minusRowButtonMousePressed(evt);
+            }
+        });
+
+        plusRowButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        plusRowButton.setText("+");
+        plusRowButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                plusRowButtonMousePressed(evt);
+            }
+        });
+
+        executeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        executeButton.setText("Execute");
+        executeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                executeButtonMousePressed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -157,7 +187,13 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
                 .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(minusRowButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(plusRowButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(executeButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(generateCodeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addComponent(splitInsertPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 822, Short.MAX_VALUE)
@@ -167,10 +203,14 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(generateCodeButton)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(generateCodeButton)
+                        .addComponent(executeButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(minusRowButton)
+                        .addComponent(plusRowButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(splitInsertPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE))
         );
@@ -183,15 +223,32 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
         // Now turn this into an SQL insert command and set command output text area
         String tableName = (String) this.tableSelectComboBox.getSelectedItem();
         this.generatedCodeTextArea.setText(this.generateInsertCommand(tableName));
-
     }//GEN-LAST:event_generateCodeButtonMousePressed
+
+    private void minusRowButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minusRowButtonMousePressed
+        if(this.insertTable.getRowCount() > 1) this.tableModel.setRowCount(this.insertTable.getRowCount() - 1);
+    }//GEN-LAST:event_minusRowButtonMousePressed
+
+    private void plusRowButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_plusRowButtonMousePressed
+        if(this.insertTable.getRowCount() < MAX_ROW_COUNT) this.tableModel.setRowCount(this.insertTable.getRowCount() + 1);
+    }//GEN-LAST:event_plusRowButtonMousePressed
+
+    private void executeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_executeButtonMousePressed
+        // Same as generate code button
+        this.generateCodeButtonMousePressed(null);
+
+
+    }//GEN-LAST:event_executeButtonMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton executeButton;
     private javax.swing.JButton generateCodeButton;
     private javax.swing.JScrollPane generatedCodeScrollPanel;
     private javax.swing.JTextArea generatedCodeTextArea;
     private javax.swing.JTable insertTable;
+    private javax.swing.JButton minusRowButton;
+    private javax.swing.JButton plusRowButton;
     private javax.swing.JSplitPane splitInsertPanel;
     private javax.swing.JLabel tabelNameLabel;
     private javax.swing.JScrollPane tableScrollPanel;
