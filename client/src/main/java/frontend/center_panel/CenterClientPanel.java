@@ -10,6 +10,7 @@ public class CenterClientPanel extends javax.swing.JPanel {
 
         // Set references
         this.commandInputOutputPanel1.setCenterClientPanel(this);
+        this.visualInsertDesignerPanel.setCenterClientPanel(this);
     }
     
     /**
@@ -90,6 +91,10 @@ public class CenterClientPanel extends javax.swing.JPanel {
         this.commandPanel1.setClientController(clientController);
     }
 
+    public void setCurrentPane(int index) {
+        int maxIndex = this.clientTabbedPane.getComponentCount();
+        if(index >= 0 && index < maxIndex) this.clientTabbedPane.setSelectedIndex(index);
+    }
     /* Getters */
     public String getInputAreaText() { return this.commandInputOutputPanel1.getInputAreaText(); }
 

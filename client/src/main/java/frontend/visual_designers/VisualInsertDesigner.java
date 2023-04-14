@@ -1,5 +1,8 @@
 package frontend.visual_designers;
 
+import frontend.center_panel.CenterClientPanel;
+import lombok.Setter;
+
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 
@@ -9,6 +12,8 @@ import java.util.ArrayList;
  */
 public class VisualInsertDesigner extends javax.swing.JPanel {
     // References
+    @Setter
+    private CenterClientPanel centerClientPanel;
 
     // Constants
     private final int DEFAULT_ROW_COUNT = 3;
@@ -121,6 +126,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
 
         tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tabelNameLabel.setText("Table Name:");
+        tabelNameLabel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
         splitInsertPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
@@ -136,6 +142,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        insertTable.setGridColor(new java.awt.Color(90, 90, 90));
         insertTable.setInheritsPopupMenu(true);
         insertTable.setName(""); // NOI18N
         insertTable.setShowGrid(true);
@@ -153,6 +160,11 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
 
         tableSelectComboBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tableSelectComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "table_1", "table_2", "table_3", "table_4" }));
+        tableSelectComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tableSelectComboBoxActionPerformed(evt);
+            }
+        });
 
         minusRowButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         minusRowButton.setText("-");
@@ -184,7 +196,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -234,11 +246,23 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
     }//GEN-LAST:event_plusRowButtonMousePressed
 
     private void executeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_executeButtonMousePressed
-        // Same as generate code button
-        this.generateCodeButtonMousePressed(null);
+        // Update the arraylist that stores all the table values
+        this.updateValuesList();
 
+        // Now turn this into an SQL insert command and set command output text area
+        String tableName = (String) this.tableSelectComboBox.getSelectedItem();
+        String command = this.generateInsertCommand(tableName);
+        this.generatedCodeTextArea.setText(command);
 
+        // Set command in SQL execution area
+        this.centerClientPanel.setInputTextAreaString(command);
+        // Switch to that pane
+        this.centerClientPanel.setCurrentPane(0);
     }//GEN-LAST:event_executeButtonMousePressed
+
+    private void tableSelectComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tableSelectComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tableSelectComboBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
