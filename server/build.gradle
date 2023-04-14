@@ -8,7 +8,7 @@ plugins {
 
 application {
     mainClass = "test.backend.Main"
-  //  mainClass = "test.backend.TestDatabaseActions"
+//    mainClass = "test.backend.TestDatabaseActions"
 }
 
 repositories {
