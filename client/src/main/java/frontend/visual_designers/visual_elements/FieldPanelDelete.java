@@ -20,21 +20,21 @@ public class FieldPanelDelete extends javax.swing.JPanel {
             return "";      // Signal that no base condition has been set -> We will ignore this attribute
         }
         // Add first condition to conditions
-        conditions += "(" + this.getColumnName() + this.conditionField1.getText() + ")";
+        conditions += "(" + this.getColumnName() + " " + this.conditionField1.getText() + ")";
 
         // Check if second condition is non-empty
         if(this.conditionField2.getText().equals("")) {
             return conditions;
         }
         // Add second condition to conditions
-        conditions += " OR (" + this.getColumnName() + this.conditionField2.getText() + ")";
+        conditions += " OR (" + this.getColumnName() + " " + this.conditionField2.getText() + ")";
 
         // Check if third condition is non-empty
         if(this.conditionField3.getText().equals("")) {
             return conditions;
         }
         // Add third condition to conditions
-        conditions += " OR (" + this.getColumnName() + this.conditionField3.getText() + ")";
+        conditions += " OR (" + this.getColumnName() + " " + this.conditionField3.getText() + ")";
 
         return conditions;
     }
@@ -89,11 +89,14 @@ public class FieldPanelDelete extends javax.swing.JPanel {
         columnField.setFocusable(false);
 
         conditionField1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        conditionField1.setEnabled(false);
 
         conditionField3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        conditionField3.setEnabled(false);
         conditionField3.setMinimumSize(new java.awt.Dimension(68, 38));
 
         conditionField2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        conditionField2.setEnabled(false);
         conditionField2.setMinimumSize(new java.awt.Dimension(68, 38));
 
         divider5.setBackground(new java.awt.Color(102, 102, 102));
@@ -151,6 +154,10 @@ public class FieldPanelDelete extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void selectedRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectedRadioButtonActionPerformed
+        boolean selected = this.selectedRadioButton.isSelected();
+        this.conditionField1.setEnabled(selected);
+        this.conditionField2.setEnabled(selected);
+        this.conditionField3.setEnabled(selected);
     }//GEN-LAST:event_selectedRadioButtonActionPerformed
 
 

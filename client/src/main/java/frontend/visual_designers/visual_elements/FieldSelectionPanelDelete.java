@@ -1,5 +1,7 @@
 package frontend.visual_designers.visual_elements;
 
+import frontend.visual_designers.VisualDeleteDesigner;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
@@ -7,6 +9,10 @@ import java.util.ArrayList;
 
 @Slf4j
 public class FieldSelectionPanelDelete extends javax.swing.JPanel {
+    // References
+    @Setter
+    private VisualDeleteDesigner visualDeleteDesigner;
+
     // Logic
     private final ArrayList<FieldPanelDelete> fieldPanels;
 
@@ -49,12 +55,66 @@ public class FieldSelectionPanelDelete extends javax.swing.JPanel {
             this.selectionPanel.add(panel);
         }
 
+        // Update divider location
+        this.visualDeleteDesigner.setDividerLocation((length + 1) * 50);
+
         // Revalidate and redraw panels
         this.selectionPanel.revalidate();
         this.selectionPanel.repaint();
 
         this.revalidate();
         this.repaint();
+    }
+
+    /* Getter */
+    public String getSQLDeleteCommand() {
+        // The table name we are working with
+        String tableName = this.visualDeleteDesigner.getSelectedTable();
+
+        // Command
+        StringBuilder commandBuilder = new StringBuilder("DELETE FROM " + tableName);
+
+        // Count how many panels have non-empty conditions
+        int nonEmptyCount = 0;
+        for(final FieldPanelDelete fieldPanel : this.fieldPanels) {
+            if(fieldPanel.isSelected()) nonEmptyCount++;
+        }
+
+        // Add WHERE clause if needed
+        if(nonEmptyCount > 0) {
+            commandBuilder.append("\nWHERE ");
+
+            // Logic
+            int conditionsUsed = 0;
+            for(final FieldPanelDelete fieldPanel : this.fieldPanels) {
+                boolean isEmpty = fieldPanel.getConditions().equals("");
+                if(fieldPanel.isSelected() && !isEmpty) {
+                    // Special case -> If there's only one condition (don't add extra parenthesis)
+                    if(!fieldPanel.getConditions().contains("OR")) {
+                        // If it doesn't contain or don't add parenthesis
+                        // Append to string builder the conditions
+                        if (conditionsUsed == 0) {
+                            commandBuilder.append(fieldPanel.getConditions());
+                        } else {
+                            commandBuilder.append(" AND\n").append(fieldPanel.getConditions());
+                        }
+                    } else {
+                        // Append to string builder the conditions
+                        if (conditionsUsed == 0) {
+                            commandBuilder.append("(").append(fieldPanel.getConditions()).append(")");
+                        } else {
+                            commandBuilder.append(" AND\n(").append(fieldPanel.getConditions()).append(")");
+                        }
+                    }
+
+                    // Update conditions used
+                    conditionsUsed++;
+                }
+            }
+        }
+
+
+        return commandBuilder.toString();
     }
 
     /**

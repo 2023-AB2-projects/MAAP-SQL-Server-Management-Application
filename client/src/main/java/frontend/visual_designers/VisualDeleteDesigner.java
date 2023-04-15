@@ -7,7 +7,18 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
 
     public VisualDeleteDesigner() {
         initComponents();
+
+        // Set references
+        this.selectionPanel.setVisualDeleteDesigner(this);
     }
+
+    /* Setters */
+    public void setDividerLocation(int location) {
+        if (location > 0 && location < this.splitPanel.getMinimumSize().getHeight()) this.splitPanel.setDividerLocation(location);
+    }
+
+    /* Getters */
+    public String getSelectedTable() { return (String) this.tableSelectComboBox.getSelectedItem(); }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -21,10 +32,11 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         tabelNameLabel = new javax.swing.JLabel();
         tableSelectComboBox = new javax.swing.JComboBox<>();
         generateCodeButton = new javax.swing.JButton();
-        jSplitPane1 = new javax.swing.JSplitPane();
+        splitPanel = new javax.swing.JSplitPane();
         generatedCodeScrollPanel = new javax.swing.JScrollPane();
         generatedCodeTextArea = new javax.swing.JTextArea();
         selectionPanel = new frontend.visual_designers.visual_elements.FieldSelectionPanelDelete();
+        jButton1 = new javax.swing.JButton();
 
         tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tabelNameLabel.setText("Table Name:");
@@ -51,9 +63,9 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
             }
         });
 
-        jSplitPane1.setDividerLocation(408);
-        jSplitPane1.setDividerSize(3);
-        jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        splitPanel.setDividerLocation(408);
+        splitPanel.setDividerSize(3);
+        splitPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         generatedCodeTextArea.setEditable(false);
         generatedCodeTextArea.setColumns(20);
@@ -61,8 +73,15 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         generatedCodeTextArea.setRows(5);
         generatedCodeScrollPanel.setViewportView(generatedCodeTextArea);
 
-        jSplitPane1.setRightComponent(generatedCodeScrollPanel);
-        jSplitPane1.setLeftComponent(selectionPanel);
+        splitPanel.setRightComponent(generatedCodeScrollPanel);
+        splitPanel.setLeftComponent(selectionPanel);
+
+        jButton1.setText("Test");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -74,9 +93,11 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(43, 43, 43)
                 .addComponent(generateCodeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addComponent(jSplitPane1)
+            .addComponent(splitPanel)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -85,9 +106,10 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(generateCodeButton)
                     .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 815, Short.MAX_VALUE))
+                .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 815, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -96,7 +118,21 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
     }//GEN-LAST:event_tableSelectComboBoxActionPerformed
 
     private void generateCodeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generateCodeButtonMousePressed
-        if(test == 0) {
+        // Get SQL command
+        String command = this.selectionPanel.getSQLDeleteCommand();
+
+        // Set output text area
+        this.generatedCodeTextArea.setText(command);
+    }//GEN-LAST:event_generateCodeButtonMousePressed
+
+    private void generateCodeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateCodeButtonActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_generateCodeButtonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+           if(test == 0) {
             // Temp
             this.selectionPanel.setFieldPanelData(new ArrayList<>(){{
                                                       add("Column_name1");
@@ -117,7 +153,7 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
                         add("Table_name2");
                         add("Table_name3");
                     }});
-        } else {
+        } else if(test == 2) {
             this.selectionPanel.setFieldPanelData(new ArrayList<>(){{
                                                       add("Column_name1");
                                                       add("Column_name2");
@@ -130,22 +166,41 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
                         add("Table_name3");
                         add("Table_name4");
                     }});
+        } else {
+                    this.selectionPanel.setFieldPanelData(new ArrayList<>(){{
+                                                              add("Column_name1");
+                                                              add("Column_name2");
+                                                              add("Column_name3");
+                                                              add("Column_name4");
+                                                              add("Column_name4");
+                                                              add("Column_name4");
+                                                              add("Column_name4");
+                                                              add("Column_name4");
+                                                              add("Column_name4");
+                                                          }},
+                            new ArrayList<>(){{
+                                add("Table_name1");
+                                add("Table_name2");
+                                add("Table_name3");
+                                add("Table_name4");
+                                add("Table_name4");
+                                add("Table_name4");
+                                add("Table_name4");
+                                add("Table_name4");
+                                add("Table_name4");
+                            }});
         }
         test++;
-    }//GEN-LAST:event_generateCodeButtonMousePressed
-
-    private void generateCodeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateCodeButtonActionPerformed
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_generateCodeButtonActionPerformed
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton generateCodeButton;
     private javax.swing.JScrollPane generatedCodeScrollPanel;
     private javax.swing.JTextArea generatedCodeTextArea;
-    private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JButton jButton1;
     private frontend.visual_designers.visual_elements.FieldSelectionPanelDelete selectionPanel;
+    private javax.swing.JSplitPane splitPanel;
     private javax.swing.JLabel tabelNameLabel;
     private javax.swing.JComboBox<String> tableSelectComboBox;
     // End of variables declaration//GEN-END:variables
