@@ -23,8 +23,8 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="selectedRadioButton" min="-2" pref="27" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+              <Component id="selectedRadioButton" min="-2" pref="36" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="divider5" min="-2" pref="3" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="columnField" min="-2" pref="180" max="-2" attributes="0"/>
@@ -58,13 +58,11 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="divider5" alignment="0" max="32767" attributes="0"/>
                           <Component id="conditionField1" alignment="0" max="32767" attributes="0"/>
-                          <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                              <Component id="divider1" alignment="1" max="32767" attributes="0"/>
-                              <Component id="divider2" alignment="1" max="32767" attributes="0"/>
-                              <Component id="divider3" alignment="0" max="32767" attributes="0"/>
-                              <Component id="columnField" alignment="0" pref="38" max="32767" attributes="0"/>
-                              <Component id="conditionField2" alignment="0" max="32767" attributes="0"/>
-                          </Group>
+                          <Component id="divider1" alignment="1" max="32767" attributes="0"/>
+                          <Component id="divider2" alignment="1" max="32767" attributes="0"/>
+                          <Component id="divider3" alignment="0" max="32767" attributes="0"/>
+                          <Component id="columnField" alignment="0" pref="38" max="32767" attributes="0"/>
+                          <Component id="conditionField2" alignment="0" max="32767" attributes="0"/>
                           <Component id="tableField" alignment="0" max="32767" attributes="0"/>
                           <Component id="conditionField3" alignment="1" max="32767" attributes="0"/>
                           <Component id="divider4" alignment="1" max="32767" attributes="0"/>

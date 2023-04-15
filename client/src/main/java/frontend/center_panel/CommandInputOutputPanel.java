@@ -28,6 +28,8 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
         setMinimumSize(new java.awt.Dimension(900, 1000));
         setPreferredSize(new java.awt.Dimension(900, 900));
 
+        commandSplitPane.setDividerLocation(450);
+        commandSplitPane.setDividerSize(3);
         commandSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         inputArea.setColumns(20);

@@ -29,10 +29,10 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         tabelNameLabel = new javax.swing.JLabel();
         tableSelectComboBox = new javax.swing.JComboBox<>();
         generateCodeButton = new javax.swing.JButton();
+        jSplitPane1 = new javax.swing.JSplitPane();
         generatedCodeScrollPanel = new javax.swing.JScrollPane();
         generatedCodeTextArea = new javax.swing.JTextArea();
-        fieldPanelDelete2 = new frontend.visual_designers.visual_elements.fieldPanelDelete();
-        fieldPanelDelete1 = new frontend.visual_designers.visual_elements.fieldPanelDelete();
+        fieldSelectionPanelDelete2 = new frontend.visual_designers.visual_elements.fieldSelectionPanelDelete();
 
         tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tabelNameLabel.setText("Table Name:");
@@ -59,32 +59,32 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
             }
         });
 
+        jSplitPane1.setDividerLocation(408);
+        jSplitPane1.setDividerSize(3);
+        jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+
         generatedCodeTextArea.setEditable(false);
         generatedCodeTextArea.setColumns(20);
         generatedCodeTextArea.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         generatedCodeTextArea.setRows(5);
         generatedCodeScrollPanel.setViewportView(generatedCodeTextArea);
 
+        jSplitPane1.setRightComponent(generatedCodeScrollPanel);
+        jSplitPane1.setLeftComponent(fieldSelectionPanelDelete2);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(generatedCodeScrollPanel, javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(generateCodeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(fieldPanelDelete2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(fieldPanelDelete1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(generateCodeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addComponent(jSplitPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -95,11 +95,7 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
                     .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fieldPanelDelete2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1, 1, 1)
-                .addComponent(fieldPanelDelete1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 292, Short.MAX_VALUE)
-                .addComponent(generatedCodeScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 422, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 815, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -116,11 +112,11 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private frontend.visual_designers.visual_elements.fieldPanelDelete fieldPanelDelete1;
-    private frontend.visual_designers.visual_elements.fieldPanelDelete fieldPanelDelete2;
+    private frontend.visual_designers.visual_elements.fieldSelectionPanelDelete fieldSelectionPanelDelete2;
     private javax.swing.JButton generateCodeButton;
     private javax.swing.JScrollPane generatedCodeScrollPanel;
     private javax.swing.JTextArea generatedCodeTextArea;
+    private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JLabel tabelNameLabel;
     private javax.swing.JComboBox<String> tableSelectComboBox;
     // End of variables declaration//GEN-END:variables
