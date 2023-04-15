@@ -128,6 +128,8 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
         tabelNameLabel.setText("Table Name:");
         tabelNameLabel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
+        splitInsertPanel.setDividerLocation(300);
+        splitInsertPanel.setDividerSize(3);
         splitInsertPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         insertTable.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N

@@ -83,6 +83,8 @@
     </Component>
     <Container class="javax.swing.JSplitPane" name="splitInsertPanel">
       <Properties>
+        <Property name="dividerLocation" type="int" value="300"/>
+        <Property name="dividerSize" type="int" value="3"/>
         <Property name="orientation" type="int" value="0"/>
       </Properties>
 
