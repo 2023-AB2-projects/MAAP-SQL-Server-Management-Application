@@ -26,19 +26,76 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        tabelNameLabel = new javax.swing.JLabel();
+        tableSelectComboBox = new javax.swing.JComboBox<>();
+        generateCodeButton = new javax.swing.JButton();
+
+        tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        tabelNameLabel.setText("Table Name:");
+        tabelNameLabel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+
+        tableSelectComboBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        tableSelectComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "table_1", "table_2", "table_3", "table_4" }));
+        tableSelectComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tableSelectComboBoxActionPerformed(evt);
+            }
+        });
+
+        generateCodeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        generateCodeButton.setText("Generate Code");
+        generateCodeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                generateCodeButtonMousePressed(evt);
+            }
+        });
+        generateCodeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generateCodeButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 822, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(438, 438, 438)
+                .addComponent(generateCodeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 632, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(generateCodeButton)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(595, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void tableSelectComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tableSelectComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tableSelectComboBoxActionPerformed
+
+    private void generateCodeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generateCodeButtonMousePressed
+    }//GEN-LAST:event_generateCodeButtonMousePressed
+
+    private void generateCodeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateCodeButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_generateCodeButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton generateCodeButton;
+    private javax.swing.JLabel tabelNameLabel;
+    private javax.swing.JComboBox<String> tableSelectComboBox;
     // End of variables declaration//GEN-END:variables
 }
