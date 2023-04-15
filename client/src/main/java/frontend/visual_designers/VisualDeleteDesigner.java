@@ -1,8 +1,15 @@
 package frontend.visual_designers;
 
+import frontend.center_panel.CenterClientPanel;
+import lombok.Setter;
+
 import java.util.ArrayList;
 
 public class VisualDeleteDesigner extends javax.swing.JPanel {
+    // References
+    @Setter
+    private CenterClientPanel centerClientPanel;
+
     private int test = 0;
 
     public VisualDeleteDesigner() {
@@ -37,6 +44,7 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         generatedCodeTextArea = new javax.swing.JTextArea();
         selectionPanel = new frontend.visual_designers.visual_elements.FieldSelectionPanelDelete();
         jButton1 = new javax.swing.JButton();
+        executeButton = new javax.swing.JButton();
 
         tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tabelNameLabel.setText("Table Name:");
@@ -74,12 +82,27 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         generatedCodeScrollPanel.setViewportView(generatedCodeTextArea);
 
         splitPanel.setRightComponent(generatedCodeScrollPanel);
+
+        selectionPanel.setPreferredSize(new java.awt.Dimension(1000, 450));
         splitPanel.setLeftComponent(selectionPanel);
 
         jButton1.setText("Test");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
+            }
+        });
+
+        executeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        executeButton.setText("Execute");
+        executeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                executeButtonMousePressed(evt);
+            }
+        });
+        executeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                executeButtonActionPerformed(evt);
             }
         });
 
@@ -92,9 +115,11 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
                 .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 287, Short.MAX_VALUE)
                 .addComponent(jButton1)
-                .addGap(43, 43, 43)
+                .addGap(183, 183, 183)
+                .addComponent(executeButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(generateCodeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addComponent(splitPanel)
@@ -107,7 +132,8 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
                     .addComponent(generateCodeButton)
                     .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(executeButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 815, Short.MAX_VALUE))
         );
@@ -193,8 +219,23 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         test++;
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void executeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_executeButtonMousePressed
+        // Get SQL command
+        String command = this.selectionPanel.getSQLDeleteCommand();
+
+        // Set command in SQL execution area
+        this.centerClientPanel.setInputTextAreaString(command);
+        // Switch to that pane
+        this.centerClientPanel.setCurrentPane(0);
+    }//GEN-LAST:event_executeButtonMousePressed
+
+    private void executeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_executeButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton executeButton;
     private javax.swing.JButton generateCodeButton;
     private javax.swing.JScrollPane generatedCodeScrollPanel;
     private javax.swing.JTextArea generatedCodeTextArea;

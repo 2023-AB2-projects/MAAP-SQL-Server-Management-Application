@@ -82,11 +82,21 @@ public class FieldPanelDelete extends javax.swing.JPanel {
         tableField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tableField.setText("table_name");
         tableField.setFocusable(false);
+        tableField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tableFieldActionPerformed(evt);
+            }
+        });
 
         columnField.setEditable(false);
         columnField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         columnField.setText("column_name");
         columnField.setFocusable(false);
+        columnField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                columnFieldActionPerformed(evt);
+            }
+        });
 
         conditionField1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         conditionField1.setEnabled(false);
@@ -94,10 +104,20 @@ public class FieldPanelDelete extends javax.swing.JPanel {
         conditionField3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         conditionField3.setEnabled(false);
         conditionField3.setMinimumSize(new java.awt.Dimension(68, 38));
+        conditionField3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                conditionField3ActionPerformed(evt);
+            }
+        });
 
         conditionField2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         conditionField2.setEnabled(false);
         conditionField2.setMinimumSize(new java.awt.Dimension(68, 38));
+        conditionField2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                conditionField2ActionPerformed(evt);
+            }
+        });
 
         divider5.setBackground(new java.awt.Color(102, 102, 102));
         divider5.setOpaque(true);
@@ -109,25 +129,25 @@ public class FieldPanelDelete extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(selectedRadioButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(2, 2, 2)
                 .addComponent(divider5, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(columnField, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(columnField, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(4, 4, 4)
                 .addComponent(divider1, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(4, 4, 4)
                 .addComponent(tableField, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(4, 4, 4)
                 .addComponent(divider2, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(4, 4, 4)
                 .addComponent(conditionField1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(4, 4, 4)
                 .addComponent(divider3, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(4, 4, 4)
                 .addComponent(conditionField2, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(4, 4, 4)
                 .addComponent(divider4, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(4, 4, 4)
                 .addComponent(conditionField3, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5))
         );
@@ -159,6 +179,22 @@ public class FieldPanelDelete extends javax.swing.JPanel {
         this.conditionField2.setEnabled(selected);
         this.conditionField3.setEnabled(selected);
     }//GEN-LAST:event_selectedRadioButtonActionPerformed
+
+    private void columnFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_columnFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_columnFieldActionPerformed
+
+    private void tableFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tableFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tableFieldActionPerformed
+
+    private void conditionField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_conditionField2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_conditionField2ActionPerformed
+
+    private void conditionField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_conditionField3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_conditionField3ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
