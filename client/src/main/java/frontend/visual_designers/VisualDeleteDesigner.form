@@ -123,7 +123,7 @@
             </Component>
           </SubComponents>
         </Container>
-        <Component class="frontend.visual_designers.visual_elements.fieldSelectionPanelDelete" name="fieldSelectionPanelDelete2">
+        <Component class="frontend.visual_designers.visual_elements.FieldSelectionPanelDelete" name="selectionPanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
               <JSplitPaneConstraints position="left"/>

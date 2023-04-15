@@ -1,8 +1,8 @@
 package frontend.visual_designers.visual_elements;
 
-public class fieldPanelDelete extends javax.swing.JPanel {
+public class FieldPanelDelete extends javax.swing.JPanel {
 
-    public fieldPanelDelete() {
+    public FieldPanelDelete() {
         initComponents();
     }
 

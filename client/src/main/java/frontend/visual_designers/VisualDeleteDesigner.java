@@ -1,18 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package frontend.visual_designers;
 
-/**
- *
- * @author lorin
- */
-public class VisualDeleteDesigner extends javax.swing.JPanel {
+import java.util.ArrayList;
 
-    /**
-     * Creates new form VisualQueryDesigner
-     */
+public class VisualDeleteDesigner extends javax.swing.JPanel {
+    private int test = 0;
+
     public VisualDeleteDesigner() {
         initComponents();
     }
@@ -32,7 +24,7 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         jSplitPane1 = new javax.swing.JSplitPane();
         generatedCodeScrollPanel = new javax.swing.JScrollPane();
         generatedCodeTextArea = new javax.swing.JTextArea();
-        fieldSelectionPanelDelete2 = new frontend.visual_designers.visual_elements.fieldSelectionPanelDelete();
+        selectionPanel = new frontend.visual_designers.visual_elements.FieldSelectionPanelDelete();
 
         tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tabelNameLabel.setText("Table Name:");
@@ -70,7 +62,7 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         generatedCodeScrollPanel.setViewportView(generatedCodeTextArea);
 
         jSplitPane1.setRightComponent(generatedCodeScrollPanel);
-        jSplitPane1.setLeftComponent(fieldSelectionPanelDelete2);
+        jSplitPane1.setLeftComponent(selectionPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -104,19 +96,56 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
     }//GEN-LAST:event_tableSelectComboBoxActionPerformed
 
     private void generateCodeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generateCodeButtonMousePressed
+        if(test == 0) {
+            // Temp
+            this.selectionPanel.setFieldPanelData(new ArrayList<>(){{
+                                                      add("Column_name1");
+                                                      add("Column_name2");
+                                                  }},
+                    new ArrayList<>(){{
+                        add("Table_name1");
+                        add("Table_name2");
+                    }});
+        } else if(test == 1) {
+            this.selectionPanel.setFieldPanelData(new ArrayList<>(){{
+                                                      add("Column_name1");
+                                                      add("Column_name2");
+                                                      add("Column_name3");
+                                                  }},
+                    new ArrayList<>(){{
+                        add("Table_name1");
+                        add("Table_name2");
+                        add("Table_name3");
+                    }});
+        } else {
+            this.selectionPanel.setFieldPanelData(new ArrayList<>(){{
+                                                      add("Column_name1");
+                                                      add("Column_name2");
+                                                      add("Column_name3");
+                                                      add("Column_name4");
+                                                  }},
+                    new ArrayList<>(){{
+                        add("Table_name1");
+                        add("Table_name2");
+                        add("Table_name3");
+                        add("Table_name4");
+                    }});
+        }
+        test++;
     }//GEN-LAST:event_generateCodeButtonMousePressed
 
     private void generateCodeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateCodeButtonActionPerformed
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_generateCodeButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private frontend.visual_designers.visual_elements.fieldSelectionPanelDelete fieldSelectionPanelDelete2;
     private javax.swing.JButton generateCodeButton;
     private javax.swing.JScrollPane generatedCodeScrollPanel;
     private javax.swing.JTextArea generatedCodeTextArea;
     private javax.swing.JSplitPane jSplitPane1;
+    private frontend.visual_designers.visual_elements.FieldSelectionPanelDelete selectionPanel;
     private javax.swing.JLabel tabelNameLabel;
     private javax.swing.JComboBox<String> tableSelectComboBox;
     // End of variables declaration//GEN-END:variables
