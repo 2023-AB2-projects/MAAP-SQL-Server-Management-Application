@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -208,9 +209,17 @@ public class ServerController {
                 serverConnection.send(getResponse());
 
 
-            }catch (NullPointerException e){
+            } catch (NullPointerException e){
                 serverConnection.stop();
                 log.info("Client Disconnected");
+                serverConnection.start();
+                serverConnection.send(databaseNames.toString());
+                log.info("Client Connected");
+            } catch (SocketException socketException) {
+                // Handled socket exception
+                // Usually happens when client disconnects -> Used to crash server
+                serverConnection.stop();
+                log.info("Client Disconnected - Reason: Socket Error (Most likely disconnected)");
                 serverConnection.start();
                 serverConnection.send(databaseNames.toString());
                 log.info("Client Connected");
