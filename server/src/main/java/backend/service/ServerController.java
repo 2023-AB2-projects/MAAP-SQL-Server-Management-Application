@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -164,6 +165,16 @@ public class ServerController {
         this.objectMapper.writeValue(catalog, rootNode);
     }
 
+    private String databaseNamesSimple() {
+        StringBuilder simple = new StringBuilder();
+        for(int i = 0; i < this.databaseNames.size(); ++i) {
+            // Add database names with ',' separation
+            simple.append(this.databaseNames.get(i));
+            if(i != this.databaseNames.size() - 1) simple.append(",");
+        }
+        return simple.toString();
+    }
+
     public void start(int port) throws IOException {
 
         ServerConnection serverConnection = new ServerConnection(port);
@@ -172,7 +183,7 @@ public class ServerController {
         log.info("Client Connected");
         String shutdownMsg = "SHUTDOWN";
 
-        serverConnection.send(databaseNames.toString());
+        serverConnection.send(this.databaseNamesSimple());
 
         while(true){
             try{
@@ -192,15 +203,23 @@ public class ServerController {
                 commandHandler.processCommand();
 
                 // update available databases for every command
-                serverConnection.send(databaseNames.toString());
+                serverConnection.send(this.databaseNamesSimple());
 
                 // build a response string, send to client
                 serverConnection.send(getResponse());
 
 
-            }catch (NullPointerException e){
+            } catch (NullPointerException e){
                 serverConnection.stop();
                 log.info("Client Disconnected");
+                serverConnection.start();
+                serverConnection.send(databaseNames.toString());
+                log.info("Client Connected");
+            } catch (SocketException socketException) {
+                // Handled socket exception
+                // Usually happens when client disconnects -> Used to crash server
+                serverConnection.stop();
+                log.info("Client Disconnected - Reason: Socket Error (Most likely disconnected)");
                 serverConnection.start();
                 serverConnection.send(databaseNames.toString());
                 log.info("Client Connected");

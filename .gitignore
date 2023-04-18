@@ -3,6 +3,9 @@
 .idea
 .vscode
 
+# Class files
+bin/**/*.class
+
 bin
 **/bin/
 !src/**/bin/
@@ -16,3 +19,4 @@ build
 **/references
 
 client/bin/main/control/*
+

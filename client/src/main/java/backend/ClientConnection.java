@@ -16,21 +16,4 @@ public class ClientConnection extends Connection{
         clientSocket.close();
 
     }
-
-//    public static void main(String[] args) throws IOException{
-//        ClientConnection clientConnection = new ClientConnection();
-//        clientConnection.startConnection("127.0.0.1", 4444);
-//
-//        String msg;
-//        for (int i = 0; i < 10; i++) {
-//            clientConnection.send(Integer.toString(i));
-//            msg = clientConnection.receive();
-//            System.out.println(msg);
-//        }
-//
-//        clientConnection.send("SHUTDOWN");
-//        msg = clientConnection.receive();
-//        System.out.println(msg);
-//        clientConnection.stopConnection();
-//    }
 }
