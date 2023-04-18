@@ -64,14 +64,31 @@ public class CenterClientPanel extends javax.swing.JPanel {
     public void setClientController(ClientController clientController) {
         this.clientController = clientController;
         this.commandPanel1.setClientController(clientController);
+        this.visualInsertDesignerPanel.setClientController(clientController);
+        this.visualDeleteDesignerPanel.setClientController(clientController);
+        this.update();
     }
 
     public void setCurrentPane(int index) {
         int maxIndex = this.clientTabbedPane.getComponentCount();
-        if(index >= 0 && index < maxIndex) this.clientTabbedPane.setSelectedIndex(index);
+        if(index >= 0 && index < maxIndex) {
+            if(index == 1) {
+                this.visualInsertDesignerPanel.updateTables();
+            } else if(index == 2) {
+                this.visualDeleteDesignerPanel.updateTables();
+            }
+            this.clientTabbedPane.setSelectedIndex(index);
+        }
     }
+
     /* Getters */
     public String getInputAreaText() { return this.commandInputOutputPanel1.getInputAreaText(); }
+
+    /* Others */
+    public void update() {
+        this.visualInsertDesignerPanel.updateTables();
+        this.visualDeleteDesignerPanel.updateTables();
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane clientTabbedPane;

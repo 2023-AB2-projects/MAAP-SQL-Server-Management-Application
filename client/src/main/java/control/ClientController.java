@@ -21,6 +21,9 @@ public class ClientController {
 
     // Other variables
     private LookAndFeel lookAndFeel;
+
+    // Data/Logic
+    private String CatalogJSON; //TODO
     private String currentDatabaseName;
     private ArrayList<String> databaseNames;
 
@@ -137,6 +140,29 @@ public class ClientController {
 
     /* Getters */
     public String getInputTextAreaString() { return this.clientFrame.getInputTextAreaString(); }
+
+    public ArrayList<String> getCurrentDatabaseTables() {
+        //TODO
+        return new ArrayList<>(){{
+            add("temp_table");
+            add("temp_table2");
+        }};
+    }
+
+    public ArrayList<String> getTableAttributes(String tableName) {
+        // Check if table name exists
+        if(this.getCurrentDatabaseTables().contains(tableName)) {
+            //TODO
+            return new ArrayList<>(){{
+                add("temp_attribute");
+                add("temp_attribute2");
+            }};
+        } else {
+            return new ArrayList<>(){{
+                add("Err: Table not found");
+            }};
+        }
+    }
 
     /* Main */
     public static void main(String[] args) {

@@ -1,14 +1,19 @@
 package frontend.visual_designers;
 
+import control.ClientController;
 import frontend.center_panel.CenterClientPanel;
 import lombok.Setter;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 public class VisualDeleteDesigner extends javax.swing.JPanel {
     // References
     @Setter
     private CenterClientPanel centerClientPanel;
+
+    @Setter
+    private ClientController clientController;
 
     private int test = 0;
 
@@ -22,6 +27,16 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
     /* Setters */
     public void setDividerLocation(int location) {
         if (location > 0 && location < this.splitPanel.getMinimumSize().getHeight()) this.splitPanel.setDividerLocation(location);
+    }
+
+    public void updateTables() {
+        ArrayList<String> tableNames = this.clientController.getCurrentDatabaseTables();
+
+        // Update items in combo box
+        this.tableSelectComboBox.removeAllItems();
+        for(final String tableName : tableNames) {
+            this.tableSelectComboBox.addItem(tableName);
+        }
     }
 
     /* Getters */
@@ -140,7 +155,18 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tableSelectComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tableSelectComboBoxActionPerformed
-        // TODO add your handling code here:
+        // Get selected index
+        String tableName = (String) this.tableSelectComboBox.getSelectedItem();
+        System.out.println("Selected table=" + tableName);
+
+        // Update selection panel
+        ArrayList<String> columnNames = this.clientController.getTableAttributes(tableName);
+        ArrayList<String> tableNames = new ArrayList<>();
+        for(int i = 0; i < columnNames.size(); ++i) {
+            tableNames.add(tableName);
+        }
+        System.out.println("Columns: " + columnNames);
+        this.selectionPanel.setFieldPanelData(columnNames, tableNames);
     }//GEN-LAST:event_tableSelectComboBoxActionPerformed
 
     private void generateCodeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generateCodeButtonMousePressed
