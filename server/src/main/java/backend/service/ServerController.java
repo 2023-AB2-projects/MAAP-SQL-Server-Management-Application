@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -185,6 +186,7 @@ public class ServerController {
 
         serverConnection.send(this.databaseNamesSimple());
 
+        // communication
         while(true){
             try{
                 String msg = serverConnection.receive();
@@ -203,10 +205,17 @@ public class ServerController {
                 commandHandler.processCommand();
 
                 // update available databases for every command
-                serverConnection.send(this.databaseNamesSimple());
+                // serverConnection.send(this.databaseNamesSimple());
 
                 // build a response string, send to client
+                // serverConnection.send(getResponse());
+
+                // send the servers response message to the client
                 serverConnection.send(getResponse());
+                // send the catalog json file to client to update GUI
+                byte[] jsonData = Files.readAllBytes(Config.getCatalogFile().toPath());
+                String catalogJsonString = objectMapper.readValue(jsonData, String.class);
+                serverConnection.send(catalogJsonString);
 
 
             } catch (NullPointerException e){
