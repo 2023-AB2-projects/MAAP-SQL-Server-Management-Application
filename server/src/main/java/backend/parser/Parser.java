@@ -10,6 +10,7 @@ import backend.databaseModels.*;
 import backend.exceptions.InvalidSQLCommand;
 import backend.exceptions.SQLParseException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.iterators.PeekingIterator;
 
 @Slf4j
 public class Parser {
@@ -85,29 +86,36 @@ public class Parser {
      */
     public DatabaseAction parseInput(String input, String databaseName) throws SQLParseException {
         List<String> tokens = tokenize(input);
+        PeekingIterator<String> it = new PeekingIterator<>(tokens.iterator());
 
         try {
-            if (tokens.get(0).equals("create")) {
-                if (tokens.get(1).equals("database")) {
-                    return parseCreateDatabase(tokens);
-                }
-                if (tokens.get(1).equals("table")) {
-                    return parseCreateTable(tokens, databaseName);
-                }
+            String firstWord = it.next();
+
+            if (firstWord.equals(("use"))) {
+                return parseUseDatabase(tokens, it);
             }
-            if (tokens.get(0).equals("drop")) {
-                if (tokens.get(1).equals("database")) {
-                    return parseDropDatabase(tokens);
+            else {
+                String secondWord = it.next();
+
+                if (firstWord.equals("create")) {
+                    if (secondWord.equals("database")) {
+                        return parseCreateDatabase(tokens, it);
+                    }
+                    if (secondWord.equals("table")) {
+                        return parseCreateTable(tokens, databaseName, it);
+                    }
                 }
-                if (tokens.get(1).equals("table")) {
-                    return parseDropTable(tokens, databaseName);
+                if (firstWord.equals("drop")) {
+                    if (secondWord.equals("database")) {
+                        return parseDropDatabase(tokens, it);
+                    }
+                    if (secondWord.equals("table")) {
+                        return parseDropTable(tokens, databaseName, it);
+                    }
                 }
-            }
-            if (tokens.get(0).equals(("use"))) {
-                return parseUseDatabase(tokens);
             }
         }
-        catch (IndexOutOfBoundsException e) {
+        catch (NoSuchElementException e) {
             throw(new SQLParseException("Missing token after `" + tokens.get(tokens.size() - 1) + "`"));
         }
 
@@ -119,19 +127,22 @@ public class Parser {
      * @return
      * @throws SQLParseException
      */
-    private UseDatabaseAction parseUseDatabase(List<String> tokens) throws SQLParseException{
-        if (tokens.size() < 2) {
+    private UseDatabaseAction parseUseDatabase(List<String> tokens, PeekingIterator<String> it) throws SQLParseException{
+        if (!it.hasNext()) {
             throw(new SQLParseException("Missing token for database name"));
         }
-        if (tokens.size() > 2) {
-            throw(new SQLParseException("Too many tokens after `" + tokens.get(1) + "`"));
+            
+        String databaseName = it.next();
+        
+        if (it.hasNext()) {
+            throw(new SQLParseException("Too many tokens after database name: `" + databaseName + "`"));
         }
 
-        String databaseName = tokens.get(1);
         checkName(databaseName, NAME_TYPE.DATABASE);
         
         DatabaseModel databaseModel = new DatabaseModel(databaseName, new ArrayList<>());
         UseDatabaseAction uda = new UseDatabaseAction(databaseModel);
+
         return uda;
     }
 
@@ -140,27 +151,29 @@ public class Parser {
      * @return
      * @throws SQLParseException
      */
-    private CreateDatabaseAction parseCreateDatabase(List<String> tokens) throws SQLParseException {
-        if (tokens.size() < 2) {
+    private CreateDatabaseAction parseCreateDatabase(List<String> tokens, PeekingIterator<String> it) throws SQLParseException {
+        if (!it.hasNext()) {
             throw(new SQLParseException("Missing token for database name"));
         }
-        if (tokens.size() > 3) {
-            throw(new SQLParseException("Too many tokens after `" + tokens.get(2) + "`"));
+
+        String databaseName = it.next();
+
+        if (it.hasNext()) {
+            throw(new SQLParseException("Too many tokens after database name: `" + databaseName + "`"));
         }
 
-        String databaseName = tokens.get(2);
         checkName(databaseName, NAME_TYPE.DATABASE);
         
         DatabaseModel databaseModel = new DatabaseModel(databaseName, new ArrayList<>());
-
         CreateDatabaseAction cda = new CreateDatabaseAction(databaseModel);
+
         return cda;
     }
 
     private enum CreateTableStates {
         GET_TABLE_NAME, GET_FIELD_NAME_TYPE, GET_FIELD_CONSTRAINTS, COMMA, CLOSING_BRACKET
     }
-    private CreateTableAction parseCreateTable(List<String> tokens, String databaseName) throws SQLParseException {
+    private CreateTableAction parseCreateTable(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
         int i = 2;
 
         // Used for constructing multiple AttributeModels
@@ -172,7 +185,7 @@ public class Parser {
         String                      tableName           = null;
         String                      fileName            = "";
         int                         rowLength           = 0;
-        ArrayList<FieldModel>   attributes          = new ArrayList<FieldModel>();
+        ArrayList<FieldModel>       attributes          = new ArrayList<FieldModel>();
         PrimaryKeyModel             primaryKey          = null;
         ArrayList<ForeignKeyModel>  foreignKeys         = new ArrayList<ForeignKeyModel>();
         ArrayList<String>           uniqueAttributes    = new ArrayList<String>();
@@ -183,65 +196,64 @@ public class Parser {
 
         CreateTableStates state = CreateTableStates.GET_TABLE_NAME;
         try {
-            while (i < tokens.size()) {
+            while (it.hasNext()) {
                 switch (state) {
                 case GET_TABLE_NAME:
                     // check if table name is valid
-                    if (checkName(tokens.get(i), NAME_TYPE.TABLE)) {
-                        tableName = tokens.get(i);
+                    if (checkName(it.peek(), NAME_TYPE.TABLE)) {
+                        tableName = it.next();
                     }
 
                     // if no more tokens after table name we can exit (table is specified without any fields, constraints)
-                    if (i+1 >= tokens.size()) {
-                        i+=1;
+                    if (!it.hasNext()) {
                         break;
                     }
                     // if there are more tokens but next one isn't a '(', invalid instruction
-                    else if (!tokens.get(i+1).equals("(")) {
+                    else if (!it.next().equals("(")) {
                         throw(new SQLParseException("Expected '(' after table name"));
                     }
                     // else skip the '(' and start reading fields
                     else {
-                        i += 2;
                         state = CreateTableStates.GET_FIELD_NAME_TYPE;
                     }
                     break;
 
                 case GET_FIELD_NAME_TYPE:
                     // read field name and type - mandatory
-                    fieldName = tokens.get(i);
-                    fieldType = tokens.get(i+1);
-                    i += 2;
+                    fieldName = it.next();
+                    fieldType = it.next();
+
                     checkName(fieldName, NAME_TYPE.COLUMN);
 
                     if (!isValidFieldType(fieldType)) {
-                        throw(new SQLParseException("Invalid field type :" + fieldType));
+                        throw(new SQLParseException("Invalid field type: \"" + fieldType + "\""));
                     }
                     // char field type needs to have following structure: (  num  )
                     if (fieldType.equals("char")) {
-                        try {
-                            fieldLength = Integer.parseInt(tokens.get(i+1));
-                        } catch (NumberFormatException e) {
-                            throw(new SQLParseException("Invalid length of char: " + tokens.get(i+1)));
-                        }
-                        if (!tokens.get(i).equals("(") || !tokens.get(i+2).equals(")")) {
+                        if (!it.next().equals("(")) {
                             throw(new SQLParseException("Expected length of char attribute in form -> (len)"));
                         }
-                        i += 3;
+                        
+                        String len = it.next();
+                        try {
+                            fieldLength = Integer.parseInt(len);
+                        } catch (NumberFormatException e) {
+                            throw(new SQLParseException("Invalid length of char: " + len));
+                        }
+
+                        if (!it.next().equals(")")) {
+                            throw(new SQLParseException("Expected length of char attribute in form -> (len)"));
+                        }
                     }
                     else {
                         fieldLength = 0;
                     }
 
-                    if (tokens.get(i).equals(")")) {
-                        /*if (i+1 >= tokens.size()) {
-                            throw(new SQLParseException("Too many tokens after closing ')'"));
-                        }*/
-                        // done
+                    if (it.peek().equals(")")) {
                         log.info("Finished reading all fields");
                         state = CreateTableStates.CLOSING_BRACKET;
                     }
-                    else if (tokens.get(i).equals(",")) {
+                    else if (it.peek().equals(",")) {
                         log.info("Finished reading field");
                         state = CreateTableStates.COMMA;
                     }
@@ -251,30 +263,36 @@ public class Parser {
                     break;
                     
                 case GET_FIELD_CONSTRAINTS:
-                    if (tokens.get(i).equals("unique")) {
+                    if (it.peek().equals("unique")) {
                         uniqueAttributes.add(fieldName);
-                        i += 1;
+                        it.next();
                         break;
                     }
-                    else if (tokens.get(i).equals("primary")) {
-                        if (tokens.get(i+1).equals("key")) {
+                    else if (it.peek().equals("primary")) {
+                        it.next();
+
+                        if (it.next().equals("key")) {
                             primaryKeyAttributes.add(fieldName);
                         }
                         else {
                             throw(new SQLParseException("Unknown constraint " + tokens.get(i) + " " + tokens.get(i+1)));
                         }
-                        i += 2;
                         break;
                     }
-                    else if (tokens.get(i).equals("foreign")) {
-                        if (!tokens.get(i+1).equals("key") || !tokens.get(i+2).equals("references")) {
-                            throw(new SQLParseException("Unknown constraint " + tokens.get(i) + " " + tokens.get(i+1)));
-                        }
-                        i += 3;
+                    else if (it.peek().equals("foreign")) {
+                        it.next();
 
-                        String foreignTable = tokens.get(i);
-                        String foreignField = tokens.get(i+2);
-                        if (!tokens.get(i+1).equals("(") || !tokens.get(i+3).equals(")")) {
+                        String tokenFirst = it.next();
+                        String tokenSecond = it.next();
+                        if (!tokenFirst.equals("key") || !tokenSecond.equals("references")) {
+                            throw(new SQLParseException("Unknown constraint, expected (foreign key references), instead of " + tokens + " " + tokens.get(i+1)));
+                        }
+
+                        String foreignTable = it.next();
+                        String openingBracket = it.next();
+                        String foreignField = it.next();
+                        String closingBracket = it.next();
+                        if (!openingBracket.equals("(") || !closingBracket.equals(")")) {
                             throw(new SQLParseException("Expected following structure for foreign key constraint -> foreign key references table(field)"));
                         }
 
@@ -283,29 +301,35 @@ public class Parser {
                             add(finalFieldName);
                         }});
                         foreignKeys.add(fkm);
-                        i += 4;
                         break;
                     }
-                    else if (tokens.get(i).equals(",")) {
+                    else if (it.peek().equals(",")) {
                         state = CreateTableStates.COMMA;
                         break;
                     }
-                    else {
-                        state = CreateTableStates.GET_FIELD_CONSTRAINTS;
+                    else if (it.peek().equals(")")) {
+                        state = CreateTableStates.CLOSING_BRACKET;
+                        break;
                     }
-                    
+                    else {
+                        throw new SQLParseException("Undefined constraint: " + it.peek());
+                    }                    
                     //break;
 
                 case COMMA, CLOSING_BRACKET:
                     attributes.add(new FieldModel(fieldName, fieldType, fieldLength, false, false));
-                    i++;
-                    log.info("Added field " + fieldName + ", " + fieldType);
+                    it.next();
+                    //log.info("Added field " + fieldName + ", " + fieldType);
 
                     fieldName = "";
                     fieldType = "";
                     fieldLength = 0;
 
                     if (state == CreateTableStates.CLOSING_BRACKET) {
+                        if (it.hasNext()) {
+                            throw new SQLParseException("Expected end of input after closing bracket");
+                        }
+
                         break;
                     }
                     else if (state == CreateTableStates.COMMA) {
@@ -318,7 +342,7 @@ public class Parser {
                 }
             }
         } 
-        catch (IndexOutOfBoundsException e) {
+        catch (NoSuchElementException e) {
             throw (new SQLParseException("Unexpected end of string"));
         }
         
@@ -328,35 +352,40 @@ public class Parser {
         return cta;
     }
 
-    private DropDatabaseAction parseDropDatabase(List<String> tokens) throws SQLParseException {
-        if (tokens.size() < 2) {
+    private DropDatabaseAction parseDropDatabase(List<String> tokens, PeekingIterator<String> it) throws SQLParseException {
+        if (!it.hasNext()) {
             throw(new SQLParseException("Missing token for database name"));
         }
-        if (tokens.size() > 3) {
-            throw(new SQLParseException("Too many tokens after `" + tokens.get(2) + "`"));
+
+        String databaseName = it.next();
+
+        if (it.hasNext()) {
+            throw(new SQLParseException("Too many tokens after database name: `" + databaseName + "`"));
         }
 
-        String databaseName = tokens.get(2);
         checkName(databaseName, NAME_TYPE.DATABASE);
 
         DatabaseModel databaseModel = new DatabaseModel(databaseName, new ArrayList<>());
-
         DropDatabaseAction dda = new DropDatabaseAction(databaseModel);
+
         return dda;
     }    
 
-    private DropTableAction parseDropTable(List<String> tokens, String databaseName) throws SQLParseException {
-        if (tokens.size() < 2) {
+    private DropTableAction parseDropTable(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
+        if (!it.hasNext()) {
             throw(new SQLParseException("Missing token for table name"));
         }
-        if (tokens.size() > 3) {
-            throw(new SQLParseException("Too many tokens after `" + tokens.get(2) + "`"));
+
+        String tableName = it.next();
+
+        if (it.hasNext()) {
+            throw(new SQLParseException("Too many tokens after table name: `" + tableName + "`"));
         }
 
-        String tableName = tokens.get(2);
         checkName(tableName, NAME_TYPE.TABLE);
 
         DropTableAction dta = new DropTableAction(tableName, databaseName);
+
         return dta;
     }  
 
