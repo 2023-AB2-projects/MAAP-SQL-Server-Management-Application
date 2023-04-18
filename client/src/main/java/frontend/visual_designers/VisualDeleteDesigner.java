@@ -144,7 +144,6 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
     private void tableSelectComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tableSelectComboBoxActionPerformed
         // Get selected index
         String tableName = (String) this.tableSelectComboBox.getSelectedItem();
-        System.out.println("Selected table=" + tableName);
 
         // Update selection panel
         ArrayList<String> columnNames = this.clientController.getTableAttributes(tableName);
@@ -152,7 +151,6 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         for(int i = 0; i < columnNames.size(); ++i) {
             tableNames.add(tableName);
         }
-        System.out.println("Columns: " + columnNames);
         this.selectionPanel.setFieldPanelData(columnNames, tableNames);
     }//GEN-LAST:event_tableSelectComboBoxActionPerformed
 

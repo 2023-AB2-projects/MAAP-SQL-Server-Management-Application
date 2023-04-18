@@ -275,11 +275,9 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
 
     private void tableSelectComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tableSelectComboBoxActionPerformed
         String tableName = (String) this.tableSelectComboBox.getSelectedItem();
-        System.out.println("Selected table=" + tableName);
 
         // Update selection panel
         ArrayList<String> columnNames = this.clientController.getTableAttributes(tableName);
-        System.out.println("Columns: " + columnNames);
 
         this.setColumnsAndRowCount(columnNames, this.DEFAULT_ROW_COUNT);
     }//GEN-LAST:event_tableSelectComboBoxActionPerformed
