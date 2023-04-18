@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -183,8 +184,11 @@ public class ServerController {
         log.info("Client Connected");
         String shutdownMsg = "SHUTDOWN";
 
-        serverConnection.send(this.databaseNamesSimple());
+        String jsonText = Files.readString(Config.getCatalogFile().toPath());
+        System.out.println(jsonText);
+        serverConnection.send(jsonText);
 
+        // communication
         while(true){
             try{
                 String msg = serverConnection.receive();
@@ -202,18 +206,22 @@ public class ServerController {
 
                 commandHandler.processCommand();
 
-                // update available databases for every command
-                serverConnection.send(this.databaseNamesSimple());
+                // 1. Send JSON Catalog
+                jsonText = Files.readString(Config.getCatalogFile().toPath());
+                System.out.println(jsonText);
+                serverConnection.send(jsonText);
 
-                // build a response string, send to client
+                // 2. Send message
                 serverConnection.send(getResponse());
-
 
             } catch (NullPointerException e){
                 serverConnection.stop();
                 log.info("Client Disconnected");
                 serverConnection.start();
-                serverConnection.send(databaseNames.toString());
+
+                jsonText = Files.readString(Config.getCatalogFile().toPath());
+                serverConnection.send(jsonText);
+
                 log.info("Client Connected");
             } catch (SocketException socketException) {
                 // Handled socket exception
@@ -221,7 +229,10 @@ public class ServerController {
                 serverConnection.stop();
                 log.info("Client Disconnected - Reason: Socket Error (Most likely disconnected)");
                 serverConnection.start();
-                serverConnection.send(databaseNames.toString());
+
+                jsonText = Files.readString(Config.getCatalogFile().toPath());
+                serverConnection.send(jsonText);
+
                 log.info("Client Connected");
             }
         }
