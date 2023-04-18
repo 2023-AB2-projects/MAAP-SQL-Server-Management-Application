@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RecordStandardizer {
+    // appends string types with spaces
     public static String formatString(String str, String type) throws InvalidTypeException {
         String formattedStr;
         Pattern pattern = Pattern.compile("char\\((\\d+)\\)");
@@ -24,6 +25,7 @@ public class RecordStandardizer {
         return formattedStr;
     }
 
+    // appends all strings types in values with spaces
     public static ArrayList<String> standardizeValues(ArrayList<String> values, ArrayList<String> types) {
         ArrayList<String> standardValues = new ArrayList<>();
         for(int i = 0; i < types.size(); i++){
