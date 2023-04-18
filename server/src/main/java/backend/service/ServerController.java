@@ -184,7 +184,9 @@ public class ServerController {
         log.info("Client Connected");
         String shutdownMsg = "SHUTDOWN";
 
-        serverConnection.send(this.databaseNamesSimple());
+        String jsonText = Files.readString(Config.getCatalogFile().toPath());
+        System.out.println(jsonText);
+        serverConnection.send(jsonText);
 
         // communication
         while(true){
@@ -203,31 +205,23 @@ public class ServerController {
                 setSqlCommand(msg);         // if the client message is a sql command, then execute it
 
                 commandHandler.processCommand();
-                //// METHOD1
-                // update available databases for every command
-                // serverConnection.send(this.databaseNamesSimple());
 
-                // build a response string, send to client
-                // serverConnection.send(getResponse());
-
-                //// METHOD2
-                // send the servers response message to the client
-                // serverConnection.send(getResponse());
-                // send the catalog json file to client to update GUI
-                // String catalogJsonString = objectMapper.readValue(Config.getCatalogFile(), String.class);
-                // System.out.println(catalogJsonString);
-                // serverConnection.send(catalogJsonString);
-
-                serverConnection.send(getResponse());
-                String jsonText = Files.readString(Config.getCatalogFile().toPath());
+                // 1. Send JSON Catalog
+                jsonText = Files.readString(Config.getCatalogFile().toPath());
                 System.out.println(jsonText);
                 serverConnection.send(jsonText);
+
+                // 2. Send message
+                serverConnection.send(getResponse());
 
             } catch (NullPointerException e){
                 serverConnection.stop();
                 log.info("Client Disconnected");
                 serverConnection.start();
-                serverConnection.send(databaseNames.toString());
+
+                jsonText = Files.readString(Config.getCatalogFile().toPath());
+                serverConnection.send(jsonText);
+
                 log.info("Client Connected");
             } catch (SocketException socketException) {
                 // Handled socket exception
@@ -235,7 +229,10 @@ public class ServerController {
                 serverConnection.stop();
                 log.info("Client Disconnected - Reason: Socket Error (Most likely disconnected)");
                 serverConnection.start();
-                serverConnection.send(databaseNames.toString());
+
+                jsonText = Files.readString(Config.getCatalogFile().toPath());
+                serverConnection.send(jsonText);
+
                 log.info("Client Connected");
             }
         }

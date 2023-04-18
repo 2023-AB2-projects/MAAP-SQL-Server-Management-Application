@@ -9,8 +9,10 @@ import backend.databaseActions.dropActions.DropTableAction;
 import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.*;
 import backend.exceptions.databaseActionsExceptions.*;
+import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 @Slf4j
@@ -105,6 +107,12 @@ public class TestDatabaseActions {
         TestDatabaseActions test = new TestDatabaseActions();
 
         test.createPeopleTable();
+        DatabaseAction deleteTable = new DropTableAction("people", "master");
+        try {
+            deleteTable.actionPerform();
+        } catch (Exception e) {
+            System.out.println("nem jo!");
+        }
 
         // CreateTable
 //        test.createCarsTable();

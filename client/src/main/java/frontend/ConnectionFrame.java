@@ -144,8 +144,8 @@ public class ConnectionFrame extends javax.swing.JFrame {
             this.setVisible(false);
 
             this.clientController.sendCommandToServer("USE master");
-            this.clientController.receiveMessageAndPerformAction(MessageModes.setTextArea);
             this.clientController.receiveMessageAndPerformAction(MessageModes.refreshJSONCatalog);
+            this.clientController.receiveMessageAndPerformAction(MessageModes.setTextArea);
 
         } catch (IOException e) {
             //change this later maybe

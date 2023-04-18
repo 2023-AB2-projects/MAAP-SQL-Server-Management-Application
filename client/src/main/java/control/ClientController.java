@@ -136,9 +136,8 @@ public class ClientController {
         this.messageHandler.establishConnection(ip);
 
         // Update current databases list
-        String databasesString = messageHandler.receiveMessage();
-        System.out.println(databasesString);
-//        this.updateCurrentDatabases(databasesString);
+        String databaseJSON = messageHandler.receiveMessage();
+        this.updateJSON(databaseJSON);
     }
 
     public void stopConnection() throws IOException {
@@ -168,6 +167,7 @@ public class ClientController {
 
             switch(mode) {
                 case MessageModes.setTextArea -> {
+                    log.info("SetTextArea mode!");
                     this.setOutputAreaString(response);
 
                     // Check if we need to update current database
@@ -179,6 +179,7 @@ public class ClientController {
                     }
                 }
                 case MessageModes.refreshJSONCatalog -> {
+                    log.info("RefreshCatalog mode!");
                     this.updateJSON(response);
                     this.updateCurrentDatabases();
 
@@ -211,7 +212,6 @@ public class ClientController {
             for(final JsonNode tableNode : this.databaseNode.get("database").get("tables")) {
                 tableNames.add(tableNode.get("table").get("tableName").asText());
             }
-
             return tableNames;
         }
         return new ArrayList<>();
