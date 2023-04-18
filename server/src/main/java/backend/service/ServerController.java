@@ -203,20 +203,25 @@ public class ServerController {
                 setSqlCommand(msg);         // if the client message is a sql command, then execute it
 
                 commandHandler.processCommand();
-
+                //// METHOD1
                 // update available databases for every command
                 // serverConnection.send(this.databaseNamesSimple());
 
                 // build a response string, send to client
                 // serverConnection.send(getResponse());
 
+                //// METHOD2
                 // send the servers response message to the client
-                serverConnection.send(getResponse());
+                // serverConnection.send(getResponse());
                 // send the catalog json file to client to update GUI
-                byte[] jsonData = Files.readAllBytes(Config.getCatalogFile().toPath());
-                String catalogJsonString = objectMapper.readValue(jsonData, String.class);
-                serverConnection.send(catalogJsonString);
+                // String catalogJsonString = objectMapper.readValue(Config.getCatalogFile(), String.class);
+                // System.out.println(catalogJsonString);
+                // serverConnection.send(catalogJsonString);
 
+                serverConnection.send(getResponse());
+                String jsonText = Files.readString(Config.getCatalogFile().toPath());
+                System.out.println(jsonText);
+                serverConnection.send(jsonText);
 
             } catch (NullPointerException e){
                 serverConnection.stop();
