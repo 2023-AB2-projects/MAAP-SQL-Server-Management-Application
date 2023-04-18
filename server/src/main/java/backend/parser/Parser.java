@@ -445,7 +445,6 @@ public class Parser {
                         fieldNames.add(fieldName);
 
                         // if closing bracket, start reading insert values 
-                        String asdasd = it.peek();
                         if (it.peek().equals(")")) {
                             state = InsertIntoStates.CLOSING_BRACKET;
                             break;
@@ -455,13 +454,17 @@ public class Parser {
                             break;
                         } 
                         else {
-                            log.info(asdasd);
                             throw new SQLParseException("Expected comma and another field name, or parenthesis after \"" + fieldName + "\"");
                         }
                     }
                     case GET_VALUES: {
-                        if (!it.next().equals("values")) {
-                            throw new SQLParseException("Expected values(value1, value2, ...)");
+                        // `values` keyword only needed before first values list
+                        if (values.isEmpty()) {
+                            if (!it.peek().equals("values")) {
+                                throw new SQLParseException("Expected values(value1, value2, ...)");
+                            }
+                            // pop `values`
+                            it.next();
                         }
 
                         if (!it.next().equals("(")) {
@@ -487,15 +490,24 @@ public class Parser {
                             break;
                         }
                         else {
-                            log.info(nextToken);
                             throw new SQLParseException("Expected comma and another value, or parenthesis after \"" + value + "\"");
                         }
                     }
                     case CLOSING_BRACKET: {
+                        // pop bracket
                         it.next();
+
                         if (currentValues != null) {
                             values.add(currentValues);
                             currentValues = null;
+                        }
+
+                        if (it.peek().equals(",")) {
+                            if (values.size() == 0) {
+                                throw new SQLParseException("No comma expected between list of names and VALUES()");
+                            }
+                            // pop comma
+                            it.next();
                         }
 
                         if (it.hasNext()) {
