@@ -16,7 +16,7 @@ import java.util.ArrayList;
 @Slf4j
 public class TestDatabaseActions {
     public TableModel createPeopleTableModel() {
-        String tableName = "People", fileName = "PeopleTableFile";
+        String tableName = "people", fileName = "PeopleTableFile";
         int rowLength = 50;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
             add(new FieldModel("id", "int", 0, false, false));
@@ -67,7 +67,7 @@ public class TestDatabaseActions {
 
     public void createCarsTable() {
         // Other table
-        String databaseName = "master", tableName = "Cars", fileName = "CarsTableFile";
+        String databaseName = "master", tableName = "cars", fileName = "CarsTableFile";
         int rowLength = 100;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
             add(new FieldModel("id", "int", 0, false, false));
