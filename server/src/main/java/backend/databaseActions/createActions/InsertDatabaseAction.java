@@ -19,9 +19,7 @@ public class InsertDatabaseAction implements DatabaseAction {
 
     @Override
     public Object actionPerform() throws DatabaseNameAlreadyExists, TableNameAlreadyExists, DatabaseDoesntExist, PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique, TableDoesntExist, IndexAlreadyExists, ForeignKeyFieldNotFound {
-        // the magic happens here...
-        // binaris file kezeles
-        // FIXME
+        
 
         return null;
     }
