@@ -1,5 +1,6 @@
 package frontend.visual_designers;
 
+import control.ClientController;
 import frontend.center_panel.CenterClientPanel;
 import lombok.Setter;
 
@@ -14,6 +15,9 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
     // References
     @Setter
     private CenterClientPanel centerClientPanel;
+
+    @Setter
+    private ClientController clientController;
 
     // Constants
     private final int DEFAULT_ROW_COUNT = 3;
@@ -31,13 +35,20 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
         this.insertTable.setModel(this.tableModel);
 
         this.tableValues = new ArrayList<>();
-
-        this.setColumnsAndRowCount(new ArrayList<>(){{
-            add("Elso");
-            add("Masodik");
-            add("Harmadik");
-        }}, DEFAULT_ROW_COUNT);
     }
+
+    /* Setters */
+    public void updateTables() {
+        ArrayList<String> tableNames = this.clientController.getCurrentDatabaseTables();
+
+        // Update items in combo box
+        this.tableSelectComboBox.removeAllItems();
+        for(final String tableName : tableNames) {
+            this.tableSelectComboBox.addItem(tableName);
+        }
+    }
+
+    /* Logic */
 
     private void setColumnsAndRowCount(ArrayList<String> columnNames, int rowCount) {
         this.tableModel.setColumnIdentifiers(columnNames.toArray());
@@ -263,7 +274,14 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
     }//GEN-LAST:event_executeButtonMousePressed
 
     private void tableSelectComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tableSelectComboBoxActionPerformed
-        // TODO add your handling code here:
+        String tableName = (String) this.tableSelectComboBox.getSelectedItem();
+        System.out.println("Selected table=" + tableName);
+
+        // Update selection panel
+        ArrayList<String> columnNames = this.clientController.getTableAttributes(tableName);
+        System.out.println("Columns: " + columnNames);
+
+        this.setColumnsAndRowCount(columnNames, this.DEFAULT_ROW_COUNT);
     }//GEN-LAST:event_tableSelectComboBoxActionPerformed
 
 

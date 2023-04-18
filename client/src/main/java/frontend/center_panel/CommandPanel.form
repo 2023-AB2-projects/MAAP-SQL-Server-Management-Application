@@ -113,10 +113,11 @@
     <Component class="javax.swing.JComboBox" name="dropDeleteComboBox">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="3">
+          <StringArray count="4">
             <StringItem index="0" value="DROP/DELETE"/>
             <StringItem index="1" value="DROP DATABASE"/>
             <StringItem index="2" value="DROP TABLE"/>
+            <StringItem index="3" value="DELETE FROM"/>
           </StringArray>
         </Property>
         <Property name="toolTipText" type="java.lang.String" value=""/>

@@ -50,7 +50,7 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
-        dropDeleteComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "DROP/DELETE", "DROP DATABASE", "DROP TABLE" }));
+        dropDeleteComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "DROP/DELETE", "DROP DATABASE", "DROP TABLE", "DELETE FROM" }));
         dropDeleteComboBox.setToolTipText("");
         dropDeleteComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -165,6 +165,7 @@ public class CommandPanel extends javax.swing.JPanel {
         switch (this.dropDeleteComboBox.getSelectedIndex()) {
             case 1 -> this.clientController.setInputTextAreaString(new DropDatabaseTemplate().toString());
             case 2 -> this.clientController.setInputTextAreaString(new DropTableTemplate().toString());
+            case 3 -> this.clientController.setInputTextAreaString(new DeleteFromTemplate().toString());
         }
 
         // Reset to basic index
