@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
@@ -118,4 +119,23 @@ public class CatalogManager {
         }
         return pks;
     }
+
+    public static List<String> getPrimaryKeyTypes(String databaseName, String tableName) {
+        ArrayList<String> col_type = (ArrayList<String>) getColumnTypes(databaseName, tableName);
+        ArrayList<String> col_name = (ArrayList<String>) getColumnNames(databaseName, tableName);
+        List<String> key_name = (ArrayList<String>) getPrimaryKeys(databaseName, tableName);
+
+        ArrayList<String> key_type = new ArrayList<>();
+        for(String key : key_name){
+            int index = col_name.indexOf(key);
+            if(index != -1) {
+                key_type.add(col_type.get(index));
+            } else {
+                log.warn("getPrimaryKeyTypes() " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
+            }
+        }
+        return key_type;
+    }
+
+
 }
