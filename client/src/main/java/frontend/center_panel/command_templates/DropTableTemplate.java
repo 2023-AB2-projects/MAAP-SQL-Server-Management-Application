@@ -4,7 +4,7 @@ public class DropTableTemplate {
     @Override
     public String toString() {
         return """
-               DROP TABLE [ IF EXISTS ] table_name
+               DROP TABLE table_name
                """;
     }
 }
