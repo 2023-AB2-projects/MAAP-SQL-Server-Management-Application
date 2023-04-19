@@ -11,36 +11,12 @@ import java.util.ArrayList;
 @Slf4j
 public class test {
     public static void main(String[] args) throws IOException, InvalidReadException, RecordNotFoundException {
-        /*RecordInserter recordInserter = new RecordInserter("asd", "asd");
-        ArrayList<String> record = new ArrayList<>();
-        ArrayList<String> key = new ArrayList<>();
-        record.add("2");
-        key.add("2");
-        record.add("1.2");
-        record.add("20");
-        record.add("monkey");
-        key.add("monkey");
-        record.add("true");
-
-        //recordInserter.insert(record);
-
-        RecordHandler recordHandler = new RecordHandler("asd", "asd");
-        RecordDeleter recordDeleter = new RecordDeleter("asd", "asd");
-
-
-        try {
-            recordDeleter.deleteByPrimaryKey(key);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-
-
-        recordInserter.close();
+        RecordHandler recordHandler = new RecordHandler("master", "cars");
+        ArrayList<String> asd = new ArrayList<>();
+        asd.add("0");
+        asd.add("a");
+        //recordHandler.insert(asd, 0);
+        System.out.println(recordHandler.readLine(0));
         recordHandler.close();
-        recordDeleter.close();*/
-
-        System.out.println(CatalogManager.getColumnNames("master", "cars"));
-        System.out.println(CatalogManager.getColumnTypes("master","cars"));
-        System.out.println(CatalogManager.getPrimaryKeys("master","cars"));
     }
 }

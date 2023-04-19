@@ -2,6 +2,7 @@ package backend.recordHandling;
 
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.InvalidTypeException;
+import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -17,21 +18,9 @@ public class RecordHandler {
     private final ArrayList<String> tableStructure;
     private final RandomAccessFile io;
     public RecordHandler(String databaseName, String tableName) throws FileNotFoundException {
-        //some json magic here
-        //fileLocation = getFileLocation(databaseName, tableName)
-        //remove this
-        //String fileLocation = "records/testFile.bin";
         String fileLocation = System.getProperty("user.dir") + "/src/main/resources/records/testFile.bin";
 
-        //some other json magic here :)
-        //tableStructure = getTableStructure(databaseName, tableName)
-        //remove this
-        tableStructure = new ArrayList<>();
-        tableStructure.add("int");
-        tableStructure.add("float");
-        tableStructure.add("long");
-        tableStructure.add("char(10)");
-        tableStructure.add("bool");
+        tableStructure = (ArrayList<String>) CatalogManager.getColumnTypes(databaseName, tableName);
 
         recordSize = 1;
         for (String type : tableStructure) {

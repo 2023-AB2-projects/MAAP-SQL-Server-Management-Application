@@ -51,12 +51,12 @@ public class CatalogManager {
         ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");
 
         // check if given tablename was found
-        for(final JsonNode tableNode : databaseTables) {
-            if(tableNode.get("table").get("tableName").asText().equals(tableName)) {
+        for (final JsonNode tableNode : databaseTables) {
+            if (tableNode.get("table").get("tableName").asText().equals(tableName)) {
                 return tableNode.get("table");
             }
         }
-        log.error("findTableNode() ->  No table were found with given name" + tableName);
+        log.error("findTableNode() ->  No table were found with given name " + tableName);
         return null;
     }
 
@@ -97,7 +97,7 @@ public class CatalogManager {
 
             // Check if a database exists with the given database name
             String currentDatabaseName = currentDatabaseNodeValue.asText();
-            if(currentDatabaseName.equals(databaseName)) {
+            if (currentDatabaseName.equals(databaseName)) {
                 return databaseNode;
             }
         }
@@ -112,9 +112,9 @@ public class CatalogManager {
         JsonNode tableNode = findTableNode(databaseName, tableName);
 
         ArrayNode primaryKeyArrayNode = (ArrayNode) tableNode.get("primaryKey").get("primaryKeyFields");
-        //System.out.println(primaryKeyArrayNode.toPrettyString());
+        // System.out.println(primaryKeyArrayNode.toPrettyString());
         for (JsonNode field : primaryKeyArrayNode) {
-                pks.add(field.asText());
+            pks.add(field.asText());
         }
         return pks;
     }

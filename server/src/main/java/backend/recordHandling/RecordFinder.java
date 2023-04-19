@@ -2,6 +2,7 @@ package backend.recordHandling;
 
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
+import backend.service.CatalogManager;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,11 +16,11 @@ public class RecordFinder {
         recordHandler = new RecordHandler(databaseName, tableName);
         keyColumnIndexes = new ArrayList<>();
         keyColumnTypes = new ArrayList<>();
-        // ArrayList<String> keyColumnNames, columnNames;
-        // keyColumnNames = getPrimaryKey(databaseName, tableName)
-        // columnNames = getColumnNames(databaseName, tableName)
-        // keyColumnIndexes = getIndexesToKeyColumns(keyColumnNames, columnNames)
-        // keyColumnTypes = getPrimaryKetColumnTypes
+        ArrayList<String> keyColumnNames, columnNames;
+        keyColumnNames = (ArrayList<String>) CatalogManager.getPrimaryKeys(databaseName, tableName);
+        columnNames = (ArrayList<String>) CatalogManager.getColumnNames(databaseName, tableName);
+
+
 
         // remove later
         keyColumnIndexes.add(0);
