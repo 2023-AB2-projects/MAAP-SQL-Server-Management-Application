@@ -7,8 +7,8 @@ plugins {
 // apply from: 'lint.gradle'
 
 application {
-//    mainClass = "test.backend.Main"
-    mainClass = "test.backend.TestDatabaseActions"
+    mainClass = "test.backend.Main"
+//    mainClass = "test.backend.TestDatabaseActions"
   //  mainClass = "backend.recordHandling.test"
 }
 

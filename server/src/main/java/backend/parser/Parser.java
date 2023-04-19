@@ -65,11 +65,6 @@ public class Parser {
         return Arrays.asList(ATTRIBUTE_TYPES).contains(token);
     } 
 
-    /**
-     * @param token
-     * @return checks if token is valid name for database/table/column
-     * @throws SQLParseException
-     */
     private enum NAME_TYPE {
         DATABASE("database"), TABLE("table"), COLUMN("column");
         private final String value;
@@ -80,6 +75,12 @@ public class Parser {
             return value;
         }
     }
+
+    /**
+     * @param token
+     * @return checks if token is valid name for database/table/column
+     * @throws SQLParseException
+     */
     private boolean checkName(String token, NAME_TYPE nt) throws SQLParseException {
         if (isKeyword(token)) {
             throw(new SQLParseException("Invalid name for " + nt.getValue() + ": " + token + " - Reserved keyword"));
@@ -363,7 +364,7 @@ public class Parser {
             throw (new SQLParseException("Unexpected end of string"));
         }
         
-        fileName = databaseName + "." + tableName + ".bin";
+        fileName = tableName + ".data.bin";
         primaryKey = new PrimaryKeyModel(primaryKeyAttributes);
         TableModel tableModel = new TableModel(tableName, fileName, rowLength, attributes, primaryKey, foreignKeys, uniqueAttributes, indexFiles);
         CreateTableAction cta = new CreateTableAction(tableModel, databaseName);

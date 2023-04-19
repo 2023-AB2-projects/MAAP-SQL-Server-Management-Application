@@ -18,7 +18,7 @@ import java.util.ArrayList;
 @Slf4j
 public class TestDatabaseActions {
     public TableModel createPeopleTableModel() {
-        String tableName = "people", fileName = "";
+        String tableName = "people", fileName = "people.data.bin";
         int rowLength = 50;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
             add(new FieldModel("id", "int", 0, false, false));
@@ -68,7 +68,7 @@ public class TestDatabaseActions {
 
     public void createCarsTable(String databaseName) {
         // Other table
-        String tableName = "cars", fileName = "CarsTableFile";
+        String tableName = "cars", fileName = "cars.data.bin";
         int rowLength = 100;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
             add(new FieldModel("id", "int", 0, false, false));
@@ -122,13 +122,6 @@ public class TestDatabaseActions {
         test.createCarsTable("adatbazis_1");
         test.createPeopleTable("adatbazis_1");
 
-//        DropDatabaseAction dropDatabaseAction = new DropDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
-//        try {
-//            dropDatabaseAction.actionPerform();
-//        } catch (DatabaseDoesntExist e) {
-//            System.out.println("Database doesn't exist!");
-//        }
-
         DatabaseAction deleteTable = new DropTableAction("people", "adatbazis_1");
         try {
             deleteTable.actionPerform();
@@ -136,9 +129,13 @@ public class TestDatabaseActions {
             System.out.println("nem jo!");
         }
 
-        // CreateTable
-//        test.createCarsTable();
-//        test.createPeopleTable();
+        DropDatabaseAction dropDatabaseAction = new DropDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
+        try {
+            dropDatabaseAction.actionPerform();
+        } catch (DatabaseDoesntExist e) {
+            System.out.println("Database doesn't exist!");
+        }
+
 
         // Create Database
 //        DatabaseModel newDatabase = new DatabaseModel();

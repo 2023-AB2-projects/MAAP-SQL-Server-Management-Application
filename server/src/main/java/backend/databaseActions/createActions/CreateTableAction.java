@@ -7,7 +7,6 @@ import backend.exceptions.databaseActionsExceptions.*;
 import backend.service.Utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 @Data
 @Slf4j
@@ -230,8 +228,7 @@ public class CreateTableAction implements DatabaseAction {
 
         // Create new table file in 'records' folder
         ///////////////////////////// REMOVE LATER ///////////////////
-        String tableDataFilePath = tableFolderPath + File.separator + this.table.getTableName() + ".data.bin";
-        table.setFileName(this.table.getTableName() + "data.bin");
+        String tableDataFilePath = tableFolderPath + File.separator + this.table.getFileName();
 
         File tableDataFile = new File(tableDataFilePath);
         if (tableDataFile.exists()) {
