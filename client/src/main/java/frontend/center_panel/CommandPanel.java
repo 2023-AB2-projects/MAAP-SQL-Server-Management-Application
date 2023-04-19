@@ -147,7 +147,7 @@ public class CommandPanel extends javax.swing.JPanel {
         log.info("Command to be sent to server:\n" + command);
 
         this.clientController.sendCommandToServer(command);
-        this.clientController.receiveMessageAndPerformAction(MessageModes.refreshDatabases);
+        this.clientController.receiveMessageAndPerformAction(MessageModes.refreshJSONCatalog);
         this.clientController.receiveMessageAndPerformAction(MessageModes.setTextArea);
     }//GEN-LAST:event_runCommandButtonMousePressed
 

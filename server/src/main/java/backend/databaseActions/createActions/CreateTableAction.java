@@ -221,6 +221,29 @@ public class CreateTableAction implements DatabaseAction {
         JsonNode newTable = JsonNodeFactory.instance.objectNode().putPOJO("table", this.table);
         databaseTables.add(newTable);
 
+        // Create new table file in 'records' folder
+        ///////////////////////////// REMOVE LATER ///////////////////
+        String fileName = Config.getDbRecordsPath() + File.separator + this.databaseName + "." + this.table.getTableName() + ".bin";
+        table.setFileName(fileName);
+
+        File tableFile = new File(table.getFileName());
+        System.out.println(Config.getDbRecordsPath() + File.separator + this.databaseName + File.separator + this.table.getFileName());
+        if (tableFile.exists()) {
+            log.error("Table binary file already exists!");
+            throw new RuntimeException();
+        }
+        try {
+            if(tableFile.createNewFile()) {
+                log.info("Binary file created!");
+            } else {
+                log.error("Binary table file already exists!");
+                throw new RuntimeException();
+            }
+        } catch (IOException e) {
+            log.error("CreateNewFile failed!");
+            throw new RuntimeException(e);
+        }
+
         // Mapper -> Write entire catalog
         try {
             mapper.writeValue(catalog, rootNode);

@@ -30,6 +30,18 @@ public class Parser {
         "int", "float", "bit", "date", "datetime", "char"
     };
 
+    private static Map<String, Integer> typeSizes = new HashMap<>();
+    static {
+        //Map<String, Integer> typeSizes = new HashMap<>();
+        typeSizes.put("int", Integer.BYTES);
+        typeSizes.put("float", Float.BYTES);
+        typeSizes.put("bit", 1);
+        //typeSizes.put("date", );
+        //typeSizes.put("datetime", );
+        //typeSizes.put("char", );
+        typeSizes = Collections.unmodifiableMap(typeSizes);
+    }
+
     /**
      * @param token
      * @return boolean if given token is keyword or not
@@ -113,6 +125,12 @@ public class Parser {
                         return parseDropTable(tokens, databaseName, it);
                     }
                 }
+                if (firstWord.equals("insert") && secondWord.equals("into")) {
+                    return parseInsertInto(tokens, databaseName, it);
+                }
+                if (firstWord.equals("delete") && secondWord.equals("from")) {
+                    return parseDeleteFrom(tokens, databaseName, it);
+                }
             }
         }
         catch (NoSuchElementException e) {
@@ -174,8 +192,6 @@ public class Parser {
         GET_TABLE_NAME, GET_FIELD_NAME_TYPE, GET_FIELD_CONSTRAINTS, COMMA, CLOSING_BRACKET
     }
     private CreateTableAction parseCreateTable(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
-        int i = 2;
-
         // Used for constructing multiple AttributeModels
         String fieldName = "";
         String fieldType = "";
@@ -242,19 +258,20 @@ public class Parser {
                         }
 
                         if (!it.next().equals(")")) {
-                            throw(new SQLParseException("Expected length of char attribute in form -> (len)"));
+                            throw(new SQLParseException("Expected length of char attribute in parentheses -> (len)"));
                         }
                     }
                     else {
-                        fieldLength = 0;
+                        fieldLength = typeSizes.get(fieldType);
                     }
+                    rowLength += fieldLength;
 
                     if (it.peek().equals(")")) {
-                        log.info("Finished reading all fields");
+                        //log.info("Finished reading all fields");
                         state = CreateTableStates.CLOSING_BRACKET;
                     }
                     else if (it.peek().equals(",")) {
-                        log.info("Finished reading field");
+                        //log.info("Finished reading field");
                         state = CreateTableStates.COMMA;
                     }
                     else {
@@ -271,11 +288,12 @@ public class Parser {
                     else if (it.peek().equals("primary")) {
                         it.next();
 
+                        String token = it.next();
                         if (it.next().equals("key")) {
                             primaryKeyAttributes.add(fieldName);
                         }
                         else {
-                            throw(new SQLParseException("Unknown constraint " + tokens.get(i) + " " + tokens.get(i+1)));
+                            throw(new SQLParseException("Unknown constraint foreign " + token));
                         }
                         break;
                     }
@@ -285,7 +303,7 @@ public class Parser {
                         String tokenFirst = it.next();
                         String tokenSecond = it.next();
                         if (!tokenFirst.equals("key") || !tokenSecond.equals("references")) {
-                            throw(new SQLParseException("Unknown constraint, expected (foreign key references), instead of " + tokens + " " + tokens.get(i+1)));
+                            throw(new SQLParseException("Unknown constraint, expected (foreign key references), instead of " + tokenFirst + " " + tokenSecond));
                         }
 
                         String foreignTable = it.next();
@@ -319,7 +337,6 @@ public class Parser {
                 case COMMA, CLOSING_BRACKET:
                     attributes.add(new FieldModel(fieldName, fieldType, fieldLength, false, false));
                     it.next();
-                    //log.info("Added field " + fieldName + ", " + fieldType);
 
                     fieldName = "";
                     fieldType = "";
@@ -346,6 +363,7 @@ public class Parser {
             throw (new SQLParseException("Unexpected end of string"));
         }
         
+        fileName = databaseName + "." + tableName + ".bin";
         primaryKey = new PrimaryKeyModel(primaryKeyAttributes);
         TableModel tableModel = new TableModel(tableName, fileName, rowLength, attributes, primaryKey, foreignKeys, uniqueAttributes, indexFiles);
         CreateTableAction cta = new CreateTableAction(tableModel, databaseName);
@@ -388,6 +406,152 @@ public class Parser {
 
         return dta;
     }  
+
+    private enum InsertIntoStates {
+        GET_TABLE_NAME, GET_FIELD_NAMES, GET_VALUES, GET_VALUES_STRINGS, CLOSING_BRACKET
+    }
+    // TODO: create DatabaseAction for insert into
+    private InsertAction parseInsertInto(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
+        String tableName = "";
+        ArrayList<String> fieldNames = new ArrayList<>();
+        ArrayList<ArrayList<String>> values = new ArrayList<>();
+
+        ArrayList<String> currentValues = null;
+
+        InsertIntoStates state = InsertIntoStates.GET_TABLE_NAME;
+        try {
+            while (it.hasNext()) {
+                switch (state) {
+                    case GET_TABLE_NAME: {
+                        if (!it.hasNext()) {
+                            throw(new SQLParseException("Missing token for table name"));
+                        }
+                
+                        if (checkName(it.peek(), NAME_TYPE.TABLE)) {
+                            tableName = it.next();
+                        }
+                        
+                        if (!it.hasNext() || !it.next().equals("(")) {
+                            throw new SQLParseException("Expected a list of attribute names after table name. e.g.: table(field1, field2, ...)");
+                        }
+
+                        state = InsertIntoStates.GET_FIELD_NAMES;
+                    }
+                    case GET_FIELD_NAMES: {
+                        String fieldName = it.next();
+
+                        checkName(fieldName, NAME_TYPE.COLUMN);
+
+                        fieldNames.add(fieldName);
+
+                        // if closing bracket, start reading insert values 
+                        if (it.peek().equals(")")) {
+                            state = InsertIntoStates.CLOSING_BRACKET;
+                            break;
+                        }
+                        // if comma, continue reading another field name
+                        else if (it.next().equals(",")) {
+                            break;
+                        } 
+                        else {
+                            throw new SQLParseException("Expected comma and another field name, or parenthesis after \"" + fieldName + "\"");
+                        }
+                    }
+                    case GET_VALUES: {
+                        // `values` keyword only needed before first values list
+                        if (values.isEmpty()) {
+                            if (!it.peek().equals("values")) {
+                                throw new SQLParseException("Expected values(value1, value2, ...)");
+                            }
+                            // pop `values`
+                            it.next();
+                        }
+
+                        if (!it.next().equals("(")) {
+                            throw new SQLParseException("Expected parenthesis after keyword `values`");
+                        }
+
+                        currentValues = new ArrayList<>();
+                        state = InsertIntoStates.GET_VALUES_STRINGS;
+
+                        break;
+                    }
+                    case GET_VALUES_STRINGS: {
+                        String value = it.next();
+
+                        currentValues.add(value);
+
+                        String nextToken = it.peek();
+                        if (it.peek().equals(")")) {
+                            state = InsertIntoStates.CLOSING_BRACKET;
+                            break;
+                        }
+                        else if (it.next().equals(",")) {
+                            break;
+                        }
+                        else {
+                            throw new SQLParseException("Expected comma and another value, or parenthesis after \"" + value + "\"");
+                        }
+                    }
+                    case CLOSING_BRACKET: {
+                        // pop bracket
+                        it.next();
+
+                        if (currentValues != null) {
+                            values.add(currentValues);
+                            currentValues = null;
+                        }
+
+                        if (it.peek().equals(",")) {
+                            if (values.size() == 0) {
+                                throw new SQLParseException("No comma expected between list of names and VALUES()");
+                            }
+                            // pop comma
+                            it.next();
+                        }
+
+                        if (it.hasNext()) {
+                            state = InsertIntoStates.GET_VALUES;
+                        }
+
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            }
+        } catch (NoSuchElementException e) {
+            throw new SQLParseException("Unexpected end of command");
+        }
+        
+        log.info(tableName);
+        log.info(fieldNames.toString());
+        log.info(values.toString());
+
+        return new InsertAction(tableName, databaseName, values);
+    }
+
+    private DeleteAction parseDeleteFrom(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
+        String tableName = "";
+        ArrayList<String> keys = new ArrayList<>();
+
+        if (!it.hasNext()) {
+            throw(new SQLParseException("Missing token for table name"));
+        }
+
+        tableName = it.next();
+
+        while (it.hasNext()) {
+            keys.add(it.next());
+        }
+
+        log.info(tableName);
+        log.info(keys.toString());
+
+        DeleteAction da = new DeleteAction(tableName, databaseName, keys);
+        return da;
+    }
 
     /**
      * Converts string to lowercase

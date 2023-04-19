@@ -66,16 +66,13 @@ public class CenterClientPanel extends javax.swing.JPanel {
         this.commandPanel1.setClientController(clientController);
         this.visualInsertDesignerPanel.setClientController(clientController);
         this.visualDeleteDesignerPanel.setClientController(clientController);
-        this.update();
     }
 
     public void setCurrentPane(int index) {
         int maxIndex = this.clientTabbedPane.getComponentCount();
         if(index >= 0 && index < maxIndex) {
-            if(index == 1) {
-                this.visualInsertDesignerPanel.updateTables();
-            } else if(index == 2) {
-                this.visualDeleteDesignerPanel.updateTables();
+            if(index == 1 || index == 2) {
+                this.update();
             }
             this.clientTabbedPane.setSelectedIndex(index);
         }
