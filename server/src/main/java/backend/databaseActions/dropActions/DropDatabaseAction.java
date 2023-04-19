@@ -4,6 +4,7 @@ import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.DatabaseModel;
 import backend.exceptions.databaseActionsExceptions.DatabaseDoesntExist;
+import backend.service.Utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -31,7 +32,7 @@ public class DropDatabaseAction implements DatabaseAction {
         }
 
         // Object mapper with indented output
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        ObjectMapper mapper = Utility.getObjectMapper();
 
         // Json catalog -> Java JsonNode
         JsonNode rootNode;
@@ -61,25 +62,8 @@ public class DropDatabaseAction implements DatabaseAction {
             if(currentDatabaseName.equals(this.database.getDatabaseName())) {
                 // Remove database folder
                 String databaseFolderPath = Config.getDbRecordsPath() + File.separator + this.database.getDatabaseName();
-                File databaseFolderFile = new File(databaseFolderPath);
-                if(databaseFolderFile.isDirectory()) {
-                    // Delete files individually
-                    String[] entries = databaseFolderFile.list();
-                    if (entries != null) {
-                        for(final String s : entries){
-                            File currentFile = new File(databaseFolderFile.getPath(), s);
-                            if(!currentFile.delete()) {
-                                log.error("file=" + s + " could not be deleted!");
-                                throw new RuntimeException();
-                            }
-                        }
-                    }
-                    if(!databaseFolderFile.delete()) {
-                        log.error("folder=" + databaseFolderPath + " could not be deleted!");
-                        throw new RuntimeException();
-                    }
-                } else {
-                    log.error("file=" + databaseFolderPath + " is not a directory!");
+                if(!Utility.deleteDirectory(new File(databaseFolderPath))) {
+                    log.error("Database directory=" + databaseFolderPath + " could not be deleted!");
                     throw new RuntimeException();
                 }
 

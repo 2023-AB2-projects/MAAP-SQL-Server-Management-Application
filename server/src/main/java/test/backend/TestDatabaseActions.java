@@ -42,8 +42,7 @@ public class TestDatabaseActions {
                 foreignKeys, uniqueAttributes, indexFiles);
     }
 
-    public void createPeopleTable() {
-        String databaseName = "master";
+    public void createPeopleTable(String databaseName) {
         TestDatabaseActions temp = new TestDatabaseActions();
         TableModel table = temp.createPeopleTableModel();
 
@@ -67,9 +66,9 @@ public class TestDatabaseActions {
         }
     }
 
-    public void createCarsTable() {
+    public void createCarsTable(String databaseName) {
         // Other table
-        String databaseName = "master", tableName = "cars", fileName = "CarsTableFile";
+        String tableName = "cars", fileName = "CarsTableFile";
         int rowLength = 100;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
             add(new FieldModel("id", "int", 0, false, false));
@@ -107,16 +106,29 @@ public class TestDatabaseActions {
         TestDatabaseActions test = new TestDatabaseActions();
 
         CreateDatabaseAction createDatabaseAction = new CreateDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
+        try {
+            createDatabaseAction.actionPerform();
+        } catch (DatabaseNameAlreadyExists e) {
+            System.out.println("Database already exists");
+        }
 
-        UseDatabaseAction useDatabaseAction = new UseDatabaseAction(new DatabaseModel("adatbaziska_1", new ArrayList<>()));
+        UseDatabaseAction useDatabaseAction = new UseDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
         try {
             useDatabaseAction.actionPerform();
         } catch (DatabaseDoesntExist e) {
             throw new RuntimeException(e);
         }
 
-        test.createCarsTable();
-        test.createPeopleTable();
+        test.createCarsTable("adatbazis_1");
+        test.createPeopleTable("adatbazis_1");
+
+        DropDatabaseAction dropDatabaseAction = new DropDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
+        try {
+            dropDatabaseAction.actionPerform();
+        } catch (DatabaseDoesntExist e) {
+            System.out.println("Database doesn't exist!");
+        }
+
 //        DatabaseAction deleteTable = new DropTableAction("people", "master");
 //        try {
 //            deleteTable.actionPerform();
