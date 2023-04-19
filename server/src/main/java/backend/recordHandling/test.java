@@ -11,15 +11,10 @@ import java.util.ArrayList;
 @Slf4j
 public class test {
     public static void main(String[] args) throws IOException, InvalidReadException, RecordNotFoundException {
-        /*RecordHandler recordHandler = new RecordHandler("master", "cars");
-        ArrayList<String> asd = new ArrayList<>();
-        asd.add("0");
-        asd.add("a");
-        //recordHandler.insert(asd, 0);
-        System.out.println(recordHandler.readLine(0));
-        recordHandler.close();*/
-
-        System.out.println(CatalogManager.getPrimaryKeyTypes("master","cars"));
-        System.out.println(CatalogManager.getPrimaryKeyIndexes("master","cars"));
+        RecordFinder recordFinder = new RecordFinder("master", "cars");
+        ArrayList<String> key = new ArrayList<>();
+        key.add("0");
+        System.out.println( recordFinder.findByPrimaryKey(key));
+        recordFinder.close();
     }
 }
