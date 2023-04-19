@@ -5,6 +5,7 @@ import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.DatabaseModel;
 import backend.exceptions.databaseActionsExceptions.DatabaseNameAlreadyExists;
 import backend.service.CommandHandler;
+import backend.service.Utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -15,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Data
 @Slf4j
@@ -32,7 +35,7 @@ public class CreateDatabaseAction implements DatabaseAction {
         File catalog = Config.getCatalogFile();
 
         // Object mapper with indented output
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        ObjectMapper mapper = Utility.getObjectMapper();
 
         // Json catalog -> Java JsonNode
         JsonNode rootNode;
@@ -60,6 +63,14 @@ public class CreateDatabaseAction implements DatabaseAction {
                 log.info("CreateDatabaseAction -> database already exists " + currentDatabaseName);
                 throw new DatabaseNameAlreadyExists(currentDatabaseName);
             }
+        }
+
+        // Create database folder in 'resources'
+        try {
+            Files.createDirectories(Paths.get(Config.getDbRecordsPath() + File.separator + this.database.getDatabaseName()));
+        } catch (IOException e) {
+            log.error("Could not create database folder: Databasename=" + this.database.getDatabaseName());
+            throw new RuntimeException(e);
         }
 
         // Create new database

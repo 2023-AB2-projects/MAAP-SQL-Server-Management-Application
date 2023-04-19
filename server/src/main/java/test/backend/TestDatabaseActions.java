@@ -18,7 +18,7 @@ import java.util.ArrayList;
 @Slf4j
 public class TestDatabaseActions {
     public TableModel createPeopleTableModel() {
-        String tableName = "people", fileName = "";
+        String tableName = "people", fileName = "people.data.bin";
         int rowLength = 50;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
             add(new FieldModel("id", "int", 0, false, false));
@@ -42,8 +42,7 @@ public class TestDatabaseActions {
                 foreignKeys, uniqueAttributes, indexFiles);
     }
 
-    public void createPeopleTable() {
-        String databaseName = "master";
+    public void createPeopleTable(String databaseName) {
         TestDatabaseActions temp = new TestDatabaseActions();
         TableModel table = temp.createPeopleTableModel();
 
@@ -67,9 +66,9 @@ public class TestDatabaseActions {
         }
     }
 
-    public void createCarsTable() {
+    public void createCarsTable(String databaseName) {
         // Other table
-        String databaseName = "master", tableName = "cars", fileName = "CarsTableFile";
+        String tableName = "cars", fileName = "cars.data.bin";
         int rowLength = 100;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
             add(new FieldModel("id", "int", 0, false, false));
@@ -106,21 +105,41 @@ public class TestDatabaseActions {
     public static void main(String[] args) {
         TestDatabaseActions test = new TestDatabaseActions();
 
-        test.createPeopleTable();
-        DatabaseAction deleteTable = new DropTableAction("people", "master");
+        CreateDatabaseAction createDatabaseAction = new CreateDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
+        try {
+            createDatabaseAction.actionPerform();
+        } catch (DatabaseNameAlreadyExists e) {
+            System.out.println("Database already exists");
+        }
+
+        UseDatabaseAction useDatabaseAction = new UseDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
+        try {
+            useDatabaseAction.actionPerform();
+        } catch (DatabaseDoesntExist e) {
+            throw new RuntimeException(e);
+        }
+
+        test.createCarsTable("adatbazis_1");
+        test.createPeopleTable("adatbazis_1");
+
+        DatabaseAction deleteTable = new DropTableAction("people", "adatbazis_1");
         try {
             deleteTable.actionPerform();
         } catch (Exception e) {
             System.out.println("nem jo!");
         }
 
-        // CreateTable
-//        test.createCarsTable();
-//        test.createPeopleTable();
+        DropDatabaseAction dropDatabaseAction = new DropDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
+        try {
+            dropDatabaseAction.actionPerform();
+        } catch (DatabaseDoesntExist e) {
+            System.out.println("Database doesn't exist!");
+        }
+
 
         // Create Database
 //        DatabaseModel newDatabase = new DatabaseModel();
-//        newDatabase.setDatabaseName("OtherDatabase2");
+//        newDatabase.setDatabaseName("adatbaziska_1");
 //        DatabaseAction createDatabase = new CreateDatabaseAction(newDatabase);
 //        try {
 //            createDatabase.actionPerform();
@@ -129,8 +148,16 @@ public class TestDatabaseActions {
 //        } catch (Exception e) {
 //            log.error("ERROR -> CreateDatabaseAction should now throw this!");
 //        }
-
-
+//
+//        newDatabase.setDatabaseName("adatbaziska_2");
+//        createDatabase = new CreateDatabaseAction(newDatabase);
+//        try {
+//            createDatabase.actionPerform();
+//        } catch (DatabaseNameAlreadyExists e) {
+//            log.info("CreateDatabaseAction -> DatabaseAlreadyExists");
+//        } catch (Exception e) {
+//            log.error("ERROR -> CreateDatabaseAction should now throw this!");
+//        }
 
         // Use Database
 //        DatabaseAction useDatabase = new UseDatabaseAction(new DatabaseModel("master", new ArrayList<>()));

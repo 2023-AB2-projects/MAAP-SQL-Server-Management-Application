@@ -35,6 +35,11 @@ public class CatalogManager {
         return Config.getDbRecordsPath() + File.separator + databaseName + File.separator + tableName + File.separator + tableName + ".data.bin";
     }
 
+    private static JsonNode getRoot(){
+        updateRoot();
+        return root;
+    }
+
     public static List<String> getColumnNames(String databaseName, String tableName) {
         ArrayList<String> columnNames = new ArrayList<>();
 
@@ -46,6 +51,33 @@ public class CatalogManager {
         System.out.println(fields.asText());
         for (JsonNode field : fields) {
             columnNames.add(field.get("fieldName").asText());
+        }
+
+        return columnNames;
+    }
+    public static List<String> getPrimaryKeys(String databaseName, String tableName) {
+        List<String> pks = new ArrayList<>();
+
+        // find the tableNode
+        JsonNode tableNode = findTableNode(databaseName, tableName);
+
+        ArrayNode primaryKeyArrayNode = (ArrayNode) tableNode.get("primaryKey").get("primaryKeyFields");
+        //System.out.println(primaryKeyArrayNode.toPrettyString());
+        for (JsonNode field : primaryKeyArrayNode) {
+            pks.add(field.asText());
+        }
+        return pks;
+    }
+    public static List<String> getColumnTypes(String databaseName, String tableName) {
+        ArrayList<String> columnNames = new ArrayList<>();
+
+        // find the table json node
+        JsonNode tableNode = findTableNode(databaseName, tableName);
+        assert tableNode != null;
+
+        ArrayNode fields = (ArrayNode) tableNode.get("fields");
+        for (JsonNode field : fields) {
+            columnNames.add(field.get("type").asText());
         }
 
         return columnNames;
@@ -64,7 +96,6 @@ public class CatalogManager {
         log.error("findTableNode() ->  No table were found with given name " + tableName);
         return null;
     }
-
     private static JsonNode findTableNode(String databaseName, String tableName) {
         // find the database json node
         JsonNode databaseNode = findDatabaseNode(databaseName);
@@ -72,25 +103,9 @@ public class CatalogManager {
 
         return findTableNode(databaseNode, tableName);
     }
-
-    public static List<String> getColumnTypes(String databaseName, String tableName) {
-        ArrayList<String> columnNames = new ArrayList<>();
-
-        // find the table json node
-        JsonNode tableNode = findTableNode(databaseName, tableName);
-        assert tableNode != null;
-
-        ArrayNode fields = (ArrayNode) tableNode.get("fields");
-        for (JsonNode field : fields) {
-            columnNames.add(field.get("type").asText());
-        }
-
-        return columnNames;
-    }
-
     private static JsonNode findDatabaseNode(String databaseName) {
         // Check if database exists
-        ArrayNode databasesArray = (ArrayNode) root.get(Config.getDbCatalogRoot());
+        ArrayNode databasesArray = (ArrayNode) getRoot().get(Config.getDbCatalogRoot());
         for (final JsonNode databaseNode : databasesArray) {
             // For each "Database" node find the name of the database
             JsonNode currentDatabaseNodeValue = databaseNode.get("database").get("databaseName");
@@ -120,8 +135,13 @@ public class CatalogManager {
         // System.out.println(primaryKeyArrayNode.toPrettyString());
         for (JsonNode field : primaryKeyArrayNode) {
             pks.add(field.asText());
+
+    private static void updateRoot(){
+        try {
+            root = mapper.readTree(catalog);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return pks;
     }
 
     public static List<String> getPrimaryKeyTypes(String databaseName, String tableName) {

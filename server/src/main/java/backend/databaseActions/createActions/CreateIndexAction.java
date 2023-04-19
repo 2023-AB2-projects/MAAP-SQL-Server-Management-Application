@@ -7,6 +7,7 @@ import backend.exceptions.databaseActionsExceptions.DatabaseDoesntExist;
 import backend.exceptions.databaseActionsExceptions.IndexAlreadyExists;
 import backend.exceptions.databaseActionsExceptions.TableDoesntExist;
 import backend.exceptions.databaseActionsExceptions.TableNameAlreadyExists;
+import backend.service.Utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -67,7 +68,7 @@ public class CreateIndexAction implements DatabaseAction {
     @Override
     public Object actionPerform() throws DatabaseDoesntExist, TableDoesntExist, IndexAlreadyExists {
         // Object mapper with indented output
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        ObjectMapper mapper = Utility.getObjectMapper();
 
         // Json catalog -> Java JsonNode
         JsonNode rootNode;

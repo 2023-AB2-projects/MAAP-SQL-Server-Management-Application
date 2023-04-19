@@ -4,6 +4,7 @@ import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.DatabaseModel;
 import backend.exceptions.databaseActionsExceptions.DatabaseDoesntExist;
+import backend.service.Utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -27,7 +28,7 @@ public class UseDatabaseAction implements DatabaseAction {
         File catalog = Config.getCatalogFile();
 
         // Object mapper with indented output
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        ObjectMapper mapper = Utility.getObjectMapper();
 
         // Json catalog -> Java JsonNode
         JsonNode rootNode;

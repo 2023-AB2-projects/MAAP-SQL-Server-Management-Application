@@ -4,9 +4,9 @@ import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.*;
 import backend.exceptions.databaseActionsExceptions.*;
+import backend.service.Utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
@@ -15,8 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 @Data
 @Slf4j
@@ -138,7 +139,7 @@ public class CreateTableAction implements DatabaseAction {
         File catalog = Config.getCatalogFile();
 
         // Object mapper with indented output
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        ObjectMapper mapper = Utility.getObjectMapper();
 
         // Json catalog -> Java JsonNode
         JsonNode rootNode;
@@ -216,24 +217,26 @@ public class CreateTableAction implements DatabaseAction {
             }
         }
 
-        // Create new table in database
-        ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");
-        JsonNode newTable = JsonNodeFactory.instance.objectNode().putPOJO("table", this.table);
-        databaseTables.add(newTable);
+        // Create table folder in 'records/databaseName' folder
+        String tableFolderPath = Config.getDbRecordsPath() + File.separator + this.databaseName + File.separator + this.table.getTableName();
+        try {
+            Files.createDirectories(Paths.get(tableFolderPath));
+        } catch (IOException e) {
+            log.error("Could not create table folder: tableFolderPath=" + tableFolderPath);
+            throw new RuntimeException(e);
+        }
 
         // Create new table file in 'records' folder
         ///////////////////////////// REMOVE LATER ///////////////////
-        String fileName = Config.getDbRecordsPath() + File.separator + this.databaseName + "." + this.table.getTableName() + ".bin";
-        table.setFileName(fileName);
+        String tableDataFilePath = tableFolderPath + File.separator + this.table.getFileName();
 
-        File tableFile = new File(table.getFileName());
-        System.out.println(Config.getDbRecordsPath() + File.separator + this.databaseName + File.separator + this.table.getFileName());
-        if (tableFile.exists()) {
+        File tableDataFile = new File(tableDataFilePath);
+        if (tableDataFile.exists()) {
             log.error("Table binary file already exists!");
             throw new RuntimeException();
         }
         try {
-            if(tableFile.createNewFile()) {
+            if(tableDataFile.createNewFile()) {
                 log.info("Binary file created!");
             } else {
                 log.error("Binary table file already exists!");
@@ -243,6 +246,11 @@ public class CreateTableAction implements DatabaseAction {
             log.error("CreateNewFile failed!");
             throw new RuntimeException(e);
         }
+
+        // Create new table in database
+        ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");
+        JsonNode newTable = JsonNodeFactory.instance.objectNode().putPOJO("table", this.table);
+        databaseTables.add(newTable);
 
         // Mapper -> Write entire catalog
         try {
