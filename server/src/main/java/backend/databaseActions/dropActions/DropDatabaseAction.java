@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.IOException;
 
 @Slf4j
@@ -23,6 +24,12 @@ public class DropDatabaseAction implements DatabaseAction {
 
     @Override
     public Object actionPerform() throws DatabaseDoesntExist {
+        // Check if master is being dropped
+        if(this.database.getDatabaseName().equals("master"))  {
+            log.info("Tried to delete 'master'!");
+            return null;
+        }
+
         // Object mapper with indented output
         ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
@@ -52,6 +59,30 @@ public class DropDatabaseAction implements DatabaseAction {
 
             // If the current databaseName is equal to the deleted database
             if(currentDatabaseName.equals(this.database.getDatabaseName())) {
+                // Remove database folder
+                String databaseFolderPath = Config.getDbRecordsPath() + File.separator + this.database.getDatabaseName();
+                File databaseFolderFile = new File(databaseFolderPath);
+                if(databaseFolderFile.isDirectory()) {
+                    // Delete files individually
+                    String[] entries = databaseFolderFile.list();
+                    if (entries != null) {
+                        for(final String s : entries){
+                            File currentFile = new File(databaseFolderFile.getPath(), s);
+                            if(!currentFile.delete()) {
+                                log.error("file=" + s + " could not be deleted!");
+                                throw new RuntimeException();
+                            }
+                        }
+                    }
+                    if(!databaseFolderFile.delete()) {
+                        log.error("folder=" + databaseFolderPath + " could not be deleted!");
+                        throw new RuntimeException();
+                    }
+                } else {
+                    log.error("file=" + databaseFolderPath + " is not a directory!");
+                    throw new RuntimeException();
+                }
+
                 // Remove database and write back
                 databasesArray.remove(removed_ind);
 

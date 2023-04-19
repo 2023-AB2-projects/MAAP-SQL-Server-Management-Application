@@ -106,13 +106,23 @@ public class TestDatabaseActions {
     public static void main(String[] args) {
         TestDatabaseActions test = new TestDatabaseActions();
 
-        test.createPeopleTable();
-        DatabaseAction deleteTable = new DropTableAction("people", "master");
+        CreateDatabaseAction createDatabaseAction = new CreateDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
+
+        UseDatabaseAction useDatabaseAction = new UseDatabaseAction(new DatabaseModel("adatbaziska_1", new ArrayList<>()));
         try {
-            deleteTable.actionPerform();
-        } catch (Exception e) {
-            System.out.println("nem jo!");
+            useDatabaseAction.actionPerform();
+        } catch (DatabaseDoesntExist e) {
+            throw new RuntimeException(e);
         }
+
+        test.createCarsTable();
+        test.createPeopleTable();
+//        DatabaseAction deleteTable = new DropTableAction("people", "master");
+//        try {
+//            deleteTable.actionPerform();
+//        } catch (Exception e) {
+//            System.out.println("nem jo!");
+//        }
 
         // CreateTable
 //        test.createCarsTable();
@@ -120,7 +130,7 @@ public class TestDatabaseActions {
 
         // Create Database
 //        DatabaseModel newDatabase = new DatabaseModel();
-//        newDatabase.setDatabaseName("OtherDatabase2");
+//        newDatabase.setDatabaseName("adatbaziska_1");
 //        DatabaseAction createDatabase = new CreateDatabaseAction(newDatabase);
 //        try {
 //            createDatabase.actionPerform();
@@ -129,8 +139,16 @@ public class TestDatabaseActions {
 //        } catch (Exception e) {
 //            log.error("ERROR -> CreateDatabaseAction should now throw this!");
 //        }
-
-
+//
+//        newDatabase.setDatabaseName("adatbaziska_2");
+//        createDatabase = new CreateDatabaseAction(newDatabase);
+//        try {
+//            createDatabase.actionPerform();
+//        } catch (DatabaseNameAlreadyExists e) {
+//            log.info("CreateDatabaseAction -> DatabaseAlreadyExists");
+//        } catch (Exception e) {
+//            log.error("ERROR -> CreateDatabaseAction should now throw this!");
+//        }
 
         // Use Database
 //        DatabaseAction useDatabase = new UseDatabaseAction(new DatabaseModel("master", new ArrayList<>()));

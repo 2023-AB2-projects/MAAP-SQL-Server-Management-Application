@@ -2,6 +2,11 @@ package backend.service;
 
 import backend.ServerConnection;
 import backend.config.Config;
+import backend.databaseActions.DatabaseAction;
+import backend.databaseActions.createActions.CreateDatabaseAction;
+import backend.databaseModels.DatabaseModel;
+import backend.exceptions.databaseActionsExceptions.*;
+import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -17,6 +22,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -151,7 +157,9 @@ public class ServerController {
     private void initCatalog(File catalog) throws IOException {
 
         /* Build up basic catalog structure */
-        // Master node
+        // Master node (it will be created using CreateDatabaseAction
+
+        /*
         ObjectNode masterNode = JsonNodeFactory.instance.objectNode();
         ObjectNode masterNodeValue = JsonNodeFactory.instance.objectNode();
         masterNodeValue.put("databaseName", this.currentDatabaseName);
@@ -160,12 +168,25 @@ public class ServerController {
 
         // Databases node
         ArrayNode databasesNode = JsonNodeFactory.instance.arrayNode();
-        databasesNode.add(masterNode);
+        databasesNode.add(masterNode);*/
 
+        // Root node
         ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
-        rootNode.set("databases", databasesNode);
+        rootNode.set("databases", new ArrayNode(null));     // Base node with []
 
         this.objectMapper.writeValue(catalog, rootNode);
+
+        // Add master database
+        DatabaseAction createDatabaseMaster = new CreateDatabaseAction(new DatabaseModel("master", new ArrayList<>()));
+        try {
+            createDatabaseMaster.actionPerform();
+        } catch (DatabaseNameAlreadyExists e) {
+            log.error("Database master already exists! -> (Error)");
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            log.error("Other exception (should not)!");
+            throw new RuntimeException(e);
+        }
     }
 
     private void initRecordsFolder() {
