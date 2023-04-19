@@ -18,11 +18,11 @@ public class RecordHandler {
     private final ArrayList<String> tableStructure;
     private final RandomAccessFile io;
     public RecordHandler(String databaseName, String tableName) throws FileNotFoundException {
-        String fileLocation = System.getProperty("user.dir") + "/src/main/resources/records/testFile.bin";
+        String fileLocation = CatalogManager.getTableDataPath(databaseName, tableName);
 
         tableStructure = (ArrayList<String>) CatalogManager.getColumnTypes(databaseName, tableName);
 
-        recordSize = 1;
+        recordSize = 1 + tableStructure.size();
         for (String type : tableStructure) {
             recordSize += sizeof(type);
         }
@@ -46,7 +46,14 @@ public class RecordHandler {
 
         io.writeBoolean(true);
         for(int i = 0; i < values.size(); i++){
-            io.write(toBytes(tableStructure.get(i), values.get(i)));
+            if(values.get(i).equals("null")){
+                io.writeBoolean(false);
+                io.write(new byte[(int) sizeof(tableStructure.get(i))]);
+            }else{
+                io.writeBoolean(true);
+                io.write(toBytes(tableStructure.get(i), values.get(i)));
+            }
+
         }
     }
     public void deleteLine(int line) throws IOException {
@@ -80,9 +87,14 @@ public class RecordHandler {
         }
 
         for(String type : tableStructure){
+            boolean nullBit = io.readBoolean();
             byte[] bytes = new byte[(int)sizeof(type)];
             io.readFully(bytes);
-            values.add(decode(type, bytes));
+            if(nullBit){
+                values.add(decode(type, bytes));
+            }else{
+                values.add("null");
+            }
         }
 
         return values;

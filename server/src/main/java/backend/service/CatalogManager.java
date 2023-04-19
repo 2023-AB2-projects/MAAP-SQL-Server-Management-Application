@@ -31,6 +31,10 @@ public class CatalogManager {
         }
     }
 
+    public static String getTableDataPath(String databaseName, String tableName) {
+        return Config.getDbRecordsPath() + File.separator + databaseName + File.separator + tableName + File.separator + tableName + ".data.bin";
+    }
+
     public static List<String> getColumnNames(String databaseName, String tableName) {
         ArrayList<String> columnNames = new ArrayList<>();
 
