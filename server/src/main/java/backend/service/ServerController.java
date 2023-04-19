@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,6 +120,7 @@ public class ServerController {
     private void init() {
         setCurrentDatabaseName("master");       // By default, "master"
         initVariables();
+        initRecordsFolder();
         accessCatalog();
         updateRootNodeAndNamesList();
     }
@@ -166,6 +168,16 @@ public class ServerController {
         this.objectMapper.writeValue(catalog, rootNode);
     }
 
+    private void initRecordsFolder() {
+        // Init records folder containing records for each database and table
+        try {
+            Files.createDirectories(Paths.get(Config.getDbRecordsPath()));
+        } catch (IOException e) {
+            log.error("Could not create 'records' folder -> IO exception!");
+            throw new RuntimeException(e);
+        }
+    }
+
     private String databaseNamesSimple() {
         StringBuilder simple = new StringBuilder();
         for(int i = 0; i < this.databaseNames.size(); ++i) {
@@ -185,7 +197,6 @@ public class ServerController {
         String shutdownMsg = "SHUTDOWN";
 
         String jsonText = Files.readString(Config.getCatalogFile().toPath());
-        System.out.println(jsonText);
         serverConnection.send(jsonText);
 
         // communication
@@ -208,7 +219,6 @@ public class ServerController {
 
                 // 1. Send JSON Catalog
                 jsonText = Files.readString(Config.getCatalogFile().toPath());
-                System.out.println(jsonText);
                 serverConnection.send(jsonText);
 
                 // 2. Send message
