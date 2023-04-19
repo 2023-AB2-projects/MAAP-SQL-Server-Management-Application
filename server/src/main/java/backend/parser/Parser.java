@@ -420,16 +420,17 @@ public class Parser {
 
         InsertIntoStates state = InsertIntoStates.GET_TABLE_NAME;
         try {
-            while (it.hasNext()) {
+            loop: 
+            while (it.hasNext() || state == InsertIntoStates.CLOSING_BRACKET) {
                 switch (state) {
+                    // called once for table name at start
                     case GET_TABLE_NAME: {
                         if (!it.hasNext()) {
                             throw(new SQLParseException("Missing token for table name"));
                         }
                 
-                        if (checkName(it.peek(), NAME_TYPE.TABLE)) {
-                            tableName = it.next();
-                        }
+                        tableName = it.next();
+                        checkName(tableName, NAME_TYPE.TABLE);
                         
                         if (!it.hasNext() || !it.next().equals("(")) {
                             throw new SQLParseException("Expected a list of attribute names after table name. e.g.: table(field1, field2, ...)");
@@ -437,6 +438,7 @@ public class Parser {
 
                         state = InsertIntoStates.GET_FIELD_NAMES;
                     }
+                    // called once for every value between the parentheses in the part `table(name1, name2, ...)
                     case GET_FIELD_NAMES: {
                         String fieldName = it.next();
 
@@ -444,31 +446,32 @@ public class Parser {
 
                         fieldNames.add(fieldName);
 
+                        String nextToken = it.next();
                         // if closing bracket, start reading insert values 
-                        if (it.peek().equals(")")) {
-                            state = InsertIntoStates.CLOSING_BRACKET;
+                        if (nextToken.equals(")")) {
+                            state = InsertIntoStates.GET_VALUES;
                             break;
                         }
                         // if comma, continue reading another field name
-                        else if (it.next().equals(",")) {
+                        else if (nextToken.equals(",")) {
                             break;
                         } 
                         else {
                             throw new SQLParseException("Expected comma and another field name, or parenthesis after \"" + fieldName + "\"");
                         }
                     }
+                    // for starting a part `values(...)` 
                     case GET_VALUES: {
                         // `values` keyword only needed before first values list
                         if (values.isEmpty()) {
-                            if (!it.peek().equals("values")) {
-                                throw new SQLParseException("Expected values(value1, value2, ...)");
+                            // pop `values` keyword
+                            if (!it.next().equals("values")) {
+                                throw new SQLParseException("Expected `values(value1, value2, ...)` after list of field names");
                             }
-                            // pop `values`
-                            it.next();
                         }
 
                         if (!it.next().equals("(")) {
-                            throw new SQLParseException("Expected parenthesis after keyword `values`");
+                            throw new SQLParseException("Expected parenthesis after keyword `values` or comma");
                         }
 
                         currentValues = new ArrayList<>();
@@ -476,17 +479,18 @@ public class Parser {
 
                         break;
                     }
+                    // called once for every value between the parentheses in the part `values(value1, value2, ...)`
                     case GET_VALUES_STRINGS: {
                         String value = it.next();
 
                         currentValues.add(value);
 
-                        String nextToken = it.peek();
-                        if (it.peek().equals(")")) {
+                        String nextToken = it.next();
+                        if (nextToken.equals(")")) {
                             state = InsertIntoStates.CLOSING_BRACKET;
                             break;
                         }
-                        else if (it.next().equals(",")) {
+                        else if (nextToken.equals(",")) {
                             break;
                         }
                         else {
@@ -494,34 +498,46 @@ public class Parser {
                         }
                     }
                     case CLOSING_BRACKET: {
-                        // pop bracket
-                        it.next();
-
+                        if (currentValues == null) {
+                            log.info("current: NULL you fucking piece of shit");
+                        }
+                        else {
+                            log.info("current: " + currentValues.toString());
+                        }
                         if (currentValues != null) {
                             values.add(currentValues);
                             currentValues = null;
                         }
-
-                        if (it.peek().equals(",")) {
-                            if (values.size() == 0) {
-                                throw new SQLParseException("No comma expected between list of names and VALUES()");
-                            }
-                            // pop comma
-                            it.next();
+                        if (values == null) {
+                            log.info("all: NULL you fucking piece of shit");
                         }
-
+                        else {
+                            log.info("all: " + values.toString());
+                        }
+                        
                         if (it.hasNext()) {
+                            log.info(it.peek());
+
+                            if (values.size() == 0) {
+                                state = InsertIntoStates.GET_VALUES;
+                                break;
+                            }
+                            else if (!it.next().equals(",")) {
+                                throw new SQLParseException("Expected comma after closing bracket");
+                            }
+                            
                             state = InsertIntoStates.GET_VALUES;
+                            break;
                         }
 
-                        break;
+                        break loop;
                     }
                     default: {
                         break;
                     }
                 }
             }
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | NullPointerException e) {
             throw new SQLParseException("Unexpected end of command");
         }
         
