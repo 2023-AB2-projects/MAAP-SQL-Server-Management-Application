@@ -5,7 +5,7 @@ public class CreateTableTemplate {
     public String toString() {
         return """
                CREATE TABLE table_name (
-                   field_1 type;
+                   field_1 type,
                    field_2 type
                )
                """;
