@@ -20,5 +20,6 @@ public class test {
         recordHandler.close();*/
 
         System.out.println(CatalogManager.getPrimaryKeyTypes("master","cars"));
+        System.out.println(CatalogManager.getPrimaryKeyIndexes("master","cars"));
     }
 }

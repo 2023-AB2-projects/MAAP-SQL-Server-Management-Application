@@ -137,5 +137,22 @@ public class CatalogManager {
         return key_type;
     }
 
+    public static List<Integer> getPrimaryKeyIndexes(String databaseName, String tableName) {
+        ArrayList<String> col_type = (ArrayList<String>) getColumnTypes(databaseName, tableName);
+        ArrayList<String> col_name = (ArrayList<String>) getColumnNames(databaseName, tableName);
+        List<String> key_name = (ArrayList<String>) getPrimaryKeys(databaseName, tableName);
+
+        ArrayList<Integer> key_index = new ArrayList<>();
+        for(String key : key_name){
+            int index = col_name.indexOf(key);
+            if(index != -1) {
+                key_index.add(index);
+            } else {
+                log.warn("getPrimaryKeyTypes() " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
+            }
+        }
+        return key_index;
+    }
+
 
 }
