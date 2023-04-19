@@ -50,7 +50,7 @@ public class DropTableAction implements DatabaseAction {
     @Override
     public Object actionPerform() throws DatabaseDoesntExist, TableDoesntExist {
         // Object mapper with indented output
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        ObjectMapper mapper = Utility.getObjectMapper();
 
         // Json catalog -> Java JsonNode
         JsonNode rootNode;
