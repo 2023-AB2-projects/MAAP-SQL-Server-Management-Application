@@ -2,6 +2,7 @@ package backend.recordHandling;
 
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
+import backend.service.CatalogManager;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,20 +14,8 @@ public class RecordFinder {
     private ArrayList<String> keyColumnTypes;
     public RecordFinder(String databaseName, String tableName) throws FileNotFoundException {
         recordHandler = new RecordHandler(databaseName, tableName);
-        keyColumnIndexes = new ArrayList<>();
-        keyColumnTypes = new ArrayList<>();
-        // ArrayList<String> keyColumnNames, columnNames;
-        // keyColumnNames = getPrimaryKey(databaseName, tableName)
-        // columnNames = getColumnNames(databaseName, tableName)
-        // keyColumnIndexes = getIndexesToKeyColumns(keyColumnNames, columnNames)
-        // keyColumnTypes = getPrimaryKetColumnTypes
-
-        // remove later
-        keyColumnIndexes.add(0);
-        keyColumnIndexes.add(3);
-        keyColumnTypes.add("int");
-        keyColumnTypes.add("char(10)");
-
+        keyColumnIndexes = (ArrayList<Integer>) CatalogManager.getPrimaryKeyIndexes(databaseName, tableName);
+        keyColumnTypes = (ArrayList<String>) CatalogManager.getPrimaryKeyTypes(databaseName, tableName);
     }
     public int findByPrimaryKey(ArrayList<String> keyValues) throws RecordNotFoundException, IOException {
         // check if index exists on primaryKey

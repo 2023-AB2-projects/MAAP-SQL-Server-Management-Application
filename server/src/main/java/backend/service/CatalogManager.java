@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
@@ -30,10 +31,15 @@ public class CatalogManager {
         }
     }
 
+    public static String getTableDataPath(String databaseName, String tableName) {
+        return Config.getDbRecordsPath() + File.separator + databaseName + File.separator + tableName + File.separator + tableName + ".data.bin";
+    }
+
     private static JsonNode getRoot(){
         updateRoot();
         return root;
     }
+
     public static List<String> getColumnNames(String databaseName, String tableName) {
         ArrayList<String> columnNames = new ArrayList<>();
 
@@ -82,12 +88,12 @@ public class CatalogManager {
         ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");
 
         // check if given tablename was found
-        for(final JsonNode tableNode : databaseTables) {
-            if(tableNode.get("table").get("tableName").asText().equals(tableName)) {
+        for (final JsonNode tableNode : databaseTables) {
+            if (tableNode.get("table").get("tableName").asText().equals(tableName)) {
                 return tableNode.get("table");
             }
         }
-        log.error("findTableNode() ->  No table were found with given name" + tableName);
+        log.error("findTableNode() ->  No table were found with given name " + tableName);
         return null;
     }
     private static JsonNode findTableNode(String databaseName, String tableName) {
@@ -111,13 +117,24 @@ public class CatalogManager {
 
             // Check if a database exists with the given database name
             String currentDatabaseName = currentDatabaseNodeValue.asText();
-            if(currentDatabaseName.equals(databaseName)) {
+            if (currentDatabaseName.equals(databaseName)) {
                 return databaseNode;
             }
         }
 
         return null;
     }
+
+    public static List<String> getPrimaryKeys(String databaseName, String tableName) {
+        List<String> pks = new ArrayList<>();
+
+        // find the tableNode
+        JsonNode tableNode = findTableNode(databaseName, tableName);
+
+        ArrayNode primaryKeyArrayNode = (ArrayNode) tableNode.get("primaryKey").get("primaryKeyFields");
+        // System.out.println(primaryKeyArrayNode.toPrettyString());
+        for (JsonNode field : primaryKeyArrayNode) {
+            pks.add(field.asText());
 
     private static void updateRoot(){
         try {
@@ -126,4 +143,40 @@ public class CatalogManager {
             throw new RuntimeException(e);
         }
     }
+
+    public static List<String> getPrimaryKeyTypes(String databaseName, String tableName) {
+        ArrayList<String> col_type = (ArrayList<String>) getColumnTypes(databaseName, tableName);
+        ArrayList<String> col_name = (ArrayList<String>) getColumnNames(databaseName, tableName);
+        List<String> key_name = (ArrayList<String>) getPrimaryKeys(databaseName, tableName);
+
+        ArrayList<String> key_type = new ArrayList<>();
+        for(String key : key_name){
+            int index = col_name.indexOf(key);
+            if(index != -1) {
+                key_type.add(col_type.get(index));
+            } else {
+                log.warn("getPrimaryKeyTypes() " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
+            }
+        }
+        return key_type;
+    }
+
+    public static List<Integer> getPrimaryKeyIndexes(String databaseName, String tableName) {
+        ArrayList<String> col_type = (ArrayList<String>) getColumnTypes(databaseName, tableName);
+        ArrayList<String> col_name = (ArrayList<String>) getColumnNames(databaseName, tableName);
+        List<String> key_name = (ArrayList<String>) getPrimaryKeys(databaseName, tableName);
+
+        ArrayList<Integer> key_index = new ArrayList<>();
+        for(String key : key_name){
+            int index = col_name.indexOf(key);
+            if(index != -1) {
+                key_index.add(index);
+            } else {
+                log.warn("getPrimaryKeyTypes() " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
+            }
+        }
+        return key_index;
+    }
+
+
 }

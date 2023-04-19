@@ -2,6 +2,7 @@ package backend.recordHandling;
 
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.InvalidTypeException;
+import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -17,23 +18,11 @@ public class RecordHandler {
     private final ArrayList<String> tableStructure;
     private final RandomAccessFile io;
     public RecordHandler(String databaseName, String tableName) throws FileNotFoundException {
-        //some json magic here
-        //fileLocation = getFileLocation(databaseName, tableName)
-        //remove this
-        //String fileLocation = "records/testFile.bin";
-        String fileLocation = System.getProperty("user.dir") + "/src/main/resources/records/testFile.bin";
+        String fileLocation = CatalogManager.getTableDataPath(databaseName, tableName);
 
-        //some other json magic here :)
-        //tableStructure = getTableStructure(databaseName, tableName)
-        //remove this
-        tableStructure = new ArrayList<>();
-        tableStructure.add("int");
-        tableStructure.add("float");
-        tableStructure.add("long");
-        tableStructure.add("char(10)");
-        tableStructure.add("bool");
+        tableStructure = (ArrayList<String>) CatalogManager.getColumnTypes(databaseName, tableName);
 
-        recordSize = 1;
+        recordSize = 1 + tableStructure.size();
         for (String type : tableStructure) {
             recordSize += sizeof(type);
         }
@@ -57,7 +46,14 @@ public class RecordHandler {
 
         io.writeBoolean(true);
         for(int i = 0; i < values.size(); i++){
-            io.write(toBytes(tableStructure.get(i), values.get(i)));
+            if(values.get(i).equals("null")){
+                io.writeBoolean(false);
+                io.write(new byte[(int) sizeof(tableStructure.get(i))]);
+            }else{
+                io.writeBoolean(true);
+                io.write(toBytes(tableStructure.get(i), values.get(i)));
+            }
+
         }
     }
     public void deleteLine(int line) throws IOException {
@@ -91,9 +87,14 @@ public class RecordHandler {
         }
 
         for(String type : tableStructure){
+            boolean nullBit = io.readBoolean();
             byte[] bytes = new byte[(int)sizeof(type)];
             io.readFully(bytes);
-            values.add(decode(type, bytes));
+            if(nullBit){
+                values.add(decode(type, bytes));
+            }else{
+                values.add("null");
+            }
         }
 
         return values;
