@@ -4,12 +4,14 @@ import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.DatabaseModel;
 import backend.exceptions.databaseActionsExceptions.DatabaseDoesntExist;
+import backend.service.Utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.IOException;
 
 @Slf4j
@@ -23,8 +25,14 @@ public class DropDatabaseAction implements DatabaseAction {
 
     @Override
     public Object actionPerform() throws DatabaseDoesntExist {
+        // Check if master is being dropped
+        if(this.database.getDatabaseName().equals("master"))  {
+            log.info("Tried to delete 'master'!");
+            return null;
+        }
+
         // Object mapper with indented output
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        ObjectMapper mapper = Utility.getObjectMapper();
 
         // Json catalog -> Java JsonNode
         JsonNode rootNode;
@@ -52,6 +60,13 @@ public class DropDatabaseAction implements DatabaseAction {
 
             // If the current databaseName is equal to the deleted database
             if(currentDatabaseName.equals(this.database.getDatabaseName())) {
+                // Remove database folder
+                String databaseFolderPath = Config.getDbRecordsPath() + File.separator + this.database.getDatabaseName();
+                if(!Utility.deleteDirectory(new File(databaseFolderPath))) {
+                    log.error("Database directory=" + databaseFolderPath + " could not be deleted!");
+                    throw new RuntimeException();
+                }
+
                 // Remove database and write back
                 databasesArray.remove(removed_ind);
 
