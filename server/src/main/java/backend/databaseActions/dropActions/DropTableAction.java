@@ -4,12 +4,14 @@ import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.exceptions.databaseActionsExceptions.DatabaseDoesntExist;
 import backend.exceptions.databaseActionsExceptions.TableDoesntExist;
+import backend.service.Utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.IOException;
 
 @Slf4j
@@ -84,6 +86,13 @@ public class DropTableAction implements DatabaseAction {
         int remove_ind = 0;
         for(final JsonNode tableNode : databaseTables) {
             if(tableNode.get("table").get("tableName").asText().equals(this.tableName)) {
+                // Remove table folder
+                String tableFolderPath = Config.getDbRecordsPath() + File.separator + this.databaseName + File.separator + this.tableName;
+                if(!Utility.deleteDirectory(new File(tableFolderPath))) {
+                    log.error("Database directory=" + tableFolderPath + " could not be deleted!");
+                    throw new RuntimeException();
+                }
+
                 // Remove corresponding table node
                 databaseTables.remove(remove_ind);
 

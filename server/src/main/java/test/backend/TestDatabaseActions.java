@@ -122,19 +122,19 @@ public class TestDatabaseActions {
         test.createCarsTable("adatbazis_1");
         test.createPeopleTable("adatbazis_1");
 
-        DropDatabaseAction dropDatabaseAction = new DropDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
-        try {
-            dropDatabaseAction.actionPerform();
-        } catch (DatabaseDoesntExist e) {
-            System.out.println("Database doesn't exist!");
-        }
-
-//        DatabaseAction deleteTable = new DropTableAction("people", "master");
+//        DropDatabaseAction dropDatabaseAction = new DropDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
 //        try {
-//            deleteTable.actionPerform();
-//        } catch (Exception e) {
-//            System.out.println("nem jo!");
+//            dropDatabaseAction.actionPerform();
+//        } catch (DatabaseDoesntExist e) {
+//            System.out.println("Database doesn't exist!");
 //        }
+
+        DatabaseAction deleteTable = new DropTableAction("people", "adatbazis_1");
+        try {
+            deleteTable.actionPerform();
+        } catch (Exception e) {
+            System.out.println("nem jo!");
+        }
 
         // CreateTable
 //        test.createCarsTable();
