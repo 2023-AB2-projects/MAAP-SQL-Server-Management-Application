@@ -35,7 +35,7 @@ public class CatalogManager {
         return Config.getDbRecordsPath() + File.separator + databaseName + File.separator + tableName + File.separator + tableName + ".data.bin";
     }
 
-    private static JsonNode getRoot(){
+    private static JsonNode getRoot() {
         updateRoot();
         return root;
     }
@@ -55,6 +55,7 @@ public class CatalogManager {
 
         return columnNames;
     }
+
     public static List<String> getPrimaryKeys(String databaseName, String tableName) {
         List<String> pks = new ArrayList<>();
 
@@ -68,6 +69,7 @@ public class CatalogManager {
         }
         return pks;
     }
+
     public static List<String> getColumnTypes(String databaseName, String tableName) {
         ArrayList<String> columnNames = new ArrayList<>();
 
@@ -83,6 +85,40 @@ public class CatalogManager {
         return columnNames;
     }
 
+    public static List<String> getPrimaryKeyTypes (String databaseName, String tableName){
+        ArrayList<String> col_type = (ArrayList<String>) getColumnTypes(databaseName, tableName);
+        ArrayList<String> col_name = (ArrayList<String>) getColumnNames(databaseName, tableName);
+        List<String> key_name = (ArrayList<String>) getPrimaryKeys(databaseName, tableName);
+
+        ArrayList<String> key_type = new ArrayList<>();
+        for (String key : key_name) {
+            int index = col_name.indexOf(key);
+            if (index != -1) {
+                key_type.add(col_type.get(index));
+            } else {
+                log.warn("getPrimaryKeyTypes() " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
+            }
+        }
+        return key_type;
+    }
+
+    public static List<Integer> getPrimaryKeyIndexes (String databaseName, String tableName){
+        ArrayList<String> col_type = (ArrayList<String>) getColumnTypes(databaseName, tableName);
+        ArrayList<String> col_name = (ArrayList<String>) getColumnNames(databaseName, tableName);
+        List<String> key_name = (ArrayList<String>) getPrimaryKeys(databaseName, tableName);
+
+        ArrayList<Integer> key_index = new ArrayList<>();
+        for (String key : key_name) {
+            int index = col_name.indexOf(key);
+            if (index != -1) {
+                key_index.add(index);
+            } else {
+                log.warn("getPrimaryKeyTypes() " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
+            }
+        }
+        return key_index;
+    }
+
     private static JsonNode findTableNode(JsonNode databaseNode, String tableName) {
         // find the databases table nodes
         ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");
@@ -96,6 +132,7 @@ public class CatalogManager {
         log.error("findTableNode() ->  No table were found with given name " + tableName);
         return null;
     }
+
     private static JsonNode findTableNode(String databaseName, String tableName) {
         // find the database json node
         JsonNode databaseNode = findDatabaseNode(databaseName);
@@ -103,6 +140,7 @@ public class CatalogManager {
 
         return findTableNode(databaseNode, tableName);
     }
+
     private static JsonNode findDatabaseNode(String databaseName) {
         // Check if database exists
         ArrayNode databasesArray = (ArrayNode) getRoot().get(Config.getDbCatalogRoot());
@@ -125,58 +163,11 @@ public class CatalogManager {
         return null;
     }
 
-    public static List<String> getPrimaryKeys(String databaseName, String tableName) {
-        List<String> pks = new ArrayList<>();
-
-        // find the tableNode
-        JsonNode tableNode = findTableNode(databaseName, tableName);
-
-        ArrayNode primaryKeyArrayNode = (ArrayNode) tableNode.get("primaryKey").get("primaryKeyFields");
-        // System.out.println(primaryKeyArrayNode.toPrettyString());
-        for (JsonNode field : primaryKeyArrayNode) {
-            pks.add(field.asText());
-
-    private static void updateRoot(){
+    private static void updateRoot () {
         try {
             root = mapper.readTree(catalog);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
-    public static List<String> getPrimaryKeyTypes(String databaseName, String tableName) {
-        ArrayList<String> col_type = (ArrayList<String>) getColumnTypes(databaseName, tableName);
-        ArrayList<String> col_name = (ArrayList<String>) getColumnNames(databaseName, tableName);
-        List<String> key_name = (ArrayList<String>) getPrimaryKeys(databaseName, tableName);
-
-        ArrayList<String> key_type = new ArrayList<>();
-        for(String key : key_name){
-            int index = col_name.indexOf(key);
-            if(index != -1) {
-                key_type.add(col_type.get(index));
-            } else {
-                log.warn("getPrimaryKeyTypes() " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
-            }
-        }
-        return key_type;
-    }
-
-    public static List<Integer> getPrimaryKeyIndexes(String databaseName, String tableName) {
-        ArrayList<String> col_type = (ArrayList<String>) getColumnTypes(databaseName, tableName);
-        ArrayList<String> col_name = (ArrayList<String>) getColumnNames(databaseName, tableName);
-        List<String> key_name = (ArrayList<String>) getPrimaryKeys(databaseName, tableName);
-
-        ArrayList<Integer> key_index = new ArrayList<>();
-        for(String key : key_name){
-            int index = col_name.indexOf(key);
-            if(index != -1) {
-                key_index.add(index);
-            } else {
-                log.warn("getPrimaryKeyTypes() " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
-            }
-        }
-        return key_index;
-    }
-
-
 }

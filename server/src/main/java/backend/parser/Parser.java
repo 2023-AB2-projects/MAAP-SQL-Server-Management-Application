@@ -546,7 +546,7 @@ public class Parser {
         log.info(fieldNames.toString());
         log.info(values.toString());
 
-        return new InsertAction(tableName, databaseName, values);
+        return new InsertAction(databaseName, tableName, values);
     }
 
     private DeleteAction parseDeleteFrom(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
@@ -566,7 +566,7 @@ public class Parser {
         log.info(tableName);
         log.info(keys.toString());
 
-        DeleteAction da = new DeleteAction(tableName, databaseName, keys);
+        DeleteAction da = new DeleteAction(databaseName, tableName, keys);
         return da;
     }
 
