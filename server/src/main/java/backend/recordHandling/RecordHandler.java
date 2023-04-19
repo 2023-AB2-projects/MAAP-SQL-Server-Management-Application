@@ -20,7 +20,8 @@ public class RecordHandler {
         //some json magic here
         //fileLocation = getFileLocation(databaseName, tableName)
         //remove this
-        String fileLocation = "records/testFile.bin";
+        //String fileLocation = "records/testFile.bin";
+        String fileLocation = System.getProperty("user.dir") + "/src/main/resources/records/testFile.bin";
 
         //some other json magic here :)
         //tableStructure = getTableStructure(databaseName, tableName)
@@ -39,13 +40,13 @@ public class RecordHandler {
         io = new RandomAccessFile(fileLocation, "rw");
     }
     public void insert(ArrayList<String> values, int line) throws IOException {
-        if(values.size() != tableStructure.size()){
+        if (values.size() != tableStructure.size()){
             log.info("Wrong length of values");
             return;
         }
         long offset = line * recordSize;
         io.seek(offset);
-        if(io.length() > offset){
+        if (io.length() > offset){
             boolean deletionByte = io.readBoolean();
             if(deletionByte){
                 log.info("Invalid location for write");

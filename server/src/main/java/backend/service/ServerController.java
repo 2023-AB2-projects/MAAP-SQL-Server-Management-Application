@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,6 +120,7 @@ public class ServerController {
     private void init() {
         setCurrentDatabaseName("master");       // By default, "master"
         initVariables();
+        initRecordsFolder();
         accessCatalog();
         updateRootNodeAndNamesList();
     }
@@ -165,6 +168,16 @@ public class ServerController {
         this.objectMapper.writeValue(catalog, rootNode);
     }
 
+    private void initRecordsFolder() {
+        // Init records folder containing records for each database and table
+        try {
+            Files.createDirectories(Paths.get(Config.getDbRecordsPath()));
+        } catch (IOException e) {
+            log.error("Could not create 'records' folder -> IO exception!");
+            throw new RuntimeException(e);
+        }
+    }
+
     private String databaseNamesSimple() {
         StringBuilder simple = new StringBuilder();
         for(int i = 0; i < this.databaseNames.size(); ++i) {
@@ -183,8 +196,10 @@ public class ServerController {
         log.info("Client Connected");
         String shutdownMsg = "SHUTDOWN";
 
-        serverConnection.send(this.databaseNamesSimple());
+        String jsonText = Files.readString(Config.getCatalogFile().toPath());
+        serverConnection.send(jsonText);
 
+        // communication
         while(true){
             try{
                 String msg = serverConnection.receive();
@@ -202,18 +217,21 @@ public class ServerController {
 
                 commandHandler.processCommand();
 
-                // update available databases for every command
-                serverConnection.send(this.databaseNamesSimple());
+                // 1. Send JSON Catalog
+                jsonText = Files.readString(Config.getCatalogFile().toPath());
+                serverConnection.send(jsonText);
 
-                // build a response string, send to client
+                // 2. Send message
                 serverConnection.send(getResponse());
-
 
             } catch (NullPointerException e){
                 serverConnection.stop();
                 log.info("Client Disconnected");
                 serverConnection.start();
-                serverConnection.send(databaseNames.toString());
+
+                jsonText = Files.readString(Config.getCatalogFile().toPath());
+                serverConnection.send(jsonText);
+
                 log.info("Client Connected");
             } catch (SocketException socketException) {
                 // Handled socket exception
@@ -221,7 +239,10 @@ public class ServerController {
                 serverConnection.stop();
                 log.info("Client Disconnected - Reason: Socket Error (Most likely disconnected)");
                 serverConnection.start();
-                serverConnection.send(databaseNames.toString());
+
+                jsonText = Files.readString(Config.getCatalogFile().toPath());
+                serverConnection.send(jsonText);
+
                 log.info("Client Connected");
             }
         }

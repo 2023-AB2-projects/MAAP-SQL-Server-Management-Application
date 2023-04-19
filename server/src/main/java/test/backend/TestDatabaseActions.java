@@ -9,14 +9,16 @@ import backend.databaseActions.dropActions.DropTableAction;
 import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.*;
 import backend.exceptions.databaseActionsExceptions.*;
+import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 @Slf4j
 public class TestDatabaseActions {
     public TableModel createPeopleTableModel() {
-        String tableName = "People", fileName = "PeopleTableFile";
+        String tableName = "people", fileName = "";
         int rowLength = 50;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
             add(new FieldModel("id", "int", 0, false, false));
@@ -26,7 +28,7 @@ public class TestDatabaseActions {
         }};
         PrimaryKeyModel primaryKey = new PrimaryKeyModel(new ArrayList<>(){{ add("id"); }});
         ArrayList<ForeignKeyModel> foreignKeys = new ArrayList<>(){{
-            add(new ForeignKeyModel("Cars", new ArrayList<>() {{
+            add(new ForeignKeyModel("cars", new ArrayList<>() {{
                 add("id");
             }}, new ArrayList<>(){{
                 add("id");
@@ -67,7 +69,7 @@ public class TestDatabaseActions {
 
     public void createCarsTable() {
         // Other table
-        String databaseName = "master", tableName = "Cars", fileName = "CarsTableFile";
+        String databaseName = "master", tableName = "cars", fileName = "CarsTableFile";
         int rowLength = 100;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
             add(new FieldModel("id", "int", 0, false, false));
@@ -104,21 +106,31 @@ public class TestDatabaseActions {
     public static void main(String[] args) {
         TestDatabaseActions test = new TestDatabaseActions();
 
+        test.createPeopleTable();
+        DatabaseAction deleteTable = new DropTableAction("people", "master");
+        try {
+            deleteTable.actionPerform();
+        } catch (Exception e) {
+            System.out.println("nem jo!");
+        }
+
         // CreateTable
 //        test.createCarsTable();
 //        test.createPeopleTable();
 
         // Create Database
-        DatabaseModel newDatabase = new DatabaseModel();
-        newDatabase.setDatabaseName("OtherDatabase2");
-        DatabaseAction createDatabase = new CreateDatabaseAction(newDatabase);
-        try {
-            createDatabase.actionPerform();
-        } catch (DatabaseNameAlreadyExists e) {
-            log.info("CreateDatabaseAction -> DatabaseAlreadyExists");
-        } catch (Exception e) {
-            log.error("ERROR -> CreateDatabaseAction should now throw this!");
-        }
+//        DatabaseModel newDatabase = new DatabaseModel();
+//        newDatabase.setDatabaseName("OtherDatabase2");
+//        DatabaseAction createDatabase = new CreateDatabaseAction(newDatabase);
+//        try {
+//            createDatabase.actionPerform();
+//        } catch (DatabaseNameAlreadyExists e) {
+//            log.info("CreateDatabaseAction -> DatabaseAlreadyExists");
+//        } catch (Exception e) {
+//            log.error("ERROR -> CreateDatabaseAction should now throw this!");
+//        }
+
+
 
         // Use Database
 //        DatabaseAction useDatabase = new UseDatabaseAction(new DatabaseModel("master", new ArrayList<>()));

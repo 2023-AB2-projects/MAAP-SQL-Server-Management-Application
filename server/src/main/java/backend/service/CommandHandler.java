@@ -61,6 +61,12 @@ public class CommandHandler {
             serverController.setCurrentDatabaseName((String) returnValue);
             serverController.setResponse("Now using " + returnValue);
         }
+        if (databaseAction instanceof InsertAction) {
+            serverController.setResponse("InsertAction parsed sucessfully");
+        }
+        if (databaseAction instanceof DeleteAction) {
+            serverController.setResponse("DeleteAction parsed succesfully");
+        }
     }
 
     private void updateControllerNodes(Exception e) {
