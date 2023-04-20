@@ -38,7 +38,11 @@ public class ServerController {
     // Variables
     @Getter
     @Setter
-    private String sqlCommand, response, currentDatabaseName;
+    private String sqlCommand, response;
+
+    @Getter
+    @Setter
+    private static String currentDatabaseName;
 
     @Getter
     @Setter
