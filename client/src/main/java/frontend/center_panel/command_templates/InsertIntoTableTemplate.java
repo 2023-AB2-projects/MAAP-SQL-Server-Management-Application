@@ -4,7 +4,7 @@ public class InsertIntoTableTemplate {
     @Override
     public String toString() {
         return """
-               INSERT INTO table_name(value_1, value_2)
+               INSERT INTO table_name
                VALUES (value_1, value_2)
                """;
     }
