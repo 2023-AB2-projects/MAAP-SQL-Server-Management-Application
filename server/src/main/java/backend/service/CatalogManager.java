@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 @Slf4j
 public class CatalogManager {
@@ -117,6 +118,35 @@ public class CatalogManager {
             }
         }
         return key_index;
+    }
+
+    public static List<String> getCurrentDatabaseTableNames() {
+        List<String> tableNames = new ArrayList<>();
+
+        // get the current database node
+        JsonNode currentDatabaseNode = findDatabaseNode(ServerController.getCurrentDatabaseName());
+        // find the databases table nodes
+        ArrayNode databaseTables = (ArrayNode) currentDatabaseNode.get("database").get("tables");
+
+        // save each tableName
+        for (final JsonNode tableNode : databaseTables) {
+            String tableName = tableNode.get("table").get("tableName").asText();
+            tableNames.add(tableName);
+        }
+        return tableNames;
+    }
+
+    public static List<String> getDatabaseNames() {
+        List<String> databaseNames = new ArrayList<>();
+
+        // find the databases json array node
+        ArrayNode databasesArray = (ArrayNode) getRoot().get(Config.getDbCatalogRoot());
+        for (final JsonNode databaseNode : databasesArray) {
+            // For each "Database" node find the name of the database
+            String databaseName = databaseNode.get("database").get("databaseName").asText();
+            databaseNames.add(databaseName);
+        }
+        return databaseNames;
     }
 
     private static JsonNode findTableNode(JsonNode databaseNode, String tableName) {
