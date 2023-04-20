@@ -21,10 +21,10 @@ public class TestDatabaseActions {
         String tableName = "people", fileName = "people.data.bin";
         int rowLength = 50;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
-            add(new FieldModel("id", "int", 0, false, false));
-            add(new FieldModel("name", "char", 100, false, true));
-            add(new FieldModel("age", "int", 0, false, true));
-            add(new FieldModel("height", "int", 0, false, true));
+            add(new FieldModel("id", "int", false));
+            add(new FieldModel("name", "char(100)", true));
+            add(new FieldModel("age", "int", true));
+            add(new FieldModel("height", "int", true));
         }};
         PrimaryKeyModel primaryKey = new PrimaryKeyModel(new ArrayList<>(){{ add("id"); }});
         ArrayList<ForeignKeyModel> foreignKeys = new ArrayList<>(){{
@@ -38,7 +38,7 @@ public class TestDatabaseActions {
         ArrayList<String> uniqueAttributes = new ArrayList<>(){{
             add("name");
         }};
-        return new TableModel(tableName, fileName, rowLength, fields, primaryKey,
+        return new TableModel(tableName, fileName, fields, primaryKey,
                 foreignKeys, uniqueAttributes, indexFiles);
     }
 
@@ -71,15 +71,15 @@ public class TestDatabaseActions {
         String tableName = "cars", fileName = "cars.data.bin";
         int rowLength = 100;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
-            add(new FieldModel("id", "int", 0, false, false));
-            add(new FieldModel("name", "char", 100, false, true));
+            add(new FieldModel("id", "int", false));
+            add(new FieldModel("name", "char(100)", true));
         }};
         PrimaryKeyModel primaryKey = new PrimaryKeyModel(new ArrayList<>(){{ add("id"); }});
         ArrayList<ForeignKeyModel> foreignKeys = new ArrayList<>();
         ArrayList<IndexFileModel> indexFiles = new ArrayList<>();
         ArrayList<String> uniqueAttributes = new ArrayList<>();
 
-        TableModel table = new TableModel(tableName, fileName, rowLength, fields, primaryKey,
+        TableModel table = new TableModel(tableName, fileName, fields, primaryKey,
                 foreignKeys, uniqueAttributes, indexFiles);
 
         CreateTableAction createTable = new CreateTableAction(table, databaseName);

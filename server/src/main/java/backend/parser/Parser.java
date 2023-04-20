@@ -30,18 +30,6 @@ public class Parser {
         "int", "float", "bit", "date", "datetime", "char"
     };
 
-    private static Map<String, Integer> typeSizes = new HashMap<>();
-    static {
-        //Map<String, Integer> typeSizes = new HashMap<>();
-        typeSizes.put("int", Integer.BYTES);
-        typeSizes.put("float", Float.BYTES);
-        typeSizes.put("bit", 1);
-        //typeSizes.put("date", );
-        //typeSizes.put("datetime", );
-        //typeSizes.put("char", );
-        typeSizes = Collections.unmodifiableMap(typeSizes);
-    }
-
     /**
      * @param token
      * @return boolean if given token is keyword or not
@@ -196,12 +184,11 @@ public class Parser {
         // Used for constructing multiple AttributeModels
         String fieldName = "";
         String fieldType = "";
-        int fieldLength = 0;
+        boolean nullable = true;
 
         // used for constructing TableModel
         String                      tableName           = null;
         String                      fileName            = "";
-        int                         rowLength           = 0;
         ArrayList<FieldModel>       attributes          = new ArrayList<FieldModel>();
         PrimaryKeyModel             primaryKey          = null;
         ArrayList<ForeignKeyModel>  foreignKeys         = new ArrayList<ForeignKeyModel>();
@@ -211,15 +198,18 @@ public class Parser {
         // used for costructing PrimaryKeyModel
         ArrayList<String>           primaryKeyAttributes = new ArrayList<String>();
 
+        boolean grace = true;
         CreateTableStates state = CreateTableStates.GET_TABLE_NAME;
         try {
-            while (it.hasNext()) {
+            while (it.hasNext() || grace) {
+                if (!it.hasNext()) {
+                    grace = false;
+                }
                 switch (state) {
                 case GET_TABLE_NAME:
                     // check if table name is valid
-                    if (checkName(it.peek(), NAME_TYPE.TABLE)) {
-                        tableName = it.next();
-                    }
+                    tableName = it.next();
+                    checkName(tableName, NAME_TYPE.TABLE);
 
                     // if no more tokens after table name we can exit (table is specified without any fields, constraints)
                     if (!it.hasNext()) {
@@ -242,6 +232,8 @@ public class Parser {
 
                     checkName(fieldName, NAME_TYPE.COLUMN);
 
+                    nullable = true;
+
                     if (!isValidFieldType(fieldType)) {
                         throw(new SQLParseException("Invalid field type: \"" + fieldType + "\""));
                     }
@@ -252,6 +244,7 @@ public class Parser {
                         }
                         
                         String len = it.next();
+                        int fieldLength;
                         try {
                             fieldLength = Integer.parseInt(len);
                         } catch (NumberFormatException e) {
@@ -261,46 +254,32 @@ public class Parser {
                         if (!it.next().equals(")")) {
                             throw(new SQLParseException("Expected length of char attribute in parentheses -> (len)"));
                         }
-                    }
-                    else {
-                        fieldLength = typeSizes.get(fieldType);
-                    }
-                    rowLength += fieldLength;
 
-                    if (it.peek().equals(")")) {
-                        //log.info("Finished reading all fields");
-                        state = CreateTableStates.CLOSING_BRACKET;
+                        fieldType = fieldType + "(" + fieldLength + ")";
                     }
-                    else if (it.peek().equals(",")) {
-                        //log.info("Finished reading field");
-                        state = CreateTableStates.COMMA;
-                    }
-                    else {
-                        state = CreateTableStates.GET_FIELD_CONSTRAINTS;
-                    }
+
+                    state = CreateTableStates.GET_FIELD_CONSTRAINTS;
                     break;
                     
                 case GET_FIELD_CONSTRAINTS:
-                    if (it.peek().equals("unique")) {
+                    String token = it.next();
+
+                    if (token.equals("unique")) {
                         uniqueAttributes.add(fieldName);
-                        it.next();
+                        nullable = false;
                         break;
                     }
-                    else if (it.peek().equals("primary")) {
-                        it.next();
-
-                        String token = it.next();
+                    else if (token.equals("primary")) {
                         if (it.next().equals("key")) {
                             primaryKeyAttributes.add(fieldName);
+                            nullable = false;
                         }
                         else {
                             throw(new SQLParseException("Unknown constraint foreign " + token));
                         }
                         break;
                     }
-                    else if (it.peek().equals("foreign")) {
-                        it.next();
-
+                    else if (token.equals("foreign")) {
                         String tokenFirst = it.next();
                         String tokenSecond = it.next();
                         if (!tokenFirst.equals("key") || !tokenSecond.equals("references")) {
@@ -322,26 +301,25 @@ public class Parser {
                         foreignKeys.add(fkm);
                         break;
                     }
-                    else if (it.peek().equals(",")) {
+                    else if (token.equals(",")) {
                         state = CreateTableStates.COMMA;
                         break;
                     }
-                    else if (it.peek().equals(")")) {
+                    else if (token.equals(")")) {
                         state = CreateTableStates.CLOSING_BRACKET;
                         break;
                     }
                     else {
-                        throw new SQLParseException("Undefined constraint: " + it.peek());
+                        throw new SQLParseException("Undefined constraint: " + token);
                     }                    
                     //break;
 
                 case COMMA, CLOSING_BRACKET:
-                    attributes.add(new FieldModel(fieldName, fieldType, fieldLength, false, false));
-                    it.next();
+                    attributes.add(new FieldModel(fieldName, fieldType, nullable));
 
                     fieldName = "";
                     fieldType = "";
-                    fieldLength = 0;
+                    nullable = true;
 
                     if (state == CreateTableStates.CLOSING_BRACKET) {
                         if (it.hasNext()) {
@@ -366,7 +344,7 @@ public class Parser {
         
         fileName = tableName + ".data.bin";
         primaryKey = new PrimaryKeyModel(primaryKeyAttributes);
-        TableModel tableModel = new TableModel(tableName, fileName, rowLength, attributes, primaryKey, foreignKeys, uniqueAttributes, indexFiles);
+        TableModel tableModel = new TableModel(tableName, fileName, attributes, primaryKey, foreignKeys, uniqueAttributes, indexFiles);
         CreateTableAction cta = new CreateTableAction(tableModel, databaseName);
         return cta;
     }
@@ -419,10 +397,13 @@ public class Parser {
 
         ArrayList<String> currentValues = null;
 
+        boolean grace = true;
         InsertIntoStates state = InsertIntoStates.GET_TABLE_NAME;
         try {
-            loop: 
-            while (it.hasNext() || state == InsertIntoStates.CLOSING_BRACKET) {
+            while (it.hasNext() || grace) {
+                if (!it.hasNext()) {
+                    grace = false;
+                }
                 switch (state) {
                     // called once for table name at start
                     case GET_TABLE_NAME: {
@@ -433,6 +414,12 @@ public class Parser {
                         tableName = it.next();
                         checkName(tableName, NAME_TYPE.TABLE);
                         
+                        String nextToken = it.peek();
+                        if (!nextToken.equals("(")) {
+                            state = InsertIntoStates.GET_VALUES;
+                            break;
+                        }
+
                         if (!it.hasNext() || !it.next().equals("(")) {
                             throw new SQLParseException("Expected a list of attribute names after table name. e.g.: table(field1, field2, ...)");
                         }
@@ -499,21 +486,9 @@ public class Parser {
                         }
                     }
                     case CLOSING_BRACKET: {
-                        if (currentValues == null) {
-                            log.info("current: NULL you fucking piece of shit");
-                        }
-                        else {
-                            log.info("current: " + currentValues.toString());
-                        }
                         if (currentValues != null) {
                             values.add(currentValues);
                             currentValues = null;
-                        }
-                        if (values == null) {
-                            log.info("all: NULL you fucking piece of shit");
-                        }
-                        else {
-                            log.info("all: " + values.toString());
                         }
                         
                         if (it.hasNext()) {
@@ -530,8 +505,9 @@ public class Parser {
                             state = InsertIntoStates.GET_VALUES;
                             break;
                         }
-
-                        break loop;
+                        else {
+                            grace = false;
+                        }
                     }
                     default: {
                         break;
