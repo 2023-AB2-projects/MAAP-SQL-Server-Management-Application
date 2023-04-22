@@ -1,30 +1,27 @@
 package backend.recordHandling;
 
+import backend.Indexing.IndexFIleHandler;
+import backend.Indexing.Key;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 
 @Slf4j
 public class test {
     public static void main(String[] args) throws IOException, InvalidReadException, RecordNotFoundException {
-        ArrayList<String> values = new ArrayList<>();
-        values.add("1");
-        values.add("null");
-        RecordInserter recordInserter = new RecordInserter("master", "cars");
-        recordInserter.insert(values);
-        recordInserter.close();
+        byte[] bytes = {0,0,0,1,0,0,0,1};
+        ArrayList<String> types = new ArrayList<>();
+        types.add("int");
+        types.add("float");
 
-        RecordHandler recordHandler = new RecordHandler("master", "cars");
-        System.out.println(recordHandler.readLine(2));
-//        ArrayList<String> key = new ArrayList<>();
-//        key.add("0");
-
-//        RecordDeleter recordDeleter = new RecordDeleter("master", "cars");
-//        recordDeleter.deleteByPrimaryKey(key);
-//        recordDeleter.close();
+        Key key = new Key(bytes, types);
+        System.out.println(Arrays.toString(key.toBytes()));
     }
 }
