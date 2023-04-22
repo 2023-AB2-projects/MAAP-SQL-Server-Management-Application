@@ -12,11 +12,9 @@ public class ByteConverter {
     public static long sizeof(String type){
         switch (type) {
             case "int" -> { return Integer.BYTES; }
-            case "long" -> { return Long.BYTES; }
             case "float" -> { return Float.BYTES; }
-            case "double" -> { return Double.BYTES; }
             case "char" -> { return Character.BYTES; }
-            case "bool" -> { return 1;}
+            case "bit" -> { return 1;}
             default -> {
                 Pattern pattern = Pattern.compile("char\\((\\d+)\\)");
                 Matcher matcher = pattern.matcher(type);
@@ -37,73 +35,22 @@ public class ByteConverter {
         }
         return sum;
     }
-    public static byte[] toBytes(String type, String value){
-        ByteBuffer buffer;
-        switch (type) {
-            case "int" -> {
-                buffer = ByteBuffer.allocate(Integer.BYTES);
-                buffer.putInt(Integer.parseInt(value));
-                return buffer.array();
-            }
-            case "long" -> {
-                buffer = ByteBuffer.allocate(Long.BYTES);
-                buffer.putLong(Long.parseLong(value));
-                return buffer.array();
-            }
-            case "float" -> {
-                buffer = ByteBuffer.allocate(Float.BYTES);
-                buffer.putFloat(Float.parseFloat(value));
-                return buffer.array();
-            }
-            case "double" -> {
-                buffer = ByteBuffer.allocate(Double.BYTES);
-                buffer.putDouble(Double.parseDouble(value));
-                return buffer.array();
-            }
-            case "char" -> {
-                buffer = ByteBuffer.allocate(Character.BYTES);
-                buffer.putChar(value.charAt(0));
-                return buffer.array();
-            }
-            case "bool" -> {
-                byte[] b = new byte[1];
-                if (value.equals("true") || value.equals("1")) {
-                    b[0] = 1;
-                }
-                return b;
-            }
-            default -> {
-                try {
-                    return RecordStandardizer.formatString(value, type).getBytes(StandardCharsets.US_ASCII);
-                }catch (InvalidTypeException e){
-                    return new byte[0];
-                }
-
-            }
-        }
-    }
     public static String decode(String type, byte[] bytes){
         switch (type) {
             case "int" -> {
                 return Integer.toString(ByteBuffer.wrap(bytes).getInt());
             }
-            case "long" -> {
-                return Long.toString(ByteBuffer.wrap(bytes).getLong());
-            }
             case "float" -> {
                 return Float.toString(ByteBuffer.wrap(bytes).getFloat());
-            }
-            case "double" -> {
-                return Double.toString(ByteBuffer.wrap(bytes).getDouble());
             }
             case "char" -> {
                 return Character.toString(ByteBuffer.wrap(bytes).getChar());
             }
-            case "bool" -> {
+            case "bit" -> {
                 if(bytes[0] == 0){
-                    return "false";
+                    return "0";
                 }
-                return "true";
+                return "1";
             }
             default -> {
                 Pattern pattern = Pattern.compile("char\\((\\d+)\\)");
@@ -162,6 +109,41 @@ public class ByteConverter {
 
         return values;
     }
+    public static byte[] toBytes(String type, String value){
+        ByteBuffer buffer;
+        switch (type) {
+            case "int" -> {
+                buffer = ByteBuffer.allocate(Integer.BYTES);
+                buffer.putInt(Integer.parseInt(value));
+                return buffer.array();
+            }
+            case "float" -> {
+                buffer = ByteBuffer.allocate(Float.BYTES);
+                buffer.putFloat(Float.parseFloat(value));
+                return buffer.array();
+            }
+            case "char" -> {
+                buffer = ByteBuffer.allocate(Character.BYTES);
+                buffer.putChar(value.charAt(0));
+                return buffer.array();
+            }
+            case "bit" -> {
+                byte[] b = new byte[1];
+                if (value.equals("1")) {
+                    b[0] = 1;
+                }
+                return b;
+            }
+            default -> {
+                try {
+                    return RecordStandardizer.formatString(value, type).getBytes(StandardCharsets.US_ASCII);
+                }catch (InvalidTypeException e){
+                    return new byte[0];
+                }
+
+            }
+        }
+    }
     public static byte[] toBytes(String type, Object value){
         if(value == null){
             throw new RuntimeException();
@@ -173,19 +155,9 @@ public class ByteConverter {
                 buffer.putInt((Integer) value);
                 return buffer.array();
             }
-            case "long" -> {
-                buffer = ByteBuffer.allocate(Long.BYTES);
-                buffer.putLong((Long) value);
-                return buffer.array();
-            }
             case "float" -> {
                 buffer = ByteBuffer.allocate(Float.BYTES);
                 buffer.putFloat((Float) value);
-                return buffer.array();
-            }
-            case "double" -> {
-                buffer = ByteBuffer.allocate(Double.BYTES);
-                buffer.putDouble((Double) value);
                 return buffer.array();
             }
             case "char" -> {
@@ -193,11 +165,9 @@ public class ByteConverter {
                 buffer.putChar((Character) value);
                 return buffer.array();
             }
-            case "bool" -> {
+            case "bit" -> {
                 byte[] b = new byte[1];
-                if ((boolean) value) {
-                    b[0] = 1;
-                }
+                b[0] = (byte) value;
                 return b;
             }
             default -> {
