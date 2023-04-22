@@ -1,11 +1,14 @@
 package backend.Indexing;
 
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Stack;
 
+@Slf4j
 public class BPlusTree {
     private IndexFileHandler io;
     private ArrayList<String> keyStructure;
@@ -34,19 +37,28 @@ public class BPlusTree {
     }
 
     public void insert(Key key, int pointer) throws IOException {
+        Stack<Integer> pointers = new Stack<>();
+        pointers.add(io.getRootPointer());
+
         TreeNode node = io.readRoot();
         while(!node.isLeaf()){
-            node = io.readTreeNode(node.findNextNode(key));
+            int nodePointer = node.findNextNode(key);
+            node = io.readTreeNode(nodePointer);
+            pointers.add(nodePointer);
         }
 
         if(node.isAlmostFull()){
             node.insertIntoLeaf(key, pointer);
-            TreeNode rightNode = node.splitLeaf(1);
+            int splitLocation = io.getEmptyNodePointer();
+            TreeNode rightNode = node.splitLeaf(splitLocation);
+            log.info(node.toString());
+            log.info(rightNode.toString());
+
 
         }else {
             node.insertIntoLeaf(key, pointer);
-            //change later
-            io.writeNode(node, 0);
+            log.info(node.toString());
+            io.writeNode(node, pointers.pop());
         }
     }
 

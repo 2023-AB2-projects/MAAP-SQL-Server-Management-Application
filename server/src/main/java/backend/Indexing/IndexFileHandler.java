@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class IndexFileHandler {
     private final RandomAccessFile io;
     private ArrayList<String> keyStructure;
-    private int nodeSize, headerSize, emptyNodeLocation;
+    private int nodeSize, headerSize;
     private final String databaseName, tableName, indexName;
 
     public IndexFileHandler(String databaseName, String tableName, String indexName) throws IOException {
@@ -63,6 +63,13 @@ public class IndexFileHandler {
         io.seek(0);
         return io.readInt();
     }
+
+    public int getEmptyNodePointer() throws IOException {
+        //get empty pointer for empty places from catalog, otherwise return pointer to end of file
+
+        return (int) ((io.length() - headerSize) / nodeSize);
+    }
+
     private int getOffset(int line){
         return headerSize + nodeSize * line;
     }
