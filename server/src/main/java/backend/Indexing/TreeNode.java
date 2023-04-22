@@ -123,7 +123,6 @@ public class TreeNode {
         pointers = newPointers;
         keyCount++;
     }
-
     public TreeNode splitLeaf(int splitLocation){
         ArrayList<Key> leftKeys = new ArrayList<>(), rightKeys = new ArrayList<>();
         ArrayList<Integer> leftPointers = new ArrayList<>(), rightPointers = new ArrayList<>();
@@ -144,16 +143,15 @@ public class TreeNode {
         keyCount = Consts.D;
         return node;
     }
-
     public boolean isAlmostFull(){
         return keyCount == Consts.D * 2 - 1;
     }
-
     public boolean isTooSmall(){
         return keyCount < Consts.D;
     }
-
-
+    public Key getSmallestKey(){
+        return keys.get(0);
+    }
     @Override
     public String toString() {
         return "TreeNode{" +

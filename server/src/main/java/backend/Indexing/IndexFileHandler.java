@@ -15,22 +15,26 @@ public class IndexFileHandler {
     private int nodeSize, headerSize, emptyNodeLocation;
     private final String databaseName, tableName, indexName;
 
-    public IndexFileHandler(String databaseName, String tableName, String indexName) throws FileNotFoundException {
+    public IndexFileHandler(String databaseName, String tableName, String indexName) throws IOException {
         this.databaseName = databaseName;
         this.tableName = tableName;
         this.indexName = indexName;
-
+        this.headerSize = Integer.BYTES;
         //get keyStructure from catalog
         //remove later
         keyStructure = new ArrayList<>();
         keyStructure.add("int");
 
-        headerSize = 0;
         int keySize = (int)ByteConverter.sizeofStructure(keyStructure);
         nodeSize = 1 + Integer.BYTES + (2 * Consts.D) * keySize + (2 * Consts.D + 1) * Integer.BYTES;
 
         String filename = Config.getDbRecordsPath() + File.separator + "test.index.bin";
         io = new RandomAccessFile(filename, "rw");
+
+        if(io.length() == 0){
+            io.writeInt(0);
+        }
+
     }
 
     public void writeNode(TreeNode node, int line) throws IOException {
@@ -48,9 +52,17 @@ public class IndexFileHandler {
     }
 
     public TreeNode readRoot() throws IOException {
-        return readTreeNode(0);
+        return readTreeNode(getRootPointer());
     }
 
+    public void setRootPointer(int rootPointer) throws IOException {
+        io.seek(0);
+        io.writeInt(rootPointer);
+    }
+    public int getRootPointer() throws IOException {
+        io.seek(0);
+        return io.readInt();
+    }
     private int getOffset(int line){
         return headerSize + nodeSize * line;
     }
