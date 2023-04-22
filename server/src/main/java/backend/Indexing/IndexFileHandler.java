@@ -9,13 +9,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
-public class IndexFIleHandler {
+public class IndexFileHandler {
     private final RandomAccessFile io;
     private ArrayList<String> keyStructure;
     private int nodeSize, headerSize, emptyNodeLocation;
     private final String databaseName, tableName, indexName;
 
-    public IndexFIleHandler(String databaseName, String tableName, String indexName) throws FileNotFoundException {
+    public IndexFileHandler(String databaseName, String tableName, String indexName) throws FileNotFoundException {
         this.databaseName = databaseName;
         this.tableName = tableName;
         this.indexName = indexName;
@@ -45,6 +45,10 @@ public class IndexFIleHandler {
         byte[] bytes = new byte[nodeSize];
         io.readFully(bytes);
         return new TreeNode(bytes, keyStructure);
+    }
+
+    public TreeNode readRoot() throws IOException {
+        return readTreeNode(0);
     }
 
     private int getOffset(int line){

@@ -37,4 +37,9 @@ public class Key implements Comparable<Key> {
         }
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return key.toString();
+    }
 }

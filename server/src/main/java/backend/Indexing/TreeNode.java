@@ -1,5 +1,6 @@
 package backend.Indexing;
 
+import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.recordHandling.ByteConverter;
 import lombok.Data;
 import lombok.Getter;
@@ -10,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class TreeNode {
+    @Getter
+    @Setter
     private boolean isLeaf;
     private int keyCount;
     private ArrayList<Key> keys;
@@ -27,6 +30,7 @@ public class TreeNode {
         nodeSize = 1 + Integer.BYTES + (2 * Consts.D) * keySize + (2 * Consts.D + 1) * Integer.BYTES;
         keys = new ArrayList<>();
         pointers = new ArrayList<>();
+        pointers.add(Consts.nullPointer);
     }
     public TreeNode(boolean isLeaf, int keyCount, ArrayList<Key> keys, ArrayList<Integer> pointers, ArrayList<String> keyStructure) {
         this.isLeaf = isLeaf;
@@ -72,17 +76,70 @@ public class TreeNode {
             buffer.putInt(pointers.get(i));
             buffer.put(keys.get(i).toBytes());
         }
+
         buffer.putInt(pointers.get(keyCount));
 
         return buffer.array();
     }
 
-    public boolean isFull(){
-        return keyCount == Consts.D * 2;
+    public int findNextNode(Key key){
+        for(int i = 0; i < keyCount; i++){
+            if(key.compareTo(keys.get(i)) < 0){
+                return pointers.get(i);
+            }
+        }
+        return pointers.get(keyCount);
+    }
+
+    public int findKeyInLeaf(Key key) throws RecordNotFoundException {
+        for(int i = 0; i < keyCount; i++){
+            if(key.compareTo(keys.get(i)) == 0){
+                return pointers.get(i);
+            }
+        }
+        throw new RecordNotFoundException();
+    }
+
+    public void insertIntoLeaf(Key key, int pointer){
+        ArrayList<Key> newKeys = new ArrayList<>();
+        ArrayList<Integer> newPointers = new ArrayList<>();
+
+        int i = 0;
+        while(i < keyCount && key.compareTo(keys.get(i)) > 0){
+            newKeys.add(keys.get(i));
+            newPointers.add(pointers.get(i));
+            i++;
+        }
+        newKeys.add(key);
+        newPointers.add(pointer);
+        while(i < keyCount){
+            newKeys.add(keys.get(i));
+            newPointers.add(pointers.get(i));
+            i++;
+        }
+        newPointers.add(pointers.get(keyCount));
+
+        keys = newKeys;
+        pointers = newPointers;
+        keyCount++;
+    }
+
+    public boolean isAlmostFull(){
+        return keyCount == Consts.D * 2 - 1;
     }
 
     public boolean isTooSmall(){
         return keyCount < Consts.D;
     }
 
+
+    @Override
+    public String toString() {
+        return "TreeNode{" +
+                "isLeaf=" + isLeaf +
+                ", keyCount=" + keyCount +
+                ", keys=" + keys +
+                ", pointers=" + pointers +
+                '}';
+    }
 }
