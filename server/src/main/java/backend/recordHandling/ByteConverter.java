@@ -1,6 +1,7 @@
 package backend.recordHandling;
 
 import backend.exceptions.recordHandlingExceptions.InvalidTypeException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class ByteConverter {
     public static long sizeof(String type){
         switch (type) {
@@ -80,11 +82,11 @@ public class ByteConverter {
             case "char" -> {
                 return ByteBuffer.wrap(bytes).getChar();
             }
-            case "bool" -> {
+            case "bit" -> {
                 if(bytes[0] == 0){
-                    return 0;
+                    return (byte) 0;
                 }
-                return 1;
+                return (byte) 1;
             }
             default -> {
                 Pattern pattern = Pattern.compile("char\\((\\d+)\\)");
@@ -186,5 +188,31 @@ public class ByteConverter {
         }
 
         return buffer.array();
+    }
+    public static int compare(String type, Object o1, Object o2) {
+        switch (type) {
+            case "int" -> {
+                return Integer.compare((int) o1, (int) o2);
+            }
+            case "float" -> {
+                return Float.compare((float) o1, (float) o2);
+            }
+            case "char" -> {
+                return Character.compare((char) o1, (char) o2);
+            }
+            case "bit" -> {
+                byte b1 = (byte) o1, b2 = (byte) o2;
+                return b1 - b2;
+            }
+            default -> {
+                try{
+                    String string1 = RecordStandardizer.formatString((String) o1, type), string2 = RecordStandardizer.formatString((String) o2, type);
+                    return string1.compareTo(string2);
+                }catch (InvalidTypeException e){
+                    log.error("Invalid type given to comparator");
+                    return 0;
+                }
+            }
+        }
     }
 }
