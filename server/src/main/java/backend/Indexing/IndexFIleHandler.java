@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class IndexFIleHandler {
     private final RandomAccessFile io;
     private ArrayList<String> keyStructure;
-    private int nodeSize, headSize, emptyNodeLocation;
+    private int nodeSize, headerSize, emptyNodeLocation;
     private final String databaseName, tableName, indexName;
 
     public IndexFIleHandler(String databaseName, String tableName, String indexName) throws FileNotFoundException {
@@ -25,14 +25,31 @@ public class IndexFIleHandler {
         keyStructure = new ArrayList<>();
         keyStructure.add("int");
 
-        int keyLength = keyStructure.size();
-        long keySize = ByteConverter.sizeofStructure(keyStructure);
-
+        headerSize = 0;
+        int keySize = (int)ByteConverter.sizeofStructure(keyStructure);
+        nodeSize = 1 + Integer.BYTES + (2 * Consts.D) * keySize + (2 * Consts.D + 1) * Integer.BYTES;
 
         String filename = Config.getDbRecordsPath() + File.separator + "test.index.bin";
         io = new RandomAccessFile(filename, "rw");
     }
 
+    public void writeNode(TreeNode node, int line) throws IOException {
+        int offset = getOffset(line);
+        io.seek(offset);
+        io.write(node.toBytes());
+    }
+
+    public TreeNode readTreeNode(int line) throws IOException {
+        int offset = getOffset(line);
+        io.seek(offset);
+        byte[] bytes = new byte[nodeSize];
+        io.readFully(bytes);
+        return new TreeNode(bytes, keyStructure);
+    }
+
+    private int getOffset(int line){
+        return headerSize + nodeSize * line;
+    }
     public void close() throws IOException {
         io.close();
     }
