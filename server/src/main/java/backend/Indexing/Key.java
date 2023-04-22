@@ -3,10 +3,7 @@ package backend.Indexing;
 import backend.recordHandling.ByteConverter;
 import lombok.Getter;
 
-import javax.swing.*;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class Key implements Comparable<Key> {
 
