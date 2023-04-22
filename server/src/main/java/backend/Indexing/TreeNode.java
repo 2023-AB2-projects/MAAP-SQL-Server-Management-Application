@@ -17,6 +17,7 @@ public class TreeNode {
     private int keyCount;
     private ArrayList<Key> keys;
     private ArrayList<Integer> pointers;
+    @Getter
     private ArrayList<String> keyStructure;
     private int keySize;
     private int nodeSize;
@@ -25,6 +26,8 @@ public class TreeNode {
     public TreeNode(boolean isLeaf, ArrayList<String> keyStructure){
         this.isLeaf = isLeaf;
         keyCount = 0;
+        this.keyStructure = keyStructure;
+
         keySize = (int)ByteConverter.sizeofStructure(keyStructure);
 
         nodeSize = 1 + Integer.BYTES + (2 * Consts.D) * keySize + (2 * Consts.D + 1) * Integer.BYTES;
@@ -45,7 +48,7 @@ public class TreeNode {
     public TreeNode(byte[] bytes, ArrayList<String> keyStructure){
         keys = new ArrayList<>();
         pointers = new ArrayList<>();
-
+        this.keyStructure = keyStructure;
         keySize = (int)ByteConverter.sizeofStructure(keyStructure);
         nodeSize = 1 + Integer.BYTES + (2 * Consts.D) * keySize + (2 * Consts.D + 1) * Integer.BYTES;
 
@@ -81,7 +84,6 @@ public class TreeNode {
 
         return buffer.array();
     }
-
     public int findNextNode(Key key){
         for(int i = 0; i < keyCount; i++){
             if(key.compareTo(keys.get(i)) < 0){
@@ -90,7 +92,6 @@ public class TreeNode {
         }
         return pointers.get(keyCount);
     }
-
     public int findKeyInLeaf(Key key) throws RecordNotFoundException {
         for(int i = 0; i < keyCount; i++){
             if(key.compareTo(keys.get(i)) == 0){
@@ -99,7 +100,6 @@ public class TreeNode {
         }
         throw new RecordNotFoundException();
     }
-
     public void insertIntoLeaf(Key key, int pointer){
         ArrayList<Key> newKeys = new ArrayList<>();
         ArrayList<Integer> newPointers = new ArrayList<>();
@@ -122,6 +122,27 @@ public class TreeNode {
         keys = newKeys;
         pointers = newPointers;
         keyCount++;
+    }
+
+    public TreeNode splitLeaf(int splitLocation){
+        ArrayList<Key> leftKeys = new ArrayList<>(), rightKeys = new ArrayList<>();
+        ArrayList<Integer> leftPointers = new ArrayList<>(), rightPointers = new ArrayList<>();
+
+        for(int i = 0; i < Consts.D; i++){
+            leftKeys.add(keys.get(i));
+            leftPointers.add(pointers.get(i));
+            rightKeys.add(keys.get(Consts.D + i));
+            rightPointers.add(pointers.get(Consts.D + i));
+        }
+        leftPointers.add(splitLocation);
+        rightPointers.add(pointers.get(keyCount));
+
+
+        TreeNode node = new TreeNode(true, Consts.D, rightKeys, rightPointers, keyStructure);
+        keys = leftKeys;
+        pointers = leftPointers;
+        keyCount = Consts.D;
+        return node;
     }
 
     public boolean isAlmostFull(){

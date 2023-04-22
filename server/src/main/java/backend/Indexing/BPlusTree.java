@@ -33,14 +33,18 @@ public class BPlusTree {
     }
 
     public void insert(Key key, int pointer) throws IOException {
-
         TreeNode node = io.readRoot();
+        System.out.println(node.getKeyStructure());
         while(!node.isLeaf()){
             node = io.readTreeNode(node.findNextNode(key));
         }
 
         if(node.isAlmostFull()){
-            //split it and do stuff
+            node.insertIntoLeaf(key, pointer);
+            TreeNode rightNode = node.splitLeaf(1);
+
+            System.out.println(node);
+            System.out.println(rightNode);
         }else {
             System.out.println(node);
             node.insertIntoLeaf(key, pointer);
