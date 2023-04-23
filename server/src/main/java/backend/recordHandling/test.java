@@ -31,7 +31,14 @@ public class test {
 //        byte[] bytes = {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 //
 //        TreeNode node = new TreeNode(bytes, types);
+//        byte[] bytes2 = {0, 0, 0, 3};
+//        Key key = new Key(bytes2, types);
 //
+//        node.insert(key, 1);
+//        node.insert(key, 2);
+//        node.insert(key, 3);
+//        System.out.println(node);
+
 //        IndexFileHandler indexFIleHandler = new IndexFileHandler("asd", "asd", "asd");
 //        indexFIleHandler.writeNode(node, 0);
 //        indexFIleHandler.writeNode(node, 1);

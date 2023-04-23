@@ -2,13 +2,11 @@ package backend.Indexing;
 
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.recordHandling.ByteConverter;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class TreeNode {
     @Getter
@@ -100,7 +98,7 @@ public class TreeNode {
         }
         throw new RecordNotFoundException();
     }
-    public void insertIntoLeaf(Key key, int pointer){
+    public void insert(Key key, int pointer){
         ArrayList<Key> newKeys = new ArrayList<>();
         ArrayList<Integer> newPointers = new ArrayList<>();
 
@@ -137,14 +135,39 @@ public class TreeNode {
         rightPointers.add(pointers.get(keyCount));
 
 
-        TreeNode node = new TreeNode(true, Consts.D, rightKeys, rightPointers, keyStructure);
+        TreeNode node = new TreeNode(isLeaf, Consts.D, rightKeys, rightPointers, keyStructure);
         keys = leftKeys;
         pointers = leftPointers;
         keyCount = Consts.D;
         return node;
     }
+
+    public TreeNode splitNode(){
+        ArrayList<Key> leftKeys = new ArrayList<>(), rightKeys = new ArrayList<>();
+        ArrayList<Integer> leftPointers = new ArrayList<>(), rightPointers = new ArrayList<>();
+
+        for(int i = 0; i < Consts.D; i++){
+            leftKeys.add(keys.get(i));
+            leftPointers.add(pointers.get(i));
+            rightKeys.add(keys.get(Consts.D + i + 1));
+            rightPointers.add(pointers.get(Consts.D + i + 1));
+        }
+        leftPointers.add(pointers.get(Consts.D));
+        rightPointers.add(pointers.get(keyCount));
+
+
+        TreeNode node = new TreeNode(isLeaf, Consts.D, rightKeys, rightPointers, keyStructure);
+        keys = leftKeys;
+        pointers = leftPointers;
+        keyCount = Consts.D;
+        return node;
+    }
+
     public boolean isAlmostFull(){
         return keyCount == Consts.D * 2 - 1;
+    }
+    public boolean isFull() {
+        return keyCount == Consts.D * 2;
     }
     public boolean isTooSmall(){
         return keyCount < Consts.D;
@@ -152,6 +175,8 @@ public class TreeNode {
     public Key getSmallestKey(){
         return keys.get(0);
     }
+
+    public Key getMiddleKey() {return keys.get(Consts.D);}
     @Override
     public String toString() {
         return "TreeNode{" +
