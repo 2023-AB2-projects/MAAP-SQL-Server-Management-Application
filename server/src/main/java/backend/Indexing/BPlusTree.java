@@ -2,11 +2,12 @@ package backend.Indexing;
 
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.functors.TruePredicate;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.Stack;
-import java.util.regex.Pattern;
 
 @Slf4j
 public class BPlusTree {
@@ -30,9 +31,15 @@ public class BPlusTree {
 
     public int find(Key key) throws IOException, RecordNotFoundException {
         TreeNode node = io.readRoot();
+        // log.info(node.toString());
+        // ArrayList<Integer> path = new ArrayList<>();
+        // path.add(io.getRootPointer());
         while(!node.isLeaf()){
+            // path.add(node.findNextNode(key));
             node = io.readTreeNode(node.findNextNode(key));
+            // log.info(node.toString());
         }
+        // System.out.println("Path: " + path);
         return node.findKeyInLeaf(key);
     }
 
@@ -48,7 +55,7 @@ public class BPlusTree {
         }
 
         if(node.isAlmostFull()){
-            node.insert(key, pointer);
+            node.insertInLeaf(key, pointer);
             int rightNodePointer = io.getEmptyNodePointer();
             TreeNode rightNode = node.splitLeaf(rightNodePointer);
 
@@ -64,7 +71,7 @@ public class BPlusTree {
             insertInParent(leftNodePointer, rightNodePointer, smallestKey, parents);
 
         }else {
-            node.insert(key, pointer);
+            node.insertInLeaf(key, pointer);
             log.info(node.toString());
             io.writeNode(node, parents.pop());
         }
@@ -82,12 +89,14 @@ public class BPlusTree {
             int newRootPointer = io.getEmptyNodePointer();
             io.writeNode(rootNode, newRootPointer);
             io.setRootPointer(newRootPointer);
+
+            log.info(rootNode.toString());
         } else {
             int parentPointer = parents.pop();
             TreeNode parentNode = io.readTreeNode(parentPointer);
 
             if(parentNode.isFull()){
-                parentNode.insert(smallestKey, rightNodePointer);
+                parentNode.insertInNode(smallestKey, rightNodePointer);
 
                 Key middleKey = parentNode.getMiddleKey();
 
@@ -97,12 +106,39 @@ public class BPlusTree {
                 io.writeNode(parentNode, parentPointer);
                 io.writeNode(rightParentNode, rightParentPointer);
 
+                log.info(parentNode.toString());
+                log.info(parentNode.toString());
+                log.info(middleKey.toString());
+
                 insertInParent(parentPointer, rightParentPointer, middleKey, parents);
             }else{
-                parentNode.insert(smallestKey, rightNodePointer);
+                parentNode.insertInNode(smallestKey, rightNodePointer);
                 io.writeNode(parentNode, parentPointer);
+
+                log.info(parentNode.toString());
             }
         }
+    }
+
+    public void printTree() throws IOException {
+        System.out.println("Rootpointer: " + io.getRootPointer());
+        for (int i = 0; i < io.getEmptyNodePointer(); i++){
+            System.out.println(i + ": " + io.readTreeNode(i));
+        }
+    }
+
+    public void travelTree() throws IOException {
+        TreeNode node = io.readRoot();
+        System.out.println(node);
+        Scanner scanner = new Scanner(System.in);
+        do{
+            int pointer = scanner.nextInt();
+            if(pointer == -1){
+                return;
+            }
+            node = io.readTreeNode(pointer);
+            System.out.println(node);
+        }while (true);
     }
 
     public boolean nullPointer(int pointer){

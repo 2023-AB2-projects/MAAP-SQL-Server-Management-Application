@@ -6,11 +6,15 @@ import backend.Indexing.Key;
 import backend.Indexing.TreeNode;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
+import com.fasterxml.jackson.databind.InjectableValues;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
+import java.util.Scanner;
 
 @Slf4j
 public class test {
@@ -48,14 +52,43 @@ public class test {
 
         BPlusTree tree = new BPlusTree("asd", "asd", "asd");
         tree.CreateEmptyTree();
-        byte[] bytes = {0, 0, 0, 3};
-        Key key = new Key(bytes, types);
-        tree.insert(key, 10);
+        Random r = new Random(2);
+        ArrayList<Integer> nums = new ArrayList<>(), pointers = new ArrayList<>();
+        ArrayList<Key> keys = new ArrayList<>();
+        int n = 1000;
+        for(int i = 0; i < n; i++){
+            ByteBuffer buffer = ByteBuffer.allocate(4);
+            int num = r.nextInt() % 10000, pointer = r.nextInt() % 100;
+            while(nums.contains(num)){
+                num = r.nextInt() % 10000;
+            }
+            nums.add(num);
+            pointers.add(pointer);
+            buffer.putInt(num);
+            Key key = new Key(buffer.array(), types);
+            keys.add(key);
+            tree.insert(key, pointer);
+            //tree.printTree();
+        }
 
-        bytes = new byte[]{0, 0, 0, 1};
-        key = new Key(bytes, types);
-        tree.insert(key, 9);
+        //System.out.println(nums);
+        //System.out.println(pointers);
+
+        ArrayList<Integer> finds = new ArrayList<>();
+
+        for(int i = 0; i < n; i++){
+            finds.add(tree.find(keys.get(i)));
+        }
+
+        //System.out.println(finds);
+
+        if(pointers.equals(finds)){
+            System.out.println("Nice");
+        }
+
+        //tree.printTree();
 
         tree.close();
+
     }
 }

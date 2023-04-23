@@ -98,7 +98,7 @@ public class TreeNode {
         }
         throw new RecordNotFoundException();
     }
-    public void insert(Key key, int pointer){
+    public void insertInLeaf(Key key, int pointer){
         ArrayList<Key> newKeys = new ArrayList<>();
         ArrayList<Integer> newPointers = new ArrayList<>();
 
@@ -116,6 +116,31 @@ public class TreeNode {
             i++;
         }
         newPointers.add(pointers.get(keyCount));
+
+        keys = newKeys;
+        pointers = newPointers;
+        keyCount++;
+    }
+
+    public void insertInNode(Key key, int pointer){
+        ArrayList<Key> newKeys = new ArrayList<>();
+        ArrayList<Integer> newPointers = new ArrayList<>();
+
+        int i = 0;
+        newPointers.add(pointers.get(0));
+        while(i < keyCount && key.compareTo(keys.get(i)) > 0){
+            newKeys.add(keys.get(i));
+            i++;
+            newPointers.add(pointers.get(i));
+        }
+        newKeys.add(key);
+        newPointers.add(pointer);
+        while(i < keyCount){
+            newKeys.add(keys.get(i));
+            i++;
+            newPointers.add(pointers.get(i));
+        }
+        //newPointers.add(pointers.get(keyCount));
 
         keys = newKeys;
         pointers = newPointers;
