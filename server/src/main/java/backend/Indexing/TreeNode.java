@@ -1,7 +1,7 @@
 package backend.Indexing;
 
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
-import backend.recordHandling.ByteConverter;
+import backend.recordHandling.TypeConverter;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,7 +26,7 @@ public class TreeNode {
         keyCount = 0;
         this.keyStructure = keyStructure;
 
-        keySize = (int)ByteConverter.sizeofStructure(keyStructure);
+        keySize = (int) TypeConverter.sizeofStructure(keyStructure);
 
         nodeSize = 1 + Integer.BYTES + (2 * Consts.D) * keySize + (2 * Consts.D + 1) * Integer.BYTES;
         keys = new ArrayList<>();
@@ -40,14 +40,14 @@ public class TreeNode {
         this.pointers = pointers;
         this.keyStructure = keyStructure;
 
-        keySize = (int)ByteConverter.sizeofStructure(keyStructure);
+        keySize = (int) TypeConverter.sizeofStructure(keyStructure);
         nodeSize = 1 + Integer.BYTES + (2 * Consts.D) * keySize + (2 * Consts.D + 1) * Integer.BYTES;
     }
     public TreeNode(byte[] bytes, ArrayList<String> keyStructure){
         keys = new ArrayList<>();
         pointers = new ArrayList<>();
         this.keyStructure = keyStructure;
-        keySize = (int)ByteConverter.sizeofStructure(keyStructure);
+        keySize = (int) TypeConverter.sizeofStructure(keyStructure);
         nodeSize = 1 + Integer.BYTES + (2 * Consts.D) * keySize + (2 * Consts.D + 1) * Integer.BYTES;
 
         ByteBuffer buffer = ByteBuffer.wrap(bytes);

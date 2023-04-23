@@ -1,5 +1,6 @@
 package backend.recordHandling;
 
+import backend.Indexing.Key;
 import backend.exceptions.recordHandlingExceptions.InvalidTypeException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-public class ByteConverter {
+public class TypeConverter {
     public static long sizeof(String type){
         switch (type) {
             case "int" -> { return Integer.BYTES; }
@@ -37,7 +38,7 @@ public class ByteConverter {
         }
         return sum;
     }
-    public static String decode(String type, byte[] bytes){
+    public static String toString(String type, byte[] bytes){
         switch (type) {
             case "int" -> {
                 return Integer.toString(ByteBuffer.wrap(bytes).getInt());
@@ -65,7 +66,7 @@ public class ByteConverter {
             }
         }
     }
-    public static Object fromBytes(String type, byte[] bytes){
+    public static Object toObject(String type, byte[] bytes){
         switch (type) {
             case "int" -> {
                 return ByteBuffer.wrap(bytes).getInt();
@@ -99,17 +100,54 @@ public class ByteConverter {
             }
         }
     }
-    public static ArrayList<Object> toList(ArrayList<String> types, byte[] bytes){
+    public static Object toObject(String type, String value){
+        switch (type) {
+            case "int" -> {
+                return Integer.parseInt(value);
+            }
+            case "float" -> {
+                return Float.parseFloat(value);
+            }
+            case "char" -> {
+                return value.charAt(0);
+            }
+            case "bit" -> {
+                if (value.equals("1")) {
+                    return (byte) 1;
+                }
+                return (byte) 0;
+            }
+            default -> {
+                try {
+                    return RecordStandardizer.formatString(value, type);
+                }catch (InvalidTypeException e){
+                    return "";
+                }
+
+            }
+        }
+    }
+    public static ArrayList<Object> toObjectList(ArrayList<String> types, byte[] bytes){
         ArrayList<Object> values = new ArrayList<>();
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
 
         for(String type : types){
             byte[] b = new byte[(int)sizeof(type)];
             buffer.get(b);
-            values.add(fromBytes(type, b));
+            values.add(toObject(type, b));
         }
 
         return values;
+    }
+    public static ArrayList<Object> toObjectList(ArrayList<String> types, ArrayList<String> values){
+        ArrayList<Object> objects = new ArrayList<>();
+        for(int i = 0; i < types.size(); i++){
+            objects.add(toObject(types.get(i), values.get(i)));
+        }
+        return objects;
+    }
+    public static Key toKey(ArrayList<String> keyStructure, ArrayList<String> values){
+        return new Key(toObjectList(keyStructure, values), keyStructure);
     }
     public static byte[] toBytes(String type, String value){
         ByteBuffer buffer;

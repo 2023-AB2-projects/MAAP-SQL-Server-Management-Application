@@ -1,10 +1,9 @@
 package backend.Indexing;
 
 import backend.config.Config;
-import backend.recordHandling.ByteConverter;
+import backend.recordHandling.TypeConverter;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class IndexFileHandler {
         keyStructure = new ArrayList<>();
         keyStructure.add("int");
 
-        int keySize = (int)ByteConverter.sizeofStructure(keyStructure);
+        int keySize = (int) TypeConverter.sizeofStructure(keyStructure);
         nodeSize = 1 + Integer.BYTES + (2 * Consts.D) * keySize + (2 * Consts.D + 1) * Integer.BYTES;
 
         String filename = Config.getDbRecordsPath() + File.separator + "test.index.bin";

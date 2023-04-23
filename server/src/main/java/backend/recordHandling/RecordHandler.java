@@ -19,7 +19,7 @@ public class RecordHandler {
 
         recordSize = 1 + tableStructure.size();
         for (String type : tableStructure) {
-            recordSize += ByteConverter.sizeof(type);
+            recordSize += TypeConverter.sizeof(type);
         }
         io = new RandomAccessFile(fileLocation, "rw");
     }
@@ -43,10 +43,10 @@ public class RecordHandler {
         for(int i = 0; i < values.size(); i++){
             if(values.get(i).equals("null")){
                 io.writeBoolean(false);
-                io.write(new byte[(int) ByteConverter.sizeof(tableStructure.get(i))]);
+                io.write(new byte[(int) TypeConverter.sizeof(tableStructure.get(i))]);
             }else{
                 io.writeBoolean(true);
-                io.write(ByteConverter.toBytes(tableStructure.get(i), values.get(i)));
+                io.write(TypeConverter.toBytes(tableStructure.get(i), values.get(i)));
             }
 
         }
@@ -83,10 +83,10 @@ public class RecordHandler {
 
         for(String type : tableStructure){
             boolean nullBit = io.readBoolean();
-            byte[] bytes = new byte[(int)ByteConverter.sizeof(type)];
+            byte[] bytes = new byte[(int) TypeConverter.sizeof(type)];
             io.readFully(bytes);
             if(nullBit){
-                values.add(ByteConverter.decode(type, bytes));
+                values.add(TypeConverter.toString(type, bytes));
             }else{
                 values.add("null");
             }

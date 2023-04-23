@@ -1,6 +1,6 @@
 package backend.Indexing;
 
-import backend.recordHandling.ByteConverter;
+import backend.recordHandling.TypeConverter;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -16,18 +16,23 @@ public class Key implements Comparable<Key> {
 
     public Key(byte[] bytes, ArrayList<String> keyStructure){
         this.keyStructure = keyStructure;
-        key = ByteConverter.toList(keyStructure, bytes);
+        key = TypeConverter.toObjectList(keyStructure, bytes);
+    }
+
+    public Key(ArrayList<Object> key, ArrayList<String> keyStructure) {
+        this.key = key;
+        this.keyStructure = keyStructure;
     }
 
     public byte[] toBytes(){
-        return ByteConverter.toBytes(keyStructure, key);
+        return TypeConverter.toBytes(keyStructure, key);
     }
 
     @Override
     public int compareTo(Key o) {
         ArrayList<Object> key = o.getKey();
         for (int i = 0; i < key.size(); i++) {
-            int rel = ByteConverter.compare(keyStructure.get(i), this.key.get(i), key.get(i));
+            int rel = TypeConverter.compare(keyStructure.get(i), this.key.get(i), key.get(i));
             if (rel < 0) {
                 return -1;
             } else if (rel > 0) {

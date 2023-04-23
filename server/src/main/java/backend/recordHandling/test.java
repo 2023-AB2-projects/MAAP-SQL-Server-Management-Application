@@ -22,7 +22,6 @@ public class test {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
         ArrayList<String> types = new ArrayList<>();
         types.add("int");
-//        types.add("float");
 //        types.add("bit");
 //
 //        Key key = new Key(bytes, types);
