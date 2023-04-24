@@ -304,6 +304,46 @@ public class CatalogManager {
         return fieldTypes;
     }
 
+    public static List<String> getTableIndexNames(String databaseName, String tableName) {
+        ArrayList<String> indexNames = new ArrayList<>();
+
+        // Find table JSON node
+        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+            throw new RuntimeException();
+        }
+
+        // Iterate over index files
+        for(final JsonNode indexFileNode : tableNode.get("indexFiles")) {
+            // Add index file name to list
+            String indexName = indexFileNode.get("indexFile").get("indexName").asText();
+            indexNames.add(indexName);
+        }
+
+        return indexNames;
+    }
+
+    public static List<String> getTableIndexFileNames(String databaseName, String tableName) {
+        ArrayList<String> fileNames = new ArrayList<>();
+
+        // Find table JSON node
+        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+            throw new RuntimeException();
+        }
+
+        // Iterate over index files
+        for(final JsonNode indexFileNode : tableNode.get("indexFiles")) {
+            // Add index file name to list
+            String indexFileName = indexFileNode.get("indexFile").get("indexFileName").asText();
+            fileNames.add(indexFileName);
+        }
+
+        return fileNames;
+    }
+
     public static boolean isIndexFieldUnique(String databaseName, String tableName, String indexName, String indexFieldName) {
         // Find the corresponding index file node
         JsonNode indexNode = CatalogManager.findTableIndexNode(databaseName, tableName, indexName);

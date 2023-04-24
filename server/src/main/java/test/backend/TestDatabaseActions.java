@@ -138,28 +138,27 @@ public class TestDatabaseActions {
 
         // Create index file
 
-        DatabaseAction createIndex = new CreateIndexAction("emberek",  "master",
-                new IndexFileModel(
-
-                        "id_index",
-                        "emberek.index.id_index.bin",
-                        true,
-                        new ArrayList<>(){{
-                            add("id");
-                            add("name");
-                        }}
-        ));
-        try {
-            createIndex.actionPerform();
-        } catch (DatabaseDoesntExist e) {
-            System.out.println("Database doesn't exist!");
-        } catch (TableDoesntExist e) {
-            System.out.println("Table doesn't exist!");
-        } catch (IndexAlreadyExists e) {
-            System.out.println("Index with given name already exists!");
-        } catch (Exception exception) {
-            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
-        }
+//        DatabaseAction createIndex = new CreateIndexAction("emberek",  "master",
+//                new IndexFileModel(
+//
+//                        "id_index2",
+//                        "emberek.index.id_index.bin",
+//                        true,
+//                        new ArrayList<>(){{
+//                            add("id");
+//                        }}
+//        ));
+//        try {
+//            createIndex.actionPerform();
+//        } catch (DatabaseDoesntExist e) {
+//            System.out.println("Database doesn't exist!");
+//        } catch (TableDoesntExist e) {
+//            System.out.println("Table doesn't exist!");
+//        } catch (IndexAlreadyExists e) {
+//            System.out.println("Index with given name already exists!");
+//        } catch (Exception exception) {
+//            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
+//        }
 
         String databaseName = "master", tableName = "emberek", indexName = "id_index";
         List<String> fieldNames = CatalogManager.getIndexFieldNames(databaseName, tableName, indexName);
@@ -171,5 +170,11 @@ public class TestDatabaseActions {
         for(final String fieldName : fieldNames) {
             System.out.println(CatalogManager.isIndexFieldUnique(databaseName, tableName, indexName, fieldName));
         }
+
+        List<String> indexNames = CatalogManager.getTableIndexNames(databaseName, tableName);
+        System.out.println(indexNames);
+
+        List<String> indexFileNames = CatalogManager.getTableIndexFileNames(databaseName, tableName);
+        System.out.println(indexFileNames);
     }
 }
