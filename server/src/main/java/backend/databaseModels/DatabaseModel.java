@@ -1,17 +1,13 @@
 package backend.databaseModels;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.ArrayList;
 
+@Data
 public class DatabaseModel {
-    @Getter
-    @Setter
     private String databaseName;
 
-    @Getter
-    @Setter
     private ArrayList<TableModel> tables;
 
     public DatabaseModel() {

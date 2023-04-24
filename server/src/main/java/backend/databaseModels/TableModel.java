@@ -1,40 +1,31 @@
 package backend.databaseModels;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 
+@Data
 public class TableModel {
-    @Getter
-    @Setter
     private String tableName, fileName;
 
-    @Getter
-    @Setter
     private ArrayList<FieldModel> fields;
 
-    @Getter
-    @Setter
+    private ArrayDeque<Integer> deletedRecordLines;
+
     private PrimaryKeyModel primaryKey;
 
-    @Getter
-    @Setter
     private ArrayList<ForeignKeyModel> foreignKeys;
 
-    @Getter
-    @Setter
     private ArrayList<String> uniqueFields;
 
-    @Getter
-    @Setter
     private ArrayList<IndexFileModel> indexFiles;
 
     public TableModel() {
         this.tableName = "none";
         this.fileName = "none";
         this.fields = new ArrayList<>();
+        this.deletedRecordLines = new ArrayDeque<>();
         this.primaryKey = new PrimaryKeyModel();
         this.foreignKeys = new ArrayList<>();
         this.uniqueFields = new ArrayList<>();
@@ -47,6 +38,12 @@ public class TableModel {
         this.tableName = tableName;
         this.fileName = fileName;
         this.fields = fields;
+        this.deletedRecordLines = new ArrayDeque<>(){{
+            add(0);
+            add(1);
+            add(2);
+            add(3);
+        }};
         this.primaryKey = primaryKey;
         this.foreignKeys = foreignKeys;
         this.uniqueFields = uniqueFields;

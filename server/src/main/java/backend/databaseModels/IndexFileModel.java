@@ -1,21 +1,15 @@
 package backend.databaseModels;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.ArrayList;
 
+@Data
 public class IndexFileModel {
-    @Getter
-    @Setter
     private String indexName, indexFileName;
 
-    @Getter
-    @Setter
     private boolean isUnique;
 
-    @Getter
-    @Setter
     private ArrayList<String> indexFields;
 
     public IndexFileModel() {

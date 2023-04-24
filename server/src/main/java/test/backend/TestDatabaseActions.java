@@ -9,6 +9,7 @@ import backend.databaseActions.dropActions.DropTableAction;
 import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.*;
 import backend.exceptions.databaseActionsExceptions.*;
+import backend.exceptions.recordHandlingExceptions.DeletedRecordLinesEmpty;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
@@ -103,7 +104,9 @@ public class TestDatabaseActions {
     }
 
     public static void main(String[] args) {
-//        TestDatabaseActions test = new TestDatabaseActions();
+        TestDatabaseActions test = new TestDatabaseActions();
+        test.createCarsTable("master");
+        test.createPeopleTable("master");
 
 //        CreateDatabaseAction createDatabaseAction = new CreateDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
 //        try {
@@ -138,29 +141,31 @@ public class TestDatabaseActions {
 
         // Create index file
 
-//        DatabaseAction createIndex = new CreateIndexAction("emberek",  "master",
-//                new IndexFileModel(
-//
-//                        "id_index2",
-//                        "emberek.index.id_index.bin",
-//                        true,
-//                        new ArrayList<>(){{
-//                            add("id");
-//                        }}
-//        ));
-//        try {
-//            createIndex.actionPerform();
-//        } catch (DatabaseDoesntExist e) {
-//            System.out.println("Database doesn't exist!");
-//        } catch (TableDoesntExist e) {
-//            System.out.println("Table doesn't exist!");
-//        } catch (IndexAlreadyExists e) {
-//            System.out.println("Index with given name already exists!");
-//        } catch (Exception exception) {
-//            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
-//        }
 
-        String databaseName = "master", tableName = "emberek", indexName = "id_index";
+
+        DatabaseAction createIndex = new CreateIndexAction("people",  "master",
+                new IndexFileModel(
+
+                        "id_index",
+                        "people.index.id_index.bin",
+                        true,
+                        new ArrayList<>(){{
+                            add("id");
+                        }}
+        ));
+        try {
+            createIndex.actionPerform();
+        } catch (DatabaseDoesntExist e) {
+            System.out.println("Database doesn't exist!");
+        } catch (TableDoesntExist e) {
+            System.out.println("Table doesn't exist!");
+        } catch (IndexAlreadyExists e) {
+            System.out.println("Index with given name already exists!");
+        } catch (Exception exception) {
+            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
+        }
+
+        String databaseName = "master", tableName = "people", indexName = "id_index";
         List<String> fieldNames = CatalogManager.getIndexFieldNames(databaseName, tableName, indexName);
         System.out.println(fieldNames);
 
@@ -176,5 +181,11 @@ public class TestDatabaseActions {
 
         List<String> indexFileNames = CatalogManager.getTableIndexFileNames(databaseName, tableName);
         System.out.println(indexFileNames);
+
+        try {
+            Integer value = CatalogManager.deletedRecordLinesPop(databaseName, tableName);
+        } catch (DeletedRecordLinesEmpty e) {
+            throw new RuntimeException(e);
+        }
     }
 }

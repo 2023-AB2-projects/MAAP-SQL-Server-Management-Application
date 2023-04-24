@@ -1,13 +1,11 @@
 package backend.databaseModels;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.ArrayList;
 
+@Data
 public class PrimaryKeyModel {
-    @Getter
-    @Setter
     private ArrayList<String> primaryKeyFields;
 
     public PrimaryKeyModel() {

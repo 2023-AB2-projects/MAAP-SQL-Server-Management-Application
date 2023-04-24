@@ -1,14 +1,18 @@
 package backend.service;
 
 import backend.config.Config;
+import backend.exceptions.recordHandlingExceptions.DeletedRecordLinesEmpty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +31,7 @@ public class CatalogManager {
         }
     }
 
-    /* Utility */
+    /* ------------------------------------------------ Utility ------------------------------------------------------*/
     private static void updateRoot () {
         try {
             root = mapper.readTree(catalog);
@@ -39,6 +43,16 @@ public class CatalogManager {
     private static JsonNode getRoot() {
         updateRoot();
         return root;
+    }
+
+    private static void updateCatalog() {
+        // Mapper -> Write entire catalog
+        try {
+            mapper.writeValue(Config.getCatalogFile(), root);
+        } catch (IOException e) {
+            log.error("CreateIndexAction -> Write value (mapper) failed");
+            throw new RuntimeException(e);
+        }
     }
 
     private static JsonNode findDatabaseNode(String databaseName) {
@@ -137,9 +151,61 @@ public class CatalogManager {
         }
         return null;
     }
-    /* / Utility */
 
-    /* Getters */
+    private static ArrayDeque<Integer> deletedRecordLinesQueue(String databaseName, String tableName) {
+        // Find table JSON node
+        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+            throw new RuntimeException();
+        }
+
+        // Build up the deque
+        ArrayDeque<Integer> recordLines = new ArrayDeque<>();
+        for(JsonNode recordLineNode : tableNode.get("deletedRecordLines")) {
+            recordLines.add(recordLineNode.asInt());
+        }
+        return recordLines;
+    }
+
+    private static void updateDeletedRecordLinesQueue(String databaseName, String tableName, ArrayDeque<Integer> queue) {
+        // Find table JSON node
+        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+            throw new RuntimeException();
+        }
+
+        // Update node and update catalog
+        ArrayNode newDeletedRecordLinesArray = mapper.valueToTree(queue);
+        ((ObjectNode) tableNode).set("deletedRecordLines", newDeletedRecordLinesArray);
+        CatalogManager.updateCatalog();     // Write root to catalog
+    }
+    /* ----------------------------------------------- / Utility -----------------------------------------------------*/
+
+    /* ----------------------------------------- Deleted Record Lines ----------------------------------------------- */
+    public static Integer deletedRecordLinesPop(String databaseName, String tableName) throws DeletedRecordLinesEmpty {
+        ArrayDeque<Integer> deletedRecordLines = CatalogManager.deletedRecordLinesQueue(databaseName, tableName);
+        if(deletedRecordLines.isEmpty()) {
+            throw new DeletedRecordLinesEmpty();
+        }
+
+        // Remove first element
+        Integer first = deletedRecordLines.removeFirst();
+
+        // Update catalog
+        CatalogManager.updateDeletedRecordLinesQueue(databaseName, tableName, deletedRecordLines);
+        return first;
+    }
+
+    public static void deletedRecordLinesEnqueue(String databaseName, String tableName, int recordLine) {
+        ArrayDeque<Integer> deletedRecordLines = CatalogManager.deletedRecordLinesQueue(databaseName, tableName);
+        deletedRecordLines.add(recordLine);
+    }
+    /* ---------------------------------------- / Deleted Record Lines ---------------------------------------------- */
+
+
+    /* ------------------------------------------------ Getters ----------------------------------------------------- */
     public static String getTableDataPath(String databaseName, String tableName) {
         return Config.getDbRecordsPath() + File.separator + databaseName + File.separator + tableName + File.separator + tableName + ".data.bin";
     }
@@ -404,4 +470,5 @@ public class CatalogManager {
         }
         return databaseNames;
     }
+    /* ----------------------------------------------- / Getters ---------------------------------------------------- */
 }
