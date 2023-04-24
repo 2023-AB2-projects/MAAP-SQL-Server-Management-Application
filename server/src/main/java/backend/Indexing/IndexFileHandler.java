@@ -68,7 +68,7 @@ public class IndexFileHandler {
         io.writeInt(pointer);
     }
 
-    private int getDeletedNodePointer() throws IOException {
+    public int getDeletedNodePointer() throws IOException {
         io.seek(Integer.BYTES);
         return io.readInt();
     }

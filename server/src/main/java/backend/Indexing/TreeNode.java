@@ -63,7 +63,7 @@ public class TreeNode {
         }
 
     }
-    public TreeNode CreateDeletedNode(int pointer){
+    public static TreeNode createDeletedNode(int pointer, ArrayList<String> keyStructure){
         ArrayList<Key> emptyKeys = new ArrayList<>();
         ArrayList<Integer> pointerToNextDeletedNode = new ArrayList<>();
         pointerToNextDeletedNode.add(pointer);
