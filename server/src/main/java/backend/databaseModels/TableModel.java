@@ -38,12 +38,7 @@ public class TableModel {
         this.tableName = tableName;
         this.fileName = fileName;
         this.fields = fields;
-        this.deletedRecordLines = new ArrayDeque<>(){{
-            add(0);
-            add(1);
-            add(2);
-            add(3);
-        }};
+        this.deletedRecordLines = new ArrayDeque<>();
         this.primaryKey = primaryKey;
         this.foreignKeys = foreignKeys;
         this.uniqueFields = uniqueFields;

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 
@@ -193,14 +192,45 @@ public class CatalogManager {
         // Remove first element
         Integer first = deletedRecordLines.removeFirst();
 
-        // Update catalog
+        // Update catalog with new deque
         CatalogManager.updateDeletedRecordLinesQueue(databaseName, tableName, deletedRecordLines);
         return first;
     }
 
-    public static void deletedRecordLinesEnqueue(String databaseName, String tableName, int recordLine) {
+    public static List<Integer> deletedRecordLinesPopN(String databaseName, String tableName, int n) {
+        // Returned value
+        List<Integer> recordLines = new ArrayList<>();
+
+        // Get current list
+        ArrayDeque<Integer> deletedRecordLines = CatalogManager.deletedRecordLinesQueue(databaseName, tableName);
+
+        // Try to add 'n' items
+        for(int i = 0; i < n; ++i) {
+            if(deletedRecordLines.isEmpty()) break;
+
+            // If not empty pop first element and add it to list
+            recordLines.add(deletedRecordLines.removeFirst());
+        }
+
+        // Update catalog with new deque
+        CatalogManager.updateDeletedRecordLinesQueue(databaseName, tableName, deletedRecordLines);
+        return recordLines;
+    }
+
+    public static void deletedRecordLinesEnqueue(String databaseName, String tableName, Integer recordLine) {
         ArrayDeque<Integer> deletedRecordLines = CatalogManager.deletedRecordLinesQueue(databaseName, tableName);
         deletedRecordLines.add(recordLine);
+
+        // Update catalog with new deque
+        CatalogManager.updateDeletedRecordLinesQueue(databaseName, tableName, deletedRecordLines);
+    }
+
+    public static void deletedRecordLinesEnqueueN(String databaseName, String tableName, List<Integer> recordLines) {
+        ArrayDeque<Integer> deletedRecordLines = CatalogManager.deletedRecordLinesQueue(databaseName, tableName);
+        deletedRecordLines.addAll(recordLines);
+
+        // Update catalog with new deque
+        CatalogManager.updateDeletedRecordLinesQueue(databaseName, tableName, deletedRecordLines);
     }
     /* ---------------------------------------- / Deleted Record Lines ---------------------------------------------- */
 

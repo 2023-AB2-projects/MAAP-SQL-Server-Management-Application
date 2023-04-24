@@ -182,10 +182,20 @@ public class TestDatabaseActions {
         List<String> indexFileNames = CatalogManager.getTableIndexFileNames(databaseName, tableName);
         System.out.println(indexFileNames);
 
-        try {
-            Integer value = CatalogManager.deletedRecordLinesPop(databaseName, tableName);
-        } catch (DeletedRecordLinesEmpty e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            Integer value = CatalogManager.deletedRecordLinesPop(databaseName, tableName);
+//        } catch (DeletedRecordLinesEmpty e) {
+//            throw new RuntimeException(e);
+//        }
+
+//        CatalogManager.deletedRecordLinesEnqueue(databaseName, tableName, 12);
+
+//        CatalogManager.deletedRecordLinesEnqueueN(databaseName, tableName, new ArrayList<>(){{
+//            add(22);
+//            add(33);
+//        }});
+
+        List<Integer> recordLines = CatalogManager.deletedRecordLinesPopN(databaseName, tableName, 5);
+        System.out.println(recordLines);
     }
 }
