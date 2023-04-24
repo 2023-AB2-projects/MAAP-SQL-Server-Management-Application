@@ -27,6 +27,7 @@ public class BPlusTree {
         TreeNode root = new TreeNode(true, keyStructure);
         io.writeNode(root, 0);
         io.setRootPointer(0);
+        io.setDeletedNodePointer(Consts.nullPointer);
     }
 
     public int find(Key key) throws IOException, RecordNotFoundException {

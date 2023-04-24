@@ -18,7 +18,7 @@ public class IndexFileHandler {
         this.databaseName = databaseName;
         this.tableName = tableName;
         this.indexName = indexName;
-        this.headerSize = Integer.BYTES;
+        this.headerSize = 2 * Integer.BYTES;
         //get keyStructure from catalog
         //remove later
         keyStructure = new ArrayList<>();
@@ -63,9 +63,21 @@ public class IndexFileHandler {
         return io.readInt();
     }
 
-    public int getEmptyNodePointer() throws IOException {
-        //get empty pointer for empty places from catalog, otherwise return pointer to end of file
+    public void setDeletedNodePointer(int pointer) throws IOException {
+        io.seek(Integer.BYTES);
+        io.writeInt(pointer);
+    }
 
+    private int getDeletedNodePointer() throws IOException {
+        io.seek(Integer.BYTES);
+        return io.readInt();
+    }
+
+    public int getEmptyNodePointer() throws IOException {
+        int pointer = getDeletedNodePointer();
+        if(pointer != Consts.nullPointer){
+            return pointer;
+        }
         return (int) ((io.length() - headerSize) / nodeSize);
     }
 
