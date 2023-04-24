@@ -8,11 +8,7 @@ import java.util.ArrayList;
 public class IndexFileModel {
     @Getter
     @Setter
-    private String indexName;
-
-    @Getter
-    @Setter
-    private int keyLength;
+    private String indexName, indexFileName;
 
     @Getter
     @Setter
@@ -20,26 +16,19 @@ public class IndexFileModel {
 
     @Getter
     @Setter
-    private String indexType;
-
-    @Getter
-    @Setter
     private ArrayList<String> indexFields;
 
     public IndexFileModel() {
         this.indexName = "none";
-        this.keyLength = 0;
+        this.indexFileName = "none";
         this.isUnique = false;
-        this.indexType = "none";
         this.indexFields = new ArrayList<>();
     }
 
-    public IndexFileModel(String indexName, int keyLength, boolean isUnique,
-                          String indexType, ArrayList<String> indexFields) {
+    public IndexFileModel(String indexName, String indexFileName, boolean isUnique, ArrayList<String> indexFields) {
         this.indexName = indexName;
-        this.keyLength = keyLength;
+        this.indexFileName = indexFileName;
         this.isUnique = isUnique;
-        this.indexType = indexType;
         this.indexFields = indexFields;
     }
 }

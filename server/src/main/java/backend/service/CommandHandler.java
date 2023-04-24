@@ -23,7 +23,7 @@ public class CommandHandler {
 
         DatabaseAction databaseAction = null;
         try {
-            databaseAction = parser.parseInput(serverController.getSqlCommand(), serverController.getCurrentDatabaseName());
+            databaseAction = parser.parseInput(serverController.getSqlCommand(), ServerController.getCurrentDatabaseName());
         } catch (SQLParseException e) {
             log.error(e.getMessage());
             updateControllerNodes(e);
@@ -58,7 +58,7 @@ public class CommandHandler {
             serverController.setResponse("Table Dropped Successfully!");
         }
         if (databaseAction instanceof UseDatabaseAction) {
-            serverController.setCurrentDatabaseName((String) returnValue);
+            ServerController.setCurrentDatabaseName((String) returnValue);
             serverController.setResponse("Now using " + returnValue);
         }
         if (databaseAction instanceof InsertAction) {
