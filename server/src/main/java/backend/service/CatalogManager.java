@@ -4,23 +4,18 @@ import backend.config.Config;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonArrayFormatVisitor;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 
 @Slf4j
 public class CatalogManager {
     private static final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-    private static File catalog = Config.getCatalogFile();
+    private static final File catalog = Config.getCatalogFile();
     private static JsonNode root;
 
     static {
@@ -146,9 +141,9 @@ public class CatalogManager {
     }
 
     public static List<String> getPrimaryKeyTypes (String databaseName, String tableName){
-        ArrayList<String> col_type = (ArrayList<String>) getColumnTypes(databaseName, tableName);
-        ArrayList<String> col_name = (ArrayList<String>) getColumnNames(databaseName, tableName);
-        List<String> key_name = (ArrayList<String>) getPrimaryKeys(databaseName, tableName);
+        List<String> col_type = getColumnTypes(databaseName, tableName);
+        List<String> col_name = getColumnNames(databaseName, tableName);
+        List<String> key_name = getPrimaryKeys(databaseName, tableName);
 
         ArrayList<String> key_type = new ArrayList<>();
         for (String key : key_name) {
@@ -163,9 +158,9 @@ public class CatalogManager {
     }
 
     public static List<Integer> getPrimaryKeyIndexes (String databaseName, String tableName){
-        ArrayList<String> col_type = (ArrayList<String>) getColumnTypes(databaseName, tableName);
-        ArrayList<String> col_name = (ArrayList<String>) getColumnNames(databaseName, tableName);
-        List<String> key_name = (ArrayList<String>) getPrimaryKeys(databaseName, tableName);
+//        List<String> col_type = getColumnTypes(databaseName, tableName);
+        List<String> col_name = getColumnNames(databaseName, tableName);
+        List<String> key_name = getPrimaryKeys(databaseName, tableName);
 
         ArrayList<Integer> key_index = new ArrayList<>();
         for (String key : key_name) {
@@ -177,6 +172,33 @@ public class CatalogManager {
             }
         }
         return key_index;
+    }
+
+    public static List<String> getIndexFieldNames(String databaseName, String tableName, String indexName) {
+        ArrayList<String> fieldNames = new ArrayList<>();
+
+        // Find table JSON node
+        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+            throw new RuntimeException();
+        }
+
+        for(final JsonNode indexNode : tableNode.get("indexFiles")) {
+            // Check index name
+            String currentIndexName = indexNode.get("indexFile").get("indexName").asText();
+            if(currentIndexName.equals(indexName)) {
+                // Iterate over all index file fields
+                for(final JsonNode indexFileName : indexNode.get("indexFile").get("indexFields")) {
+                    fieldNames.add(indexFileName.asText());
+                }
+
+                // Break since we found our node
+                return fieldNames;
+            }
+        }
+
+        return fieldNames;
     }
 
     public static List<String> getCurrentDatabaseTableNames() {

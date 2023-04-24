@@ -15,12 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class TestDatabaseActions {
     public TableModel createPeopleTableModel() {
         String tableName = "people", fileName = "people.data.bin";
-        int rowLength = 50;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
             add(new FieldModel("id", "int", false));
             add(new FieldModel("name", "char(100)", true));
@@ -70,7 +70,6 @@ public class TestDatabaseActions {
     public void createCarsTable(String databaseName) {
         // Other table
         String tableName = "cars", fileName = "cars.data.bin";
-        int rowLength = 100;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
             add(new FieldModel("id", "int", false));
             add(new FieldModel("name", "char(100)", true));
@@ -104,7 +103,7 @@ public class TestDatabaseActions {
     }
 
     public static void main(String[] args) {
-        TestDatabaseActions test = new TestDatabaseActions();
+//        TestDatabaseActions test = new TestDatabaseActions();
 
 //        CreateDatabaseAction createDatabaseAction = new CreateDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
 //        try {
@@ -138,24 +137,30 @@ public class TestDatabaseActions {
 //        }
 
         // Create index file
-        DatabaseAction createIndex = new CreateIndexAction("emberek",  "master",
-                new IndexFileModel(
 
-                        "name_index",
-                        "emberek.index.name_index.bin",
-                        true,
-                        new ArrayList<>()
-        ));
-        try {
-            createIndex.actionPerform();
-        } catch (DatabaseDoesntExist e) {
-            System.out.println("Database doesn't exist!");
-        } catch (TableDoesntExist e) {
-            System.out.println("Table doesn't exist!");
-        } catch (IndexAlreadyExists e) {
-            System.out.println("Index with given name already exists!");
-        } catch (Exception exception) {
-            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
-        }
+//        DatabaseAction createIndex = new CreateIndexAction("emberek",  "master",
+//                new IndexFileModel(
+//
+//                        "id_index",
+//                        "emberek.index.id_index.bin",
+//                        true,
+//                        new ArrayList<>(){{
+//                            add("id");
+//                        }}
+//        ));
+//        try {
+//            createIndex.actionPerform();
+//        } catch (DatabaseDoesntExist e) {
+//            System.out.println("Database doesn't exist!");
+//        } catch (TableDoesntExist e) {
+//            System.out.println("Table doesn't exist!");
+//        } catch (IndexAlreadyExists e) {
+//            System.out.println("Index with given name already exists!");
+//        } catch (Exception exception) {
+//            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
+//        }
+
+        List<String> fieldNames = CatalogManager.getIndexFieldNames("master", "emberek", "id_index");
+        System.out.println(fieldNames);
     }
 }
