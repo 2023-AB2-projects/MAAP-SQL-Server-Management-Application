@@ -94,6 +94,33 @@ public class RecordHandler {
 
         return values;
     }
+
+    public ArrayList<Object> readLineAsObjectList(int line) throws IOException, InvalidReadException {
+        ArrayList<Object> values = new ArrayList<>();
+        long offset = line * recordSize;
+        if(offset >= io.length()){
+            throw new InvalidReadException();
+        }
+
+        io.seek(offset);
+        boolean deletionByte = io.readBoolean();
+        if(!deletionByte){
+            throw new InvalidReadException();
+        }
+
+        for(String type : tableStructure){
+            boolean nullBit = io.readBoolean();
+            byte[] bytes = new byte[(int) TypeConverter.sizeof(type)];
+            io.readFully(bytes);
+            if(nullBit){
+                values.add(TypeConverter.toObject(type, bytes));
+            }else{
+                values.add(null);
+            }
+        }
+
+        return values;
+    }
     public long getRecordCount() throws IOException {
         return io.length() / recordSize;
     }

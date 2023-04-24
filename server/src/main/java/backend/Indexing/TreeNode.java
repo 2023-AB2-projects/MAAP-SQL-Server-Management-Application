@@ -63,6 +63,12 @@ public class TreeNode {
         }
 
     }
+    public TreeNode CreateDeletedNode(int pointer){
+        ArrayList<Key> emptyKeys = new ArrayList<>();
+        ArrayList<Integer> pointerToNextDeletedNode = new ArrayList<>();
+        pointerToNextDeletedNode.add(pointer);
+        return new TreeNode(false, 0, emptyKeys, pointerToNextDeletedNode, keyStructure);
+    }
     public byte[] toBytes(){
         ByteBuffer buffer = ByteBuffer.allocate(nodeSize);
 
@@ -188,6 +194,9 @@ public class TreeNode {
         return node;
     }
 
+    public boolean isDeleted() {
+        return keyCount == 0;
+    }
     public boolean isAlmostFull(){
         return keyCount == Consts.D * 2 - 1;
     }
