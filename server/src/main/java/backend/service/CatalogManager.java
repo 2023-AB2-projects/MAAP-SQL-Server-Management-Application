@@ -201,6 +201,57 @@ public class CatalogManager {
         return fieldNames;
     }
 
+    public static List<String> getIndexFieldTypes(String databaseName, String tableName, String indexName) {
+        ArrayList<String> fieldTypes = new ArrayList<>();
+
+        // Find table JSON node
+        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+            throw new RuntimeException();
+        }
+
+        // JSON array node containing all fields
+        ArrayNode fieldsArray = (ArrayNode) tableNode.get("fields");
+
+        // Find field names then types
+        for(final JsonNode indexNode : tableNode.get("indexFiles")) {
+            // Check index name
+            String currentIndexName = indexNode.get("indexFile").get("indexName").asText();
+            if(currentIndexName.equals(indexName)) {
+                ArrayList<String> fieldNames = new ArrayList<>();
+
+                // Iterate over all index file fields
+                for(final JsonNode indexFileName : indexNode.get("indexFile").get("indexFields")) {
+                    fieldNames.add(indexFileName.asText());
+                }
+
+                // Find type for each field
+                for(final String indexFieldName : fieldNames) {
+                    // Find in the fields of table
+                    for(final JsonNode fieldNode : fieldsArray) {
+                        if(fieldNode.get("fieldName").asText().equals(indexFieldName)) {
+                            fieldTypes.add(fieldNode.get("type").asText());
+                            break;      // Move on to next field
+                        }
+                    }
+                }
+
+                // Check size
+                if (fieldNames.size() != fieldTypes.size()) {
+                    log.error("Could not find all types for field names in index!");
+                    throw new RuntimeException();
+                }
+
+                // Break since we found our node
+                return fieldTypes;
+            }
+        }
+
+        return fieldTypes;
+    }
+
+
     public static List<String> getCurrentDatabaseTableNames() {
         List<String> tableNames = new ArrayList<>();
 

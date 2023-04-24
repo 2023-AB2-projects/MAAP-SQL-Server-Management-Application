@@ -162,5 +162,8 @@ public class TestDatabaseActions {
 
         List<String> fieldNames = CatalogManager.getIndexFieldNames("master", "emberek", "id_index");
         System.out.println(fieldNames);
+
+        List<String> fieldTypes = CatalogManager.getIndexFieldTypes("master", "emberek", "id_index");
+        System.out.println(fieldTypes);
     }
 }
