@@ -138,32 +138,38 @@ public class TestDatabaseActions {
 
         // Create index file
 
-//        DatabaseAction createIndex = new CreateIndexAction("emberek",  "master",
-//                new IndexFileModel(
-//
-//                        "id_index",
-//                        "emberek.index.id_index.bin",
-//                        true,
-//                        new ArrayList<>(){{
-//                            add("id");
-//                        }}
-//        ));
-//        try {
-//            createIndex.actionPerform();
-//        } catch (DatabaseDoesntExist e) {
-//            System.out.println("Database doesn't exist!");
-//        } catch (TableDoesntExist e) {
-//            System.out.println("Table doesn't exist!");
-//        } catch (IndexAlreadyExists e) {
-//            System.out.println("Index with given name already exists!");
-//        } catch (Exception exception) {
-//            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
-//        }
+        DatabaseAction createIndex = new CreateIndexAction("emberek",  "master",
+                new IndexFileModel(
 
-        List<String> fieldNames = CatalogManager.getIndexFieldNames("master", "emberek", "id_index");
+                        "id_index",
+                        "emberek.index.id_index.bin",
+                        true,
+                        new ArrayList<>(){{
+                            add("id");
+                            add("name");
+                        }}
+        ));
+        try {
+            createIndex.actionPerform();
+        } catch (DatabaseDoesntExist e) {
+            System.out.println("Database doesn't exist!");
+        } catch (TableDoesntExist e) {
+            System.out.println("Table doesn't exist!");
+        } catch (IndexAlreadyExists e) {
+            System.out.println("Index with given name already exists!");
+        } catch (Exception exception) {
+            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
+        }
+
+        String databaseName = "master", tableName = "emberek", indexName = "id_index";
+        List<String> fieldNames = CatalogManager.getIndexFieldNames(databaseName, tableName, indexName);
         System.out.println(fieldNames);
 
-        List<String> fieldTypes = CatalogManager.getIndexFieldTypes("master", "emberek", "id_index");
+        List<String> fieldTypes = CatalogManager.getIndexFieldTypes(databaseName, tableName, indexName);
         System.out.println(fieldTypes);
+
+        for(final String fieldName : fieldNames) {
+            System.out.println(CatalogManager.isIndexFieldUnique(databaseName, tableName, indexName, fieldName));
+        }
     }
 }

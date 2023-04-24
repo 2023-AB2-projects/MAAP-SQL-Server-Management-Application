@@ -41,6 +41,28 @@ public class CatalogManager {
         return root;
     }
 
+    private static JsonNode findDatabaseNode(String databaseName) {
+        // Check if database exists
+        ArrayNode databasesArray = (ArrayNode) getRoot().get(Config.getDbCatalogRoot());
+        for (final JsonNode databaseNode : databasesArray) {
+            // For each "Database" node find the name of the database
+            JsonNode currentDatabaseNodeValue = databaseNode.get("database").get("databaseName");
+
+            if (currentDatabaseNodeValue == null) {
+                log.error("Database null -> \"databaseName\" not found");
+                continue;
+            }
+
+            // Check if a database exists with the given database name
+            String currentDatabaseName = currentDatabaseNodeValue.asText();
+            if (currentDatabaseName.equals(databaseName)) {
+                return databaseNode;
+            }
+        }
+
+        return null;
+    }
+
     private static JsonNode findTableNode(JsonNode databaseNode, String tableName) {
         // find the databases table nodes
         ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");
@@ -63,25 +85,56 @@ public class CatalogManager {
         return findTableNode(databaseNode, tableName);
     }
 
-    private static JsonNode findDatabaseNode(String databaseName) {
-        // Check if database exists
-        ArrayNode databasesArray = (ArrayNode) getRoot().get(Config.getDbCatalogRoot());
-        for (final JsonNode databaseNode : databasesArray) {
-            // For each "Database" node find the name of the database
-            JsonNode currentDatabaseNodeValue = databaseNode.get("database").get("databaseName");
+    private static JsonNode findTableFieldNode(String databaseName, String tableName, String fieldName) {
+        // Find the table json node
+        JsonNode tableNode = findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("Database=" + databaseName + ", table=" + tableName + " not found!");
+            throw new RuntimeException();
+        }
 
-            if (currentDatabaseNodeValue == null) {
-                log.error("Database null -> \"databaseName\" not found");
-                continue;
-            }
-
-            // Check if a database exists with the given database name
-            String currentDatabaseName = currentDatabaseNodeValue.asText();
-            if (currentDatabaseName.equals(databaseName)) {
-                return databaseNode;
+        // Iterate over fields
+        for (final JsonNode fieldNode : tableNode.get("fields")) {
+            String currentFieldName = fieldNode.get("fieldName").asText();
+            if(currentFieldName.equals(fieldName)) {
+                return fieldNode;
             }
         }
 
+        return null;
+    }
+
+    private static ArrayNode findTableFieldsArrayNode(String databaseName, String tableName) {
+        // Find table JSON node
+        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+            throw new RuntimeException();
+        }
+
+        return (ArrayNode) tableNode.get("fields");
+    }
+
+    private static ArrayNode findTableIndexFilesArrayNode(String databaseName, String tableName) {
+        // Find table JSON node
+        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+            throw new RuntimeException();
+        }
+
+        return (ArrayNode) tableNode.get("indexFiles");
+    }
+
+    private static JsonNode findTableIndexNode(String databaseName, String tableName, String indexName) {
+        // Find node
+        for(final JsonNode indexNode : CatalogManager.findTableIndexFilesArrayNode(databaseName, tableName)) {
+            // Check index name
+            String currentIndexName = indexNode.get("indexFile").get("indexName").asText();
+            if(currentIndexName.equals(indexName)) {
+                return indexNode;
+            }
+        }
         return null;
     }
     /* / Utility */
@@ -140,6 +193,29 @@ public class CatalogManager {
         return columnNames;
     }
 
+    public static String getFieldType(String databaseName, String tableName, String fieldName) {
+        // Find the table json node
+        JsonNode fieldNode = CatalogManager.findTableFieldNode(databaseName, tableName, fieldName);
+        if(fieldNode == null) {
+            log.error("Database=" + databaseName + ", table=" + tableName + ", field=" + fieldName + " not found!");
+            throw new RuntimeException();
+        }
+
+        return fieldNode.get("type").asText();
+    }
+
+    public static boolean isFieldUnique(String databaseName, String tableName, String fieldName) {
+        // Find the table json node
+        JsonNode fieldNode = CatalogManager.findTableFieldNode(databaseName, tableName, fieldName);
+        if(fieldNode == null) {
+            log.error("Database=" + databaseName + ", table=" + tableName + ", field=" + fieldName + " not found!");
+            throw new RuntimeException();
+        }
+
+        // Is unique, when it's not nullable
+        return !fieldNode.get("nullable").asBoolean();
+    }
+
     public static List<String> getPrimaryKeyTypes (String databaseName, String tableName){
         List<String> col_type = getColumnTypes(databaseName, tableName);
         List<String> col_name = getColumnNames(databaseName, tableName);
@@ -177,80 +253,83 @@ public class CatalogManager {
     public static List<String> getIndexFieldNames(String databaseName, String tableName, String indexName) {
         ArrayList<String> fieldNames = new ArrayList<>();
 
-        // Find table JSON node
-        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
-        if(tableNode == null) {
-            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+        // In index node
+        JsonNode indexNode = CatalogManager.findTableIndexNode(databaseName, tableName, indexName);
+        if(indexNode == null) {
+            log.error("Database=" + databaseName + ", table=" + tableName + ", indexName=" + indexName + " not found!");
             throw new RuntimeException();
         }
 
-        for(final JsonNode indexNode : tableNode.get("indexFiles")) {
-            // Check index name
-            String currentIndexName = indexNode.get("indexFile").get("indexName").asText();
-            if(currentIndexName.equals(indexName)) {
-                // Iterate over all index file fields
-                for(final JsonNode indexFileName : indexNode.get("indexFile").get("indexFields")) {
-                    fieldNames.add(indexFileName.asText());
-                }
-
-                // Break since we found our node
-                return fieldNames;
-            }
+        // Iterate over all index file fields
+        for(final JsonNode indexFileName : indexNode.get("indexFile").get("indexFields")) {
+            fieldNames.add(indexFileName.asText());
         }
 
         return fieldNames;
     }
 
     public static List<String> getIndexFieldTypes(String databaseName, String tableName, String indexName) {
+        ArrayList<String> fieldNames = new ArrayList<>();
         ArrayList<String> fieldTypes = new ArrayList<>();
 
-        // Find table JSON node
-        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
-        if(tableNode == null) {
-            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+        // JSON array node containing all fields
+        ArrayNode fieldsArray = CatalogManager.findTableFieldsArrayNode(databaseName, tableName);
+
+        // In index node
+        JsonNode indexNode = CatalogManager.findTableIndexNode(databaseName, tableName, indexName);
+        if(indexNode == null) {
+            log.error("Database=" + databaseName + ", table=" + tableName + ", indexName=" + indexName + " not found!");
             throw new RuntimeException();
         }
 
-        // JSON array node containing all fields
-        ArrayNode fieldsArray = (ArrayNode) tableNode.get("fields");
+        // Iterate over all index file fields
+        for(final JsonNode indexFieldNode : indexNode.get("indexFile").get("indexFields")) {
+            String indexFieldName = indexFieldNode.asText();
+            fieldNames.add(indexFieldName);
 
-        // Find field names then types
-        for(final JsonNode indexNode : tableNode.get("indexFiles")) {
-            // Check index name
-            String currentIndexName = indexNode.get("indexFile").get("indexName").asText();
-            if(currentIndexName.equals(indexName)) {
-                ArrayList<String> fieldNames = new ArrayList<>();
-
-                // Iterate over all index file fields
-                for(final JsonNode indexFileName : indexNode.get("indexFile").get("indexFields")) {
-                    fieldNames.add(indexFileName.asText());
+            // Find in the fields of table
+            for(final JsonNode fieldNode : fieldsArray) {
+                if(fieldNode.get("fieldName").asText().equals(indexFieldName)) {
+                    fieldTypes.add(fieldNode.get("type").asText());
+                    break;      // Move on to next field
                 }
-
-                // Find type for each field
-                for(final String indexFieldName : fieldNames) {
-                    // Find in the fields of table
-                    for(final JsonNode fieldNode : fieldsArray) {
-                        if(fieldNode.get("fieldName").asText().equals(indexFieldName)) {
-                            fieldTypes.add(fieldNode.get("type").asText());
-                            break;      // Move on to next field
-                        }
-                    }
-                }
-
-                // Check size
-                if (fieldNames.size() != fieldTypes.size()) {
-                    log.error("Could not find all types for field names in index!");
-                    throw new RuntimeException();
-                }
-
-                // Break since we found our node
-                return fieldTypes;
             }
+        }
+        // Check size
+        if (fieldNames.size() != fieldTypes.size()) {
+            log.error("Could not find all types for field names in index!");
+            throw new RuntimeException();
         }
 
         return fieldTypes;
     }
 
+    public static boolean isIndexFieldUnique(String databaseName, String tableName, String indexName, String indexFieldName) {
+        // Find the corresponding index file node
+        JsonNode indexNode = CatalogManager.findTableIndexNode(databaseName, tableName, indexName);
+        if(indexNode == null) {
+            log.error("Database=" + databaseName + ", table=" + tableName + ", indexName=" + indexName + " not found!");
+            throw new RuntimeException();
+        }
+
+        // Check if given index field name exists in node fields
+        boolean fieldExists = false;
+        for(final JsonNode fieldNode : indexNode.get("indexFile").get("indexFields")) {
+            if(fieldNode.asText().equals(indexFieldName)) {
+                fieldExists = true;
+                break;
+            }
+        }
+
+        // Check if it doesn't exist
+        if(!fieldExists) {
+            log.error("Database=" + databaseName + ", table=" + tableName + ", indexName=" + indexName + ", indexField=" + indexFieldName + " not found!");
+            throw new RuntimeException();
+        }
+
+        // Now get field type
+        return CatalogManager.isFieldUnique(databaseName, tableName, indexFieldName);
+    }
 
     public static List<String> getCurrentDatabaseTableNames() {
         List<String> tableNames = new ArrayList<>();
