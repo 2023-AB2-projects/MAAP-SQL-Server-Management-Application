@@ -46,6 +46,9 @@ public class CommandHandler {
             serverController.setResponse("Database Created Successfully!");
         }
         if (databaseAction instanceof DropDatabaseAction) {
+            // Update server current databaseName
+            serverController.setCurrentDatabaseName("master");
+
             serverController.updateRootNodeAndNamesList();
             serverController.setResponse("Database Dropped Successfully!");
         }
@@ -55,7 +58,7 @@ public class CommandHandler {
         }
         if (databaseAction instanceof DropTableAction) {
             //serverController.updateRootNodeAndNamesList();
-            serverController.setResponse("Table Dropped Successfully!");
+            serverController.setResponse("Table dropped successfully");
         }
         if (databaseAction instanceof UseDatabaseAction) {
             ServerController.setCurrentDatabaseName((String) returnValue);
