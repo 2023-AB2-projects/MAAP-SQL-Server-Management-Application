@@ -102,8 +102,9 @@ public class ClientController {
             // Update database node
             this.databaseNode = this.findDatabaseNodeFromRoot(this.currentDatabaseName);
             if(databaseNode == null) {
-                log.error("Database doesn't exits: " + this.currentDatabaseName + "!");
-                throw new RuntimeException();
+                this.currentDatabaseName = "master";
+                this.clientFrame.setCurrentDatabaseName(this.currentDatabaseName);
+                this.databaseNode = this.findDatabaseNodeFromRoot(this.currentDatabaseName);
             }
         }
     }

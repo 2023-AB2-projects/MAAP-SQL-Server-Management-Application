@@ -104,9 +104,9 @@ public class TestDatabaseActions {
     }
 
     public static void main(String[] args) {
-        TestDatabaseActions test = new TestDatabaseActions();
-        test.createCarsTable("master");
-        test.createPeopleTable("master");
+//        TestDatabaseActions test = new TestDatabaseActions();
+//        test.createCarsTable("master");
+//        test.createPeopleTable("master");
 
 //        CreateDatabaseAction createDatabaseAction = new CreateDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
 //        try {
@@ -140,8 +140,6 @@ public class TestDatabaseActions {
 //        }
 
         // Create index file
-
-
 
         DatabaseAction createIndex = new CreateIndexAction("people",  "master",
                 new IndexFileModel(

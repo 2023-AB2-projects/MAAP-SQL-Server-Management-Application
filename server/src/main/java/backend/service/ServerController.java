@@ -40,8 +40,9 @@ public class ServerController {
     @Setter
     private String sqlCommand, response;
 
-    @Getter
+
     @Setter
+    @Getter
     private static String currentDatabaseName;
 
     @Getter
@@ -90,7 +91,7 @@ public class ServerController {
         }
 
         // Check if database exists
-        this.databaseNode = this.findDatabaseNodeFromRoot(this.currentDatabaseName, this.rootNode);
+        this.databaseNode = this.findDatabaseNodeFromRoot(ServerController.currentDatabaseName, this.rootNode);
         if(databaseNode == null) {
             log.error("CreateTableAction -> Database doesn't exits: " + this.currentDatabaseName + "!");
             throw new RuntimeException();
