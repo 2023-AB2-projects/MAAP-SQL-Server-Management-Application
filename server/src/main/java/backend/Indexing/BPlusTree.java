@@ -128,6 +128,7 @@ public class BPlusTree {
         TreeNode node = io.readRoot();
         while(!node.isLeaf()){
             int nodePointer = node.findNextNode(key);
+            System.out.println(node);
             node = io.readTreeNode(nodePointer);
             parents.add(nodePointer);
         }
@@ -141,7 +142,7 @@ public class BPlusTree {
         }catch (KeyNotFoundException e){
             return;
         }
-        System.out.println(node);
+        // System.out.println(node);
 
         //remove from root
         if(io.getRootPointer() == nodePointer){
@@ -176,6 +177,14 @@ public class BPlusTree {
             }
 
             TreeNode siblingNode = io.readTreeNode(siblingPointer);
+
+//            System.out.println(nodePointer);
+//            System.out.println(siblingPointer);
+//            System.out.println(parentNode);
+//
+//            System.out.println(isLeftSibling);
+//            System.out.println(siblingNode);
+//            System.out.println(node);
             Key siblingSeparatorKey = parentNode.getKeyBetween(nodePointer, siblingPointer);
 
             if(siblingNode.keyCount() + node.keyCount() < Consts.D * 2){ //join Nodes
@@ -189,8 +198,8 @@ public class BPlusTree {
                     siblingPointer = tempPointer;
                 }
 
-                System.out.println(node);
-                System.out.println(siblingNode);
+//                System.out.println(node);
+//                System.out.println(siblingNode);
                 if(node.isLeaf()){
                     node.joinLeaves(siblingNode);
                 }else {
@@ -202,30 +211,42 @@ public class BPlusTree {
 
                 delete(parentNode, parentNodePointer, siblingSeparatorKey, parents);
             } else{ //unable to join, must borrow
+//                System.out.println("Before");
+//                System.out.println("Current node: " +node);
+//                System.out.println("Sibling node: " + siblingNode);
+//                System.out.println("Parent node: " + parentNode);
+
                 Key borrowedKey;
                 if(isLeftSibling) { //siblingNode is the left sibling of node
-                    borrowedKey = siblingNode.popKey();
+                    borrowedKey = siblingNode.popBackKey();
                     if(node.isLeaf()){
-                        Integer borrowedPointer = siblingNode.popPointerFromLeaf();
+                        Integer borrowedPointer = siblingNode.popBackPointerFromLeaf();
                         node.insertInLeaf(borrowedKey, borrowedPointer);
                     }else {
-                        Integer borrowedPointer = siblingNode.popPointerFromNode();
+                        Integer borrowedPointer = siblingNode.popBackPointerFromNode();
                         //I know that this look stupid, but it is not an error
                         node.insertInLeaf(siblingSeparatorKey, borrowedPointer);
                     }
+                    parentNode.replaceKey(siblingSeparatorKey, borrowedKey);
                 } else{ //siblingNode is the right sibling of node
-                    borrowedKey = node.popKey();
+                    borrowedKey = siblingNode.popFrontKey();
                     if(node.isLeaf()){
-                        Integer borrowedPointer = node.popPointerFromLeaf();
-                        siblingNode.insertInLeaf(borrowedKey, borrowedPointer);
+                        Integer borrowedPointer = siblingNode.popFrontPointerFromLeaf();
+                        node.insertInLeaf(borrowedKey, borrowedPointer);
                     }else{
-                        Integer borrowedPointer = node.popPointerFromNode();
+                        Integer borrowedPointer = siblingNode.popFrontPointerFromLeaf();
                         //I know that this look stupid, but it is not an error
-                        siblingNode.insertInLeaf(siblingSeparatorKey, borrowedPointer);
+                        node.insertInNode(siblingSeparatorKey, borrowedPointer);
                     }
+                    parentNode.replaceKey(siblingSeparatorKey, siblingNode.getSmallestKey());
                 }
 
-                parentNode.replaceKey(siblingSeparatorKey, borrowedKey);
+
+//                System.out.println("After");
+//                System.out.println("Current node: " +node);
+//                System.out.println("Sibling node: " + siblingNode);
+//                System.out.println("Parent node: " + parentNode);
+
                 io.writeNode(node, nodePointer);
                 io.writeNode(siblingNode, siblingPointer);
                 io.writeNode(parentNode, parentNodePointer);
@@ -238,7 +259,7 @@ public class BPlusTree {
     public void printTree() throws IOException {
         System.out.println("Rootpointer: " + io.getRootPointer());
         System.out.println("EmptyPointer: " + io.getDeletedNodePointer());
-        for (int i = 0; i < io.popEmptyNodePointer(); i++){
+        for (int i = 0; i < io.getSize(); i++){
             System.out.println(i + ": " + io.readTreeNode(i));
         }
     }

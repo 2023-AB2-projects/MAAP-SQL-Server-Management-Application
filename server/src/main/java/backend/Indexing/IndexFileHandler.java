@@ -75,7 +75,6 @@ public class IndexFileHandler {
 
     public void addEmptyNode(int line) throws IOException {
         TreeNode emptyNode = TreeNode.createDeletedNode(getDeletedNodePointer(), keyStructure);
-        System.out.println(emptyNode);
         setDeletedNodePointer(line);
         writeNode(emptyNode, line);
     }
@@ -91,6 +90,9 @@ public class IndexFileHandler {
         return (int) ((io.length() - headerSize) / nodeSize);
     }
 
+    public int getSize() throws IOException {
+        return (int) ((io.length() - headerSize) / nodeSize);
+    }
     private int getOffset(int line){
         return headerSize + nodeSize * line;
     }

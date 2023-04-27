@@ -242,7 +242,7 @@ public class TreeNode {
         if(i <= 0){
             return null;
         }
-        return i - 1;
+        return pointers.get(i - 1);
     }
 
     public Integer getRightSiblingPointer(int childPointer){
@@ -253,7 +253,7 @@ public class TreeNode {
         if(i == keyCount()){
             return null;
         }
-        return i + 1;
+        return pointers.get(i + 1);
     }
 
     public void joinLeaves(TreeNode sibling){
@@ -278,13 +278,20 @@ public class TreeNode {
         return pointers.get(0);
     }
 
-    public Key popKey(){
+    public Key popBackKey(){
         return keys.remove(keyCount() - 1);
     }
-    public Integer popPointerFromLeaf(){
-        return pointers.remove(keyCount() - 1);
+    public Key popFrontKey() {
+        return keys.remove(0);
     }
-    public Integer popPointerFromNode() {return  pointers.remove(keyCount());}
+    public Integer popBackPointerFromLeaf(){
+        return pointers.remove(pointers.size() - 2);
+    }
+    public Integer popFrontPointerFromLeaf(){
+        return pointers.remove(0);
+    }
+    public Integer popBackPointerFromNode() {return  pointers.remove(pointers.size() - 1);}
+    public Integer popFrontPointerFromNode() {return  pointers.remove(1);}
     @Override
     public String toString() {
         return "TreeNode{" +
