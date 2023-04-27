@@ -39,6 +39,10 @@ public class test {
 
         node.join(node1, key2);
         System.out.println(node);
+
+        System.out.println(node.popKey());
+        System.out.println(node.popPointer());
+        System.out.println(node);
 //        try{
 //            node.removeKey(key2);
 //            node.removeKey(key3);
@@ -76,8 +80,8 @@ public class test {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
         types = new ArrayList<>();
         types.add("int");
-        //TreeNodeTest();
-        BtreeDeleteTest();
+        TreeNodeTest();
+        //BtreeDeleteTest();
 //        types.add("bit");
 //
 //        Key key = new Key(bytes, types);

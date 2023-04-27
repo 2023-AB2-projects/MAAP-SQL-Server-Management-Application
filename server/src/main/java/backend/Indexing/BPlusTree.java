@@ -204,6 +204,9 @@ public class BPlusTree {
             } else{ //unable to join, must borrow
                 if(isLeftSibling) { //siblingNode is the left sibling of node
                     if(node.isLeaf()){
+                        Key borrowedKey = siblingNode.popKey();
+                        Integer borrowedPointer = siblingNode.popPointer();
+
 
                     }else {
 

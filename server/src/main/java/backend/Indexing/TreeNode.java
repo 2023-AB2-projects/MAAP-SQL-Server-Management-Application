@@ -268,16 +268,27 @@ public class TreeNode {
         pointers.remove(keyCount);
         pointers.addAll(sibling.getPointers());
         keys.addAll(sibling.getKeys());
+
+        keyCount += sibling.getKeyCount();
     }
 
     public void join(TreeNode sibling, Key key){
         keys.add(key);
         keys.addAll(sibling.getKeys());
         pointers.addAll(sibling.getPointers());
+
+        keyCount += sibling.getKeyCount() + 1;
     }
 
     public Integer getFirstPointer(){
         return pointers.get(0);
+    }
+
+    public Key popKey(){
+        return keys.remove(keyCount - 1);
+    }
+    public Integer popPointer(){
+        return pointers.remove(keyCount - 1);
     }
     @Override
     public String toString() {
