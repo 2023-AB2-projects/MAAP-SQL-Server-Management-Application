@@ -210,6 +210,16 @@ public class TreeNode {
     public boolean isTooSmall(){
         return keyCount < Consts.D;
     }
+
+    public void removeKey(Key key){
+        int i = keys.indexOf(key);
+        if(i == -1){
+            return;
+        }
+        keys.remove(i);
+        pointers.remove(i);
+        keyCount--;
+    }
     public Key getSmallestKey(){
         return keys.get(0);
     }

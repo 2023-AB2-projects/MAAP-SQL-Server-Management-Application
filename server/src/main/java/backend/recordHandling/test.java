@@ -18,10 +18,32 @@ import java.util.Scanner;
 
 @Slf4j
 public class test {
+    public static ArrayList<String> types;
+    public static void TreeNodeTest(){
+        TreeNode node = new TreeNode(true, types);
+        byte[] bytes1 = {0, 0, 0, 1};
+        byte[] bytes2 = {0, 0, 0, 2};
+        byte[] bytes3 = {0, 0, 0, 3};
+
+        Key key1 = new Key(bytes1, types);
+        Key key2 = new Key(bytes2, types);
+        Key key3 = new Key(bytes3, types);
+
+        node.insertInLeaf(key1, 1);
+        node.insertInLeaf(key2, 2);
+        node.insertInLeaf(key3, 3);
+
+        node.removeKey(key2);
+        node.removeKey(key3);
+        node.removeKey(key3);
+        node.removeKey(key1);
+        System.out.println(node);
+    }
     public static void main(String[] args) throws IOException, InvalidReadException, RecordNotFoundException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
-        ArrayList<String> types = new ArrayList<>();
+        types = new ArrayList<>();
         types.add("int");
+        TreeNodeTest();
 //        types.add("bit");
 //
 //        Key key = new Key(bytes, types);
@@ -34,12 +56,7 @@ public class test {
 //        byte[] bytes = {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 //
 //        TreeNode node = new TreeNode(bytes, types);
-//        byte[] bytes2 = {0, 0, 0, 3};
-//        Key key = new Key(bytes2, types);
-//
-//        node.insert(key, 1);
-//        node.insert(key, 2);
-//        node.insert(key, 3);
+
 //        System.out.println(node);
 
 //        IndexFileHandler indexFIleHandler = new IndexFileHandler("asd", "asd", "asd");
@@ -94,12 +111,14 @@ public class test {
 //        BPlusTree tree = new BPlusTree("asd", "asd", "asd");
 //        tree.CreateEmptyTree();
 //        tree.close();
-        IndexFileHandler handler = new IndexFileHandler("asd", "asd", "asd");
-        System.out.println(handler.popEmptyNodePointer());
-        System.out.println(handler.getDeletedNodePointer());
-//        System.out.println(handler.readTreeNode(0));
-//        System.out.println(handler.readTreeNode(1));
-//        System.out.println(handler.readTreeNode(2));
-        handler.close();
+//        IndexFileHandler handler = new IndexFileHandler("asd", "asd", "asd");
+//        System.out.println(handler.popEmptyNodePointer());
+//        System.out.println(handler.getDeletedNodePointer());
+////        System.out.println(handler.readTreeNode(0));
+////        System.out.println(handler.readTreeNode(1));
+////        System.out.println(handler.readTreeNode(2));
+//        handler.close();
+
+
     }
 }
