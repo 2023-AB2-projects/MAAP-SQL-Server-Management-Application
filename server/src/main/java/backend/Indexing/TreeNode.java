@@ -220,6 +220,9 @@ public class TreeNode {
             throw new KeyNotFoundException();
         }
         keys.remove(i);
+        if(!isLeaf){
+            i++;
+        }
         pointers.remove(i);
         keyCount--;
     }
@@ -272,6 +275,7 @@ public class TreeNode {
         keys.addAll(sibling.getKeys());
         pointers.addAll(sibling.getPointers());
     }
+
     public Integer getFirstPointer(){
         return pointers.get(0);
     }

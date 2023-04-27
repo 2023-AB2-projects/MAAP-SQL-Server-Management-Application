@@ -68,6 +68,7 @@ public class test {
 
         tree.delete(key3);
 
+        tree.insert(key3, 102);
         tree.printTree();
         tree.close();
     }
@@ -75,8 +76,8 @@ public class test {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
         types = new ArrayList<>();
         types.add("int");
-        TreeNodeTest();
-        //BtreeDeleteTest();
+        //TreeNodeTest();
+        BtreeDeleteTest();
 //        types.add("bit");
 //
 //        Key key = new Key(bytes, types);

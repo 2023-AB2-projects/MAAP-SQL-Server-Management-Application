@@ -132,10 +132,10 @@ public class BPlusTree {
             parents.add(nodePointer);
         }
 
-        delete(node, key, parents.pop(), parents);
+        delete(node, parents.pop(), key, parents);
     }
 
-    private void delete(TreeNode node, Key key, Integer nodePointer, Stack<Integer> parents) throws IOException {
+    private void delete(TreeNode node, Integer nodePointer, Key key, Stack<Integer> parents) throws IOException {
         try{
             node.removeKey(key);
         }catch (KeyNotFoundException e){
@@ -179,16 +179,41 @@ public class BPlusTree {
             Key commonKey = parentNode.getKeyBetween(nodePointer, siblingPointer);
 
             if(siblingNode.getKeyCount() + node.getKeyCount() < Consts.D * 2){ //join Nodes
-                if(!isLeftSibling){
+                if(isLeftSibling){
                     TreeNode temp = node;
                     node = siblingNode;
                     siblingNode = temp;
+
+                    Integer tempPointer = nodePointer;
+                    nodePointer = siblingPointer;
+                    siblingPointer = tempPointer;
                 }
 
+                System.out.println(node);
+                System.out.println(siblingNode);
                 if(node.isLeaf()){
-
+                    node.joinLeaves(siblingNode);
                 }else {
+                    node.join(siblingNode, commonKey);
+                }
 
+                io.writeNode(node, nodePointer);
+                io.addEmptyNode(siblingPointer);
+
+                delete(parentNode, parentNodePointer, commonKey, parents);
+            } else{ //unable to join, must borrow
+                if(isLeftSibling) { //siblingNode is the left sibling of node
+                    if(node.isLeaf()){
+
+                    }else {
+
+                    }
+                } else{ //siblingNode is the right sibling of node
+                    if(node.isLeaf()){
+
+                    }else{
+
+                    }
                 }
             }
 
@@ -198,6 +223,7 @@ public class BPlusTree {
     }
     public void printTree() throws IOException {
         System.out.println("Rootpointer: " + io.getRootPointer());
+        System.out.println("EmptyPointer: " + io.getDeletedNodePointer());
         for (int i = 0; i < io.popEmptyNodePointer(); i++){
             System.out.println(i + ": " + io.readTreeNode(i));
         }
