@@ -132,18 +132,11 @@ public class BPlusTree {
             parents.add(nodePointer);
         }
 
-        delete(node, key, Consts.nullPointer, parents);
+        delete(node, key, parents.pop(), parents);
     }
 
     private void delete(TreeNode node, Key key, Integer nodePointer, Stack<Integer> parents) throws IOException {
         try{
-            System.out.println(node);
-            System.out.println(key);
-            System.out.println(node.getSmallestKey());
-
-            if(key.equals(node.getSmallestKey())){
-                System.out.println("good");
-            }
             node.removeKey(key);
         }catch (KeyNotFoundException e){
             return;
@@ -152,19 +145,22 @@ public class BPlusTree {
 
         //remove from root
         if(io.getRootPointer() == nodePointer){
-            if(node.getKeyCount() == 0){
+            if(node.getKeyCount() == 0){ //root is empty
                 int newRoot = node.getFirstPointer();
-                if(!nullPointer(newRoot)){
+                if(!nullPointer(newRoot)){ //delete the root
                     io.setRootPointer(newRoot);
                     io.addEmptyNode(nodePointer);
+                }else { //tree is now empty
+                    io.writeNode(node, nodePointer);
                 }
-            }else {
+            }else { //removed entry from root
                 io.writeNode(node, nodePointer);
             }
             return;
         }
 
-        if(node.isTooSmall()){
+        //
+        if(node.isTooSmall()){ //node became too small
             Integer parentNodePointer = parents.pop();
             TreeNode parentNode = io.readTreeNode(parentNodePointer);
 
@@ -182,10 +178,21 @@ public class BPlusTree {
             TreeNode siblingNode = io.readTreeNode(siblingPointer);
             Key commonKey = parentNode.getKeyBetween(nodePointer, siblingPointer);
 
-            System.out.println(siblingNode);
-            System.out.println(commonKey);
+            if(siblingNode.getKeyCount() + node.getKeyCount() < Consts.D * 2){ //join Nodes
+                if(!isLeftSibling){
+                    TreeNode temp = node;
+                    node = siblingNode;
+                    siblingNode = temp;
+                }
 
-        }else{
+                if(node.isLeaf()){
+
+                }else {
+
+                }
+            }
+
+        }else{ //just remove the entry and write it to storage
             io.writeNode(node, nodePointer);
         }
     }

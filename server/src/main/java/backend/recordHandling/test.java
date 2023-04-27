@@ -30,18 +30,24 @@ public class test {
         Key key3 = new Key(bytes3, types);
 
         node.insertInLeaf(key1, 1);
-        node.insertInLeaf(key2, 2);
-        node.insertInLeaf(key3, 3);
 
-        try{
-            node.removeKey(key2);
-            node.removeKey(key3);
-            node.removeKey(key3);
-            node.removeKey(key1);
-        }catch (Exception e){
-            System.out.println("nope");
-        }
+        TreeNode node1 = new TreeNode(true, types);
+        node1.insertInLeaf(key3, 3);
+
         System.out.println(node);
+        System.out.println(node1);
+
+        node.join(node1, key2);
+        System.out.println(node);
+//        try{
+//            node.removeKey(key2);
+//            node.removeKey(key3);
+//            node.removeKey(key3);
+//            node.removeKey(key1);
+//        }catch (Exception e){
+//            System.out.println("nope");
+//        }
+//        System.out.println(node);
     }
 
     public static void BtreeDeleteTest() throws IOException {
@@ -56,17 +62,21 @@ public class test {
         Key key2 = new Key(bytes2, types);
         Key key3 = new Key(bytes3, types);
 
-        tree.insert(key1, 1);
-        tree.delete(key1);
+        tree.insert(key1, 100);
+        tree.insert(key2, 101);
+        tree.insert(key3, 102);
 
+        tree.delete(key3);
+
+        tree.printTree();
         tree.close();
     }
     public static void main(String[] args) throws IOException, InvalidReadException, RecordNotFoundException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
         types = new ArrayList<>();
         types.add("int");
-        //TreeNodeTest();
-        BtreeDeleteTest();
+        TreeNodeTest();
+        //BtreeDeleteTest();
 //        types.add("bit");
 //
 //        Key key = new Key(bytes, types);

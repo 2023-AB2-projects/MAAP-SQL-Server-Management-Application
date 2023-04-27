@@ -226,7 +226,7 @@ public class TreeNode {
 
     public Key getKeyBetween(int pointer1, int pointer2){
         int i1 = pointers.indexOf(pointer1), i2 = pointers.indexOf(pointer2);
-        return keys.get(Integer.max(i1, i2));
+        return keys.get(Integer.min(i1, i2));
     }
 
     public Key getSmallestKey(){
@@ -255,6 +255,22 @@ public class TreeNode {
             return null;
         }
         return i + 1;
+    }
+
+    public void joinLeaves(TreeNode sibling){
+        if(!isLeaf || !sibling.isLeaf()){
+            log.warn("Invalid join method called");
+            return;
+        }
+        pointers.remove(keyCount);
+        pointers.addAll(sibling.getPointers());
+        keys.addAll(sibling.getKeys());
+    }
+
+    public void join(TreeNode sibling, Key key){
+        keys.add(key);
+        keys.addAll(sibling.getKeys());
+        pointers.addAll(sibling.getPointers());
     }
     public Integer getFirstPointer(){
         return pointers.get(0);
