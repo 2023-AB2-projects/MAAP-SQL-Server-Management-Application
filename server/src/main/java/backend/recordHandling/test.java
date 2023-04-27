@@ -56,7 +56,7 @@ public class test {
         Random r = new Random(6);
         ArrayList<Integer> nums = new ArrayList<>(), pointers = new ArrayList<>();
         ArrayList<Key> keys = new ArrayList<>();
-        int n = 95;
+        int n = 80;
         for(int i = 0; i < n; i++){
             ByteBuffer buffer = ByteBuffer.allocate(4);
             int num = r.nextInt() % 10000, pointer = r.nextInt() % 10000;

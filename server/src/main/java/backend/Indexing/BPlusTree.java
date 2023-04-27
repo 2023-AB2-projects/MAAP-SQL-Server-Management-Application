@@ -128,7 +128,6 @@ public class BPlusTree {
         TreeNode node = io.readRoot();
         while(!node.isLeaf()){
             int nodePointer = node.findNextNode(key);
-            System.out.println(node);
             node = io.readTreeNode(nodePointer);
             parents.add(nodePointer);
         }
@@ -206,6 +205,7 @@ public class BPlusTree {
                     node.join(siblingNode, siblingSeparatorKey);
                 }
 
+
                 io.writeNode(node, nodePointer);
                 io.addEmptyNode(siblingPointer);
 
@@ -234,11 +234,11 @@ public class BPlusTree {
                         Integer borrowedPointer = siblingNode.popFrontPointerFromLeaf();
                         node.insertInLeaf(borrowedKey, borrowedPointer);
                     }else{
-                        Integer borrowedPointer = siblingNode.popFrontPointerFromLeaf();
-                        //I know that this look stupid, but it is not an error
+                        Integer borrowedPointer = siblingNode.popFrontPointerFromNode();
+
                         node.insertInNode(siblingSeparatorKey, borrowedPointer);
                     }
-                    parentNode.replaceKey(siblingSeparatorKey, siblingNode.getSmallestKey());
+                    parentNode.replaceKey(siblingSeparatorKey, borrowedKey);
                 }
 
 
@@ -256,6 +256,7 @@ public class BPlusTree {
             io.writeNode(node, nodePointer);
         }
     }
+
     public void printTree() throws IOException {
         System.out.println("Rootpointer: " + io.getRootPointer());
         System.out.println("EmptyPointer: " + io.getDeletedNodePointer());
