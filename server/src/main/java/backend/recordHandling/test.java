@@ -49,45 +49,57 @@ public class test {
 //        TreeNode node1 = indexFIleHandler.readTreeNode(0);
 //        System.out.println(Arrays.toString(node1.toBytes()));
 
-        BPlusTree tree = new BPlusTree("asd", "asd", "asd");
-        tree.CreateEmptyTree();
-        Random r = new Random(2);
-        ArrayList<Integer> nums = new ArrayList<>(), pointers = new ArrayList<>();
-        ArrayList<Key> keys = new ArrayList<>();
-        int n = 1000;
-        for(int i = 0; i < n; i++){
-            ByteBuffer buffer = ByteBuffer.allocate(4);
-            int num = r.nextInt() % 10000, pointer = r.nextInt() % 100;
-            while(nums.contains(num)){
-                num = r.nextInt() % 10000;
-            }
-            nums.add(num);
-            pointers.add(pointer);
-            buffer.putInt(num);
-            Key key = new Key(buffer.array(), types);
-            keys.add(key);
-            tree.insert(key, pointer);
-            //tree.printTree();
-        }
+//        BPlusTree tree = new BPlusTree("asd", "asd", "asd");
+//        tree.CreateEmptyTree();
+//        Random r = new Random(2);
+//        ArrayList<Integer> nums = new ArrayList<>(), pointers = new ArrayList<>();
+//        ArrayList<Key> keys = new ArrayList<>();
+//        int n = 1000;
+//        for(int i = 0; i < n; i++){
+//            ByteBuffer buffer = ByteBuffer.allocate(4);
+//            int num = r.nextInt() % 10000, pointer = r.nextInt() % 100;
+//            while(nums.contains(num)){
+//                num = r.nextInt() % 10000;
+//            }
+//            nums.add(num);
+//            pointers.add(pointer);
+//            buffer.putInt(num);
+//            Key key = new Key(buffer.array(), types);
+//            keys.add(key);
+//            tree.insert(key, pointer);
+//            //tree.printTree();
+//        }
 
         //System.out.println(nums);
         //System.out.println(pointers);
 
-        ArrayList<Integer> finds = new ArrayList<>();
+//        ArrayList<Integer> finds = new ArrayList<>();
 
-        for(int i = 0; i < n; i++){
-            finds.add(tree.find(keys.get(i)));
-        }
+//        for(int i = 0; i < n; i++){
+//            finds.add(tree.find(keys.get(i)));
+//        }
 
         //System.out.println(finds);
 
-        if(pointers.equals(finds)){
-            System.out.println("Nice");
-        }
+//        if(pointers.equals(finds)){
+//            System.out.println("Nice");
+//        }
 
         //tree.printTree();
 
-        tree.close();
 
+//        tree.close();
+
+
+//        BPlusTree tree = new BPlusTree("asd", "asd", "asd");
+//        tree.CreateEmptyTree();
+//        tree.close();
+        IndexFileHandler handler = new IndexFileHandler("asd", "asd", "asd");
+        System.out.println(handler.popEmptyNodePointer());
+        System.out.println(handler.getDeletedNodePointer());
+//        System.out.println(handler.readTreeNode(0));
+//        System.out.println(handler.readTreeNode(1));
+//        System.out.println(handler.readTreeNode(2));
+        handler.close();
     }
 }

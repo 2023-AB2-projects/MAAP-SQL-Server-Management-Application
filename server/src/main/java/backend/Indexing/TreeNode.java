@@ -4,16 +4,20 @@ import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.recordHandling.TypeConverter;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+@Slf4j
 public class TreeNode {
     @Getter
     @Setter
     private boolean isLeaf;
     private int keyCount;
+    @Getter
     private ArrayList<Key> keys;
+    @Setter
     private ArrayList<Integer> pointers;
     @Getter
     private ArrayList<String> keyStructure;
@@ -211,6 +215,13 @@ public class TreeNode {
     }
 
     public Key getMiddleKey() {return keys.get(Consts.D);}
+
+    public Integer getOnlyPointer(){
+        if(keyCount != 0){
+            log.warn("Invalid use of getOnlyPointer function");
+        }
+        return pointers.get(0);
+    }
     @Override
     public String toString() {
         return "TreeNode{" +

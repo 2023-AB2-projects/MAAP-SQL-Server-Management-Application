@@ -14,6 +14,7 @@ public class IndexFileHandler {
     private int nodeSize, headerSize;
     private final String databaseName, tableName, indexName;
 
+    private final static long deletePointerOffset = Integer.BYTES;
     public IndexFileHandler(String databaseName, String tableName, String indexName) throws IOException {
         this.databaseName = databaseName;
         this.tableName = tableName;
@@ -53,7 +54,6 @@ public class IndexFileHandler {
     public TreeNode readRoot() throws IOException {
         return readTreeNode(getRootPointer());
     }
-
     public void setRootPointer(int rootPointer) throws IOException {
         io.seek(0);
         io.writeInt(rootPointer);
@@ -69,15 +69,25 @@ public class IndexFileHandler {
     }
 
     public int getDeletedNodePointer() throws IOException {
-        io.seek(Integer.BYTES);
+        io.seek(deletePointerOffset);
         return io.readInt();
     }
 
-    public int getEmptyNodePointer() throws IOException {
+    public void addEmptyNode(int line) throws IOException {
+        TreeNode emptyNode = TreeNode.createDeletedNode(getDeletedNodePointer(), keyStructure);
+        System.out.println(emptyNode);
+        setDeletedNodePointer(line);
+        writeNode(emptyNode, line);
+    }
+
+    public int popEmptyNodePointer() throws IOException {
         int pointer = getDeletedNodePointer();
         if(pointer != Consts.nullPointer){
+            TreeNode node = readTreeNode(pointer);
+            setDeletedNodePointer(node.getOnlyPointer());
             return pointer;
         }
+        //end of file
         return (int) ((io.length() - headerSize) / nodeSize);
     }
 

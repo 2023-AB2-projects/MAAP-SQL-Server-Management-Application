@@ -2,7 +2,6 @@ package backend.Indexing;
 
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.functors.TruePredicate;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,7 +56,7 @@ public class BPlusTree {
 
         if(node.isAlmostFull()){
             node.insertInLeaf(key, pointer);
-            int rightNodePointer = io.getEmptyNodePointer();
+            int rightNodePointer = io.popEmptyNodePointer();
             TreeNode rightNode = node.splitLeaf(rightNodePointer);
 
             log.info(node.toString());
@@ -87,7 +86,7 @@ public class BPlusTree {
             pointers.add(rightNodePointer);
             TreeNode rootNode = new TreeNode(false, 1, keys, pointers, keyStructure);
 
-            int newRootPointer = io.getEmptyNodePointer();
+            int newRootPointer = io.popEmptyNodePointer();
             io.writeNode(rootNode, newRootPointer);
             io.setRootPointer(newRootPointer);
 
@@ -101,7 +100,7 @@ public class BPlusTree {
 
                 Key middleKey = parentNode.getMiddleKey();
 
-                int rightParentPointer = io.getEmptyNodePointer();
+                int rightParentPointer = io.popEmptyNodePointer();
                 TreeNode rightParentNode = parentNode.splitNode();
 
                 io.writeNode(parentNode, parentPointer);
@@ -121,9 +120,26 @@ public class BPlusTree {
         }
     }
 
+    public void delete(Key key) throws IOException {
+        Stack<Integer> parents = new Stack<>();
+        parents.add(io.getRootPointer());
+
+        TreeNode node = io.readRoot();
+        while(!node.isLeaf()){
+            int nodePointer = node.findNextNode(key);
+            node = io.readTreeNode(nodePointer);
+            parents.add(nodePointer);
+        }
+
+        delete(node, key, Consts.nullPointer, parents);
+    }
+
+    private void delete(TreeNode node, Key key, Integer nodePointer, Stack<Integer> parents){
+
+    }
     public void printTree() throws IOException {
         System.out.println("Rootpointer: " + io.getRootPointer());
-        for (int i = 0; i < io.getEmptyNodePointer(); i++){
+        for (int i = 0; i < io.popEmptyNodePointer(); i++){
             System.out.println(i + ": " + io.readTreeNode(i));
         }
     }
