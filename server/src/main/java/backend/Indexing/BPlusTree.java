@@ -205,7 +205,6 @@ public class BPlusTree {
                     node.join(siblingNode, siblingSeparatorKey);
                 }
 
-
                 io.writeNode(node, nodePointer);
                 io.addEmptyNode(siblingPointer);
 
