@@ -1,20 +1,14 @@
 package backend.recordHandling;
 
 import backend.Indexing.BPlusTree;
-import backend.Indexing.IndexFileHandler;
 import backend.Indexing.Key;
 import backend.Indexing.TreeNode;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
-import com.fasterxml.jackson.databind.InjectableValues;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.Scanner;
 
 @Slf4j
 public class test {
@@ -41,7 +35,7 @@ public class test {
         System.out.println(node);
 
         System.out.println(node.popKey());
-        System.out.println(node.popPointer());
+        System.out.println(node.popPointerFromLeaf());
         System.out.println(node);
 //        try{
 //            node.removeKey(key2);

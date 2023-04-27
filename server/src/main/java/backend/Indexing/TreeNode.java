@@ -16,21 +16,21 @@ public class TreeNode {
     @Setter
     private boolean isLeaf;
     @Getter
-    private int keyCount;
-    @Getter
     private ArrayList<Key> keys;
     @Setter
     @Getter
     private ArrayList<Integer> pointers;
     @Getter
-    private ArrayList<String> keyStructure;
-    private int keySize;
-    private int nodeSize;
+    private final ArrayList<String> keyStructure;
+    private final int keySize;
+    private final int nodeSize;
 
+    public int keyCount(){
+        return keys.size();
+    }
     //empty node
     public TreeNode(boolean isLeaf, ArrayList<String> keyStructure){
         this.isLeaf = isLeaf;
-        keyCount = 0;
         this.keyStructure = keyStructure;
 
         keySize = (int) TypeConverter.sizeofStructure(keyStructure);
@@ -40,9 +40,8 @@ public class TreeNode {
         pointers = new ArrayList<>();
         pointers.add(Consts.nullPointer);
     }
-    public TreeNode(boolean isLeaf, int keyCount, ArrayList<Key> keys, ArrayList<Integer> pointers, ArrayList<String> keyStructure) {
+    public TreeNode(boolean isLeaf, ArrayList<Key> keys, ArrayList<Integer> pointers, ArrayList<String> keyStructure) {
         this.isLeaf = isLeaf;
-        this.keyCount = keyCount;
         this.keys = keys;
         this.pointers = pointers;
         this.keyStructure = keyStructure;
@@ -59,7 +58,7 @@ public class TreeNode {
 
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         isLeaf = buffer.get() == 1;
-        keyCount = buffer.getInt();
+        int keyCount = buffer.getInt();
         pointers.add(buffer.getInt());
 
         for (int i = 0; i < keyCount; i++){
@@ -74,7 +73,7 @@ public class TreeNode {
         ArrayList<Key> emptyKeys = new ArrayList<>();
         ArrayList<Integer> pointerToNextDeletedNode = new ArrayList<>();
         pointerToNextDeletedNode.add(pointer);
-        return new TreeNode(false, 0, emptyKeys, pointerToNextDeletedNode, keyStructure);
+        return new TreeNode(false, emptyKeys, pointerToNextDeletedNode, keyStructure);
     }
     public byte[] toBytes(){
         ByteBuffer buffer = ByteBuffer.allocate(nodeSize);
@@ -85,26 +84,26 @@ public class TreeNode {
             buffer.put((byte) 0);
         }
 
-        buffer.putInt(keyCount);
-        for(int i = 0; i < keyCount; i++){
+        buffer.putInt(keyCount());
+        for(int i = 0; i < keyCount(); i++){
             buffer.putInt(pointers.get(i));
             buffer.put(keys.get(i).toBytes());
         }
 
-        buffer.putInt(pointers.get(keyCount));
+        buffer.putInt(pointers.get(keyCount()));
 
         return buffer.array();
     }
     public int findNextNode(Key key){
-        for(int i = 0; i < keyCount; i++){
+        for(int i = 0; i < keyCount(); i++){
             if(key.compareTo(keys.get(i)) < 0){
                 return pointers.get(i);
             }
         }
-        return pointers.get(keyCount);
+        return pointers.get(keyCount());
     }
     public int findKeyInLeaf(Key key) throws RecordNotFoundException {
-        for(int i = 0; i < keyCount; i++){
+        for(int i = 0; i < keyCount(); i++){
             if(key.compareTo(keys.get(i)) == 0){
                 return pointers.get(i);
             }
@@ -116,23 +115,22 @@ public class TreeNode {
         ArrayList<Integer> newPointers = new ArrayList<>();
 
         int i = 0;
-        while(i < keyCount && key.compareTo(keys.get(i)) > 0){
+        while(i < keyCount() && key.compareTo(keys.get(i)) > 0){
             newKeys.add(keys.get(i));
             newPointers.add(pointers.get(i));
             i++;
         }
         newKeys.add(key);
         newPointers.add(pointer);
-        while(i < keyCount){
+        while(i < keyCount()){
             newKeys.add(keys.get(i));
             newPointers.add(pointers.get(i));
             i++;
         }
-        newPointers.add(pointers.get(keyCount));
+        newPointers.add(pointers.get(keyCount()));
 
         keys = newKeys;
         pointers = newPointers;
-        keyCount++;
     }
 
     public void insertInNode(Key key, int pointer){
@@ -141,23 +139,22 @@ public class TreeNode {
 
         int i = 0;
         newPointers.add(pointers.get(0));
-        while(i < keyCount && key.compareTo(keys.get(i)) > 0){
+        while(i < keyCount() && key.compareTo(keys.get(i)) > 0){
             newKeys.add(keys.get(i));
             i++;
             newPointers.add(pointers.get(i));
         }
         newKeys.add(key);
         newPointers.add(pointer);
-        while(i < keyCount){
+        while(i < keyCount()){
             newKeys.add(keys.get(i));
             i++;
             newPointers.add(pointers.get(i));
         }
-        //newPointers.add(pointers.get(keyCount));
+        //newPointers.add(pointers.get(keyCount()));
 
         keys = newKeys;
         pointers = newPointers;
-        keyCount++;
     }
     public TreeNode splitLeaf(int splitLocation){
         ArrayList<Key> leftKeys = new ArrayList<>(), rightKeys = new ArrayList<>();
@@ -170,13 +167,12 @@ public class TreeNode {
             rightPointers.add(pointers.get(Consts.D + i));
         }
         leftPointers.add(splitLocation);
-        rightPointers.add(pointers.get(keyCount));
+        rightPointers.add(pointers.get(keyCount()));
 
 
-        TreeNode node = new TreeNode(isLeaf, Consts.D, rightKeys, rightPointers, keyStructure);
+        TreeNode node = new TreeNode(isLeaf, rightKeys, rightPointers, keyStructure);
         keys = leftKeys;
         pointers = leftPointers;
-        keyCount = Consts.D;
         return node;
     }
 
@@ -191,27 +187,26 @@ public class TreeNode {
             rightPointers.add(pointers.get(Consts.D + i + 1));
         }
         leftPointers.add(pointers.get(Consts.D));
-        rightPointers.add(pointers.get(keyCount));
+        rightPointers.add(pointers.get(keyCount()));
 
 
-        TreeNode node = new TreeNode(isLeaf, Consts.D, rightKeys, rightPointers, keyStructure);
+        TreeNode node = new TreeNode(isLeaf, rightKeys, rightPointers, keyStructure);
         keys = leftKeys;
         pointers = leftPointers;
-        keyCount = Consts.D;
         return node;
     }
 
     public boolean isDeleted() {
-        return keyCount == 0;
+        return keyCount() == 0;
     }
     public boolean isAlmostFull(){
-        return keyCount == Consts.D * 2 - 1;
+        return keyCount() == Consts.D * 2 - 1;
     }
     public boolean isFull() {
-        return keyCount == Consts.D * 2;
+        return keyCount() == Consts.D * 2;
     }
     public boolean isTooSmall(){
-        return keyCount < Consts.D;
+        return keyCount() < Consts.D;
     }
 
     public void removeKey(Key key) throws KeyNotFoundException {
@@ -224,9 +219,10 @@ public class TreeNode {
             i++;
         }
         pointers.remove(i);
-        keyCount--;
     }
-
+    public void replaceKey(Key oldKey, Key newKey){
+        keys.set(keys.indexOf(oldKey), newKey);
+    }
     public Key getKeyBetween(int pointer1, int pointer2){
         int i1 = pointers.indexOf(pointer1), i2 = pointers.indexOf(pointer2);
         return keys.get(Integer.min(i1, i2));
@@ -254,7 +250,7 @@ public class TreeNode {
             return null;
         }
         int i = pointers.indexOf(childPointer);
-        if(i == keyCount){
+        if(i == keyCount()){
             return null;
         }
         return i + 1;
@@ -265,11 +261,10 @@ public class TreeNode {
             log.warn("Invalid join method called");
             return;
         }
-        pointers.remove(keyCount);
+        pointers.remove(keyCount());
         pointers.addAll(sibling.getPointers());
         keys.addAll(sibling.getKeys());
 
-        keyCount += sibling.getKeyCount();
     }
 
     public void join(TreeNode sibling, Key key){
@@ -277,7 +272,6 @@ public class TreeNode {
         keys.addAll(sibling.getKeys());
         pointers.addAll(sibling.getPointers());
 
-        keyCount += sibling.getKeyCount() + 1;
     }
 
     public Integer getFirstPointer(){
@@ -285,16 +279,17 @@ public class TreeNode {
     }
 
     public Key popKey(){
-        return keys.remove(keyCount - 1);
+        return keys.remove(keyCount() - 1);
     }
-    public Integer popPointer(){
-        return pointers.remove(keyCount - 1);
+    public Integer popPointerFromLeaf(){
+        return pointers.remove(keyCount() - 1);
     }
+    public Integer popPointerFromNode() {return  pointers.remove(keyCount());}
     @Override
     public String toString() {
         return "TreeNode{" +
                 "isLeaf=" + isLeaf +
-                ", keyCount=" + keyCount +
+                ", keyCount=" + keyCount() +
                 ", keys=" + keys +
                 ", pointers=" + pointers +
                 '}';

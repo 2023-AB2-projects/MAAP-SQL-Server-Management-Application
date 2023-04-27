@@ -85,7 +85,7 @@ public class BPlusTree {
             ArrayList<Integer> pointers = new ArrayList<>();
             pointers.add(leftNodePointer);
             pointers.add(rightNodePointer);
-            TreeNode rootNode = new TreeNode(false, 1, keys, pointers, keyStructure);
+            TreeNode rootNode = new TreeNode(false, keys, pointers, keyStructure);
 
             int newRootPointer = io.popEmptyNodePointer();
             io.writeNode(rootNode, newRootPointer);
@@ -145,7 +145,7 @@ public class BPlusTree {
 
         //remove from root
         if(io.getRootPointer() == nodePointer){
-            if(node.getKeyCount() == 0){ //root is empty
+            if(node.keyCount() == 0){ //root is empty
                 int newRoot = node.getFirstPointer();
                 if(!nullPointer(newRoot)){ //delete the root
                     io.setRootPointer(newRoot);
@@ -176,9 +176,9 @@ public class BPlusTree {
             }
 
             TreeNode siblingNode = io.readTreeNode(siblingPointer);
-            Key commonKey = parentNode.getKeyBetween(nodePointer, siblingPointer);
+            Key siblingSeparatorKey = parentNode.getKeyBetween(nodePointer, siblingPointer);
 
-            if(siblingNode.getKeyCount() + node.getKeyCount() < Consts.D * 2){ //join Nodes
+            if(siblingNode.keyCount() + node.keyCount() < Consts.D * 2){ //join Nodes
                 if(isLeftSibling){
                     TreeNode temp = node;
                     node = siblingNode;
@@ -194,30 +194,41 @@ public class BPlusTree {
                 if(node.isLeaf()){
                     node.joinLeaves(siblingNode);
                 }else {
-                    node.join(siblingNode, commonKey);
+                    node.join(siblingNode, siblingSeparatorKey);
                 }
 
                 io.writeNode(node, nodePointer);
                 io.addEmptyNode(siblingPointer);
 
-                delete(parentNode, parentNodePointer, commonKey, parents);
+                delete(parentNode, parentNodePointer, siblingSeparatorKey, parents);
             } else{ //unable to join, must borrow
+                Key borrowedKey;
                 if(isLeftSibling) { //siblingNode is the left sibling of node
+                    borrowedKey = siblingNode.popKey();
                     if(node.isLeaf()){
-                        Key borrowedKey = siblingNode.popKey();
-                        Integer borrowedPointer = siblingNode.popPointer();
-
-
+                        Integer borrowedPointer = siblingNode.popPointerFromLeaf();
+                        node.insertInLeaf(borrowedKey, borrowedPointer);
                     }else {
-
+                        Integer borrowedPointer = siblingNode.popPointerFromNode();
+                        //I know that this look stupid, but it is not an error
+                        node.insertInLeaf(siblingSeparatorKey, borrowedPointer);
                     }
                 } else{ //siblingNode is the right sibling of node
+                    borrowedKey = node.popKey();
                     if(node.isLeaf()){
-
+                        Integer borrowedPointer = node.popPointerFromLeaf();
+                        siblingNode.insertInLeaf(borrowedKey, borrowedPointer);
                     }else{
-
+                        Integer borrowedPointer = node.popPointerFromNode();
+                        //I know that this look stupid, but it is not an error
+                        siblingNode.insertInLeaf(siblingSeparatorKey, borrowedPointer);
                     }
                 }
+
+                parentNode.replaceKey(siblingSeparatorKey, borrowedKey);
+                io.writeNode(node, nodePointer);
+                io.writeNode(siblingNode, siblingPointer);
+                io.writeNode(parentNode, parentNodePointer);
             }
 
         }else{ //just remove the entry and write it to storage
