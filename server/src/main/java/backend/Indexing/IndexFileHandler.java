@@ -84,7 +84,7 @@ public class IndexFileHandler {
         int pointer = getDeletedNodePointer();
         if(pointer != Consts.nullPointer){
             TreeNode node = readTreeNode(pointer);
-            setDeletedNodePointer(node.getOnlyPointer());
+            setDeletedNodePointer(node.getFirstPointer());
             return pointer;
         }
         //end of file

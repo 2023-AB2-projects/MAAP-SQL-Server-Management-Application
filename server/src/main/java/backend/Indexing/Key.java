@@ -47,4 +47,17 @@ public class Key implements Comparable<Key> {
     public String toString() {
         return key.toString();
     }
+
+    @Override
+    public boolean equals(Object obj){
+        if(obj == null){
+            return false;
+        }
+        if(getClass() != obj.getClass()){
+            return false;
+        }
+        Key key = (Key) obj;
+        return this.key.equals(key.getKey()) && keyStructure.equals(key.getKeyStructure());
+    }
+
 }

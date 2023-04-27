@@ -1,5 +1,6 @@
 package backend.Indexing;
 
+import backend.exceptions.recordHandlingExceptions.KeyNotFoundException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.recordHandling.TypeConverter;
 import lombok.Getter;
@@ -14,10 +15,12 @@ public class TreeNode {
     @Getter
     @Setter
     private boolean isLeaf;
+    @Getter
     private int keyCount;
     @Getter
     private ArrayList<Key> keys;
     @Setter
+    @Getter
     private ArrayList<Integer> pointers;
     @Getter
     private ArrayList<String> keyStructure;
@@ -211,25 +214,49 @@ public class TreeNode {
         return keyCount < Consts.D;
     }
 
-    public void removeKey(Key key){
+    public void removeKey(Key key) throws KeyNotFoundException {
         int i = keys.indexOf(key);
         if(i == -1){
-            return;
+            throw new KeyNotFoundException();
         }
         keys.remove(i);
         pointers.remove(i);
         keyCount--;
     }
+
+    public Key getKeyBetween(int pointer1, int pointer2){
+        int i1 = pointers.indexOf(pointer1), i2 = pointers.indexOf(pointer2);
+        return keys.get(Integer.max(i1, i2));
+    }
+
     public Key getSmallestKey(){
         return keys.get(0);
     }
 
     public Key getMiddleKey() {return keys.get(Consts.D);}
 
-    public Integer getOnlyPointer(){
-        if(keyCount != 0){
-            log.warn("Invalid use of getOnlyPointer function");
+    public Integer getLeftSiblingPointer(int childPointer){
+        if(isLeaf){
+            return null;
         }
+        int i = pointers.indexOf(childPointer);
+        if(i <= 0){
+            return null;
+        }
+        return i - 1;
+    }
+
+    public Integer getRightSiblingPointer(int childPointer){
+        if(isLeaf){
+            return null;
+        }
+        int i = pointers.indexOf(childPointer);
+        if(i == keyCount){
+            return null;
+        }
+        return i + 1;
+    }
+    public Integer getFirstPointer(){
         return pointers.get(0);
     }
     @Override

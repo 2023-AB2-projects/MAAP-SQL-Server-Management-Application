@@ -1,5 +1,6 @@
 package backend.Indexing;
 
+import backend.exceptions.recordHandlingExceptions.KeyNotFoundException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -134,8 +135,59 @@ public class BPlusTree {
         delete(node, key, Consts.nullPointer, parents);
     }
 
-    private void delete(TreeNode node, Key key, Integer nodePointer, Stack<Integer> parents){
+    private void delete(TreeNode node, Key key, Integer nodePointer, Stack<Integer> parents) throws IOException {
+        try{
+            System.out.println(node);
+            System.out.println(key);
+            System.out.println(node.getSmallestKey());
 
+            if(key.equals(node.getSmallestKey())){
+                System.out.println("good");
+            }
+            node.removeKey(key);
+        }catch (KeyNotFoundException e){
+            return;
+        }
+        System.out.println(node);
+
+        //remove from root
+        if(io.getRootPointer() == nodePointer){
+            if(node.getKeyCount() == 0){
+                int newRoot = node.getFirstPointer();
+                if(!nullPointer(newRoot)){
+                    io.setRootPointer(newRoot);
+                    io.addEmptyNode(nodePointer);
+                }
+            }else {
+                io.writeNode(node, nodePointer);
+            }
+            return;
+        }
+
+        if(node.isTooSmall()){
+            Integer parentNodePointer = parents.pop();
+            TreeNode parentNode = io.readTreeNode(parentNodePointer);
+
+            Integer siblingPointer = parentNode.getLeftSiblingPointer(nodePointer);
+            boolean isLeftSibling = true;
+            if(siblingPointer == null){
+                isLeftSibling = false;
+                siblingPointer = parentNode.getRightSiblingPointer(nodePointer);
+                if(siblingPointer == null){
+                    log.warn("Something went wrong");
+                    return;
+                }
+            }
+
+            TreeNode siblingNode = io.readTreeNode(siblingPointer);
+            Key commonKey = parentNode.getKeyBetween(nodePointer, siblingPointer);
+
+            System.out.println(siblingNode);
+            System.out.println(commonKey);
+
+        }else{
+            io.writeNode(node, nodePointer);
+        }
     }
     public void printTree() throws IOException {
         System.out.println("Rootpointer: " + io.getRootPointer());
@@ -158,7 +210,7 @@ public class BPlusTree {
         }while (true);
     }
 
-    public boolean nullPointer(int pointer){
+    private boolean nullPointer(int pointer){
         return pointer == Consts.nullPointer;
     }
 

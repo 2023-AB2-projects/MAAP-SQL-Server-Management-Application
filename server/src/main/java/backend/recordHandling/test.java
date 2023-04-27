@@ -33,17 +33,40 @@ public class test {
         node.insertInLeaf(key2, 2);
         node.insertInLeaf(key3, 3);
 
-        node.removeKey(key2);
-        node.removeKey(key3);
-        node.removeKey(key3);
-        node.removeKey(key1);
+        try{
+            node.removeKey(key2);
+            node.removeKey(key3);
+            node.removeKey(key3);
+            node.removeKey(key1);
+        }catch (Exception e){
+            System.out.println("nope");
+        }
         System.out.println(node);
+    }
+
+    public static void BtreeDeleteTest() throws IOException {
+        BPlusTree tree = new BPlusTree("asd", "asd", "asd");
+        tree.CreateEmptyTree();
+
+        byte[] bytes1 = {0, 0, 0, 1};
+        byte[] bytes2 = {0, 0, 0, 2};
+        byte[] bytes3 = {0, 0, 0, 3};
+
+        Key key1 = new Key(bytes1, types);
+        Key key2 = new Key(bytes2, types);
+        Key key3 = new Key(bytes3, types);
+
+        tree.insert(key1, 1);
+        tree.delete(key1);
+
+        tree.close();
     }
     public static void main(String[] args) throws IOException, InvalidReadException, RecordNotFoundException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
         types = new ArrayList<>();
         types.add("int");
-        TreeNodeTest();
+        //TreeNodeTest();
+        BtreeDeleteTest();
 //        types.add("bit");
 //
 //        Key key = new Key(bytes, types);
