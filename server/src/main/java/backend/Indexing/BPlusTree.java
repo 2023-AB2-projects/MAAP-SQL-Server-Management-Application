@@ -232,12 +232,14 @@ public class BPlusTree {
                     if(node.isLeaf()){
                         Integer borrowedPointer = siblingNode.popFrontPointerFromLeaf();
                         node.insertInLeaf(borrowedKey, borrowedPointer);
+                        parentNode.replaceKey(siblingSeparatorKey, siblingNode.getSmallestKey());
                     }else{
                         Integer borrowedPointer = siblingNode.popFrontPointerFromNode();
 
                         node.insertInNode(siblingSeparatorKey, borrowedPointer);
+                        parentNode.replaceKey(siblingSeparatorKey, borrowedKey);
                     }
-                    parentNode.replaceKey(siblingSeparatorKey, borrowedKey);
+
                 }
 
 
