@@ -106,15 +106,6 @@ public class TreeNode {
         return pointers.get(keyCount());
     }
 
-    public int findKeyInLeaf(Key key) throws RecordNotFoundException {
-        for(int i = 0; i < keyCount(); i++){
-            if(key.compareTo(keys.get(i)) == 0){
-                return pointers.get(i);
-            }
-        }
-        throw new RecordNotFoundException();
-    }
-
     public void insertInLeaf(Key key, int pointer){
         ArrayList<Key> newKeys = new ArrayList<>();
         ArrayList<Integer> newPointers = new ArrayList<>();

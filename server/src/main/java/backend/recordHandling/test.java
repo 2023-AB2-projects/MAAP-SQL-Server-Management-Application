@@ -3,6 +3,7 @@ package backend.recordHandling;
 import backend.Indexing.BPlusTree;
 import backend.Indexing.Key;
 import backend.Indexing.TreeNode;
+import backend.Indexing.UniqueIndexManager;
 import backend.config.Config;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.KeyAlreadyInTreeException;
@@ -14,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 @Slf4j
@@ -110,12 +112,29 @@ public class test {
 
         tree.close();
     }
-    public static void main(String[] args) throws IOException, InvalidReadException, RecordNotFoundException, KeyAlreadyInTreeException, KeyNotFoundException {
+
+    public static void testUniqueIndexManager() throws IOException, KeyAlreadyInTreeException, KeyNotFoundException {
+        UniqueIndexManager manager = new UniqueIndexManager("asd", "asd", "asd");
+        manager.removeLater();
+
+        ArrayList<String> values = new ArrayList<>();
+        values.add("1");
+
+        manager.insert(values, 101);
+        System.out.println(manager.isPresent(values));
+        System.out.println(manager.findLocation(values));
+        manager.delete(values);
+        System.out.println(manager.isPresent(values));
+
+        manager.close();
+    }
+    public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
         types = new ArrayList<>();
         types.add("int");
         //TreeNodeTest();
-        BtreeDeleteTest();
+        //BtreeDeleteTest();
+        testUniqueIndexManager();
 //        types.add("bit");
 //
 //        Key key = new Key(bytes, types);

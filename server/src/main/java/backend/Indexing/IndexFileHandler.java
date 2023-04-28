@@ -1,9 +1,7 @@
 package backend.Indexing;
 
-import backend.config.Config;
 import backend.recordHandling.TypeConverter;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;

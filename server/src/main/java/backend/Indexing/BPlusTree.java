@@ -26,12 +26,12 @@ public class BPlusTree {
         io.setDeletedNodePointer(Constants.nullPointer);
     }
 
-    public int find(Key key) throws IOException, RecordNotFoundException {
+    public int find(Key key) throws IOException, KeyNotFoundException {
         TreeNode node = io.readRoot();
         while(!node.isLeaf()){
             node = io.readTreeNode(node.findNextNode(key));
         }
-        return node.findKeyInLeaf(key);
+        return node.getValueOfKey(key);
     }
 
     public void insert(Key key, int pointer) throws IOException, KeyAlreadyInTreeException {

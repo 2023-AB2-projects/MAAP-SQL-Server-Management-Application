@@ -10,13 +10,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class UniqueIndexHandler {
+public class UniqueIndexManager {
     private final ArrayList<String> keyStructure;
     private final BPlusTree bPlusTree;
 
     private final String databaseName, tableName;
 
-    public UniqueIndexHandler(String databaseName, String tableName, String indexName) throws IOException {
+    public UniqueIndexManager(String databaseName, String tableName, String indexName) throws IOException {
         this.databaseName = databaseName;
         this.tableName = tableName;
         // keyStructure = CatalogManager.getIndexStructure(databaseName, tableName, indexName);
@@ -29,7 +29,11 @@ public class UniqueIndexHandler {
         //remove later
         String filename = Config.getDbRecordsPath() + File.separator + "test.index.bin";
 
-        bPlusTree = new BPlusTree(keyStructure, indexName);
+        bPlusTree = new BPlusTree(keyStructure, filename);
+    }
+
+    public void removeLater() throws IOException {
+        bPlusTree.createEmptyTree();
     }
 
     public boolean isPresent(ArrayList<String> values){
@@ -37,12 +41,12 @@ public class UniqueIndexHandler {
         try{
             bPlusTree.find(key);
             return true;
-        }catch (RecordNotFoundException | IOException e) {
+        } catch (KeyNotFoundException | IOException e) {
             return false;
         }
     }
 
-    public Integer findLocation(ArrayList<String> values) throws RecordNotFoundException, IOException {
+    public Integer findLocation(ArrayList<String> values) throws IOException, KeyNotFoundException {
         Key key = TypeConverter.toKey(keyStructure, values);
         return bPlusTree.find(key);
     }
@@ -52,9 +56,11 @@ public class UniqueIndexHandler {
         bPlusTree.insert(key, pointer);
     }
 
-    public void delete(ArrayList<String> values) throws IOException, KeyNotFoundException {
+    public void delete(ArrayList<String> values) throws IOException {
         Key key = TypeConverter.toKey(keyStructure, values);
-        bPlusTree.delete(key);
+        try {
+            bPlusTree.delete(key);
+        }catch (KeyNotFoundException ignored){}
     }
 
     public void close() throws IOException {
