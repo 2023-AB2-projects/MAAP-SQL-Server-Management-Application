@@ -149,6 +149,7 @@ public class TypeConverter {
     public static Key toKey(ArrayList<String> keyStructure, ArrayList<String> values){
         return new Key(toObjectList(keyStructure, values), keyStructure);
     }
+
     public static byte[] toBytes(String type, String value){
         ByteBuffer buffer;
         switch (type) {
@@ -227,6 +228,7 @@ public class TypeConverter {
 
         return buffer.array();
     }
+
     public static int compare(String type, Object o1, Object o2) {
         switch (type) {
             case "int" -> {

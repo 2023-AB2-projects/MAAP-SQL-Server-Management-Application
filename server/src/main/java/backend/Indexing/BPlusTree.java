@@ -1,5 +1,6 @@
 package backend.Indexing;
 
+import backend.exceptions.recordHandlingExceptions.KeyAlreadyInTreeException;
 import backend.exceptions.recordHandlingExceptions.KeyNotFoundException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class BPlusTree {
         return node.findKeyInLeaf(key);
     }
 
-    public void insert(Key key, int pointer) throws IOException {
+    public void insert(Key key, int pointer) throws IOException, KeyAlreadyInTreeException {
         Stack<Integer> parents = new Stack<>();
         parents.add(io.getRootPointer());
 
@@ -42,6 +43,10 @@ public class BPlusTree {
             int nodePointer = node.findNextNode(key);
             node = io.readTreeNode(nodePointer);
             parents.add(nodePointer);
+        }
+
+        if(node.getKeys().contains(key)){
+            throw new KeyAlreadyInTreeException();
         }
 
         if(node.isAlmostFull()){
@@ -99,7 +104,7 @@ public class BPlusTree {
         }
     }
 
-    public void delete(Key key) throws IOException {
+    public void delete(Key key) throws IOException, KeyNotFoundException {
         Stack<Integer> parents = new Stack<>();
         parents.add(io.getRootPointer());
 
@@ -109,10 +114,10 @@ public class BPlusTree {
             node = io.readTreeNode(nodePointer);
             parents.add(nodePointer);
         }
-        try{
-            Integer pointer = node.getValueOfKey(key);
-            delete(node, parents.pop(), key, pointer, parents);
-        }catch (KeyNotFoundException ignored){}
+
+        Integer pointer = node.getValueOfKey(key);
+        delete(node, parents.pop(), key, pointer, parents);
+
     }
 
     private void delete(TreeNode node, Integer nodePointer, Key deleteKey, Integer deletePointer, Stack<Integer> parents) throws IOException {

@@ -23,6 +23,7 @@ public class RecordHandler {
         }
         io = new RandomAccessFile(fileLocation, "rw");
     }
+
     public void insert(ArrayList<String> values, int line) throws IOException {
         if (values.size() != tableStructure.size()){
             log.info("Wrong length of values");
@@ -51,6 +52,7 @@ public class RecordHandler {
 
         }
     }
+
     public void deleteLine(int line) throws IOException {
         long offset = line * recordSize;
 
@@ -68,6 +70,7 @@ public class RecordHandler {
         io.seek(offset);
         io.writeBoolean(false);
     }
+
     public ArrayList<String> readLine(int line) throws IOException, InvalidReadException {
         ArrayList<String> values = new ArrayList<>();
         long offset = line * recordSize;
@@ -121,11 +124,12 @@ public class RecordHandler {
 
         return values;
     }
+
     public long getRecordCount() throws IOException {
         return io.length() / recordSize;
     }
+
     public void close() throws IOException {
         io.close();
     }
-
 }

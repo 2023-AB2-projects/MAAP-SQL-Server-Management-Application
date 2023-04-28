@@ -5,6 +5,8 @@ import backend.Indexing.Key;
 import backend.Indexing.TreeNode;
 import backend.config.Config;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
+import backend.exceptions.recordHandlingExceptions.KeyAlreadyInTreeException;
+import backend.exceptions.recordHandlingExceptions.KeyNotFoundException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,7 +54,7 @@ public class test {
 //        System.out.println(node);
     }
 
-    public static void BtreeDeleteTest() throws IOException, RecordNotFoundException {
+    public static void BtreeDeleteTest() throws IOException, RecordNotFoundException, KeyAlreadyInTreeException, KeyNotFoundException {
         String filename = Config.getDbRecordsPath() + File.separator + "test.index.bin";
         System.out.println(filename);
         BPlusTree tree = new BPlusTree(types, filename);
@@ -108,7 +110,7 @@ public class test {
 
         tree.close();
     }
-    public static void main(String[] args) throws IOException, InvalidReadException, RecordNotFoundException {
+    public static void main(String[] args) throws IOException, InvalidReadException, RecordNotFoundException, KeyAlreadyInTreeException, KeyNotFoundException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
         types = new ArrayList<>();
         types.add("int");
