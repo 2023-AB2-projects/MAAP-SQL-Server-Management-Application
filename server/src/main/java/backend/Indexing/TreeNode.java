@@ -202,10 +202,6 @@ public class TreeNode {
         return node;
     }
 
-    public boolean isDeleted() {
-        return keyCount() == 0;
-    }
-
     public boolean isAlmostFull(){
         return keyCount() == Constants.D * 2 - 1;
     }
@@ -230,6 +226,13 @@ public class TreeNode {
         keys.set(keys.indexOf(oldKey), newKey);
     }
 
+    public Integer getValueOfKey(Key key) throws KeyNotFoundException {
+        int i = keys.indexOf(key);
+        if(i == -1){
+            throw new KeyNotFoundException();
+        }
+        return pointers.get(i);
+    }
     public Key getKeyBetween(int pointer1, int pointer2){
         int i1 = pointers.indexOf(pointer1), i2 = pointers.indexOf(pointer2);
         return keys.get(Integer.min(i1, i2));

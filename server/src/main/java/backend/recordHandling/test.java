@@ -3,10 +3,12 @@ package backend.recordHandling;
 import backend.Indexing.BPlusTree;
 import backend.Indexing.Key;
 import backend.Indexing.TreeNode;
+import backend.config.Config;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -51,9 +53,11 @@ public class test {
     }
 
     public static void BtreeDeleteTest() throws IOException, RecordNotFoundException {
-        BPlusTree tree = new BPlusTree("asd", "asd", "asd");
-        tree.CreateEmptyTree();
-        Random r = new Random(6);
+        String filename = Config.getDbRecordsPath() + File.separator + "test.index.bin";
+        System.out.println(filename);
+        BPlusTree tree = new BPlusTree(types, filename);
+        tree.createEmptyTree();
+        Random r = new Random();
         ArrayList<Integer> nums = new ArrayList<>(), pointers = new ArrayList<>();
         ArrayList<Key> keys = new ArrayList<>();
         int n = 1000;
@@ -83,7 +87,7 @@ public class test {
         tree.printTree();
 
         for(int i = 0; i < n; i++){
-            tree.delete(keys.get(i), pointers.get(i));
+            tree.delete(keys.get(i));
             //tree.printTree();
         }
 
@@ -97,8 +101,9 @@ public class test {
 //            System.out.println("Nice");
 //        }
 
-        System.out.println(keys);
-        System.out.println(pointers);
+        //System.out.println(keys);
+        //System.out.println(pointers);
+        tree.insert(keys.get(0), pointers.get(0));
         tree.printTree();
 
         tree.close();

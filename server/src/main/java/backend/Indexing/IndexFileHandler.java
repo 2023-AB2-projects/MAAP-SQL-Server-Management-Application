@@ -12,24 +12,17 @@ public class IndexFileHandler {
     private final RandomAccessFile io;
     private ArrayList<String> keyStructure;
     private int nodeSize, headerSize;
-    private final String databaseName, tableName, indexName;
 
     private final static long deletePointerOffset = Integer.BYTES;
-    public IndexFileHandler(String databaseName, String tableName, String indexName) throws IOException {
-        this.databaseName = databaseName;
-        this.tableName = tableName;
-        this.indexName = indexName;
+    public IndexFileHandler(ArrayList<String> keyStructure, String fileLocation) throws IOException {
         this.headerSize = 2 * Integer.BYTES;
-        //get keyStructure from catalog
-        //remove later
-        keyStructure = new ArrayList<>();
-        keyStructure.add("int");
+
+        this.keyStructure = keyStructure;
 
         int keySize = (int) TypeConverter.sizeofStructure(keyStructure);
         nodeSize = 1 + Integer.BYTES + (2 * Constants.D) * keySize + (2 * Constants.D + 1) * Integer.BYTES;
 
-        String filename = Config.getDbRecordsPath() + File.separator + "test.index.bin";
-        io = new RandomAccessFile(filename, "rw");
+        io = new RandomAccessFile(fileLocation, "rw");
 
         if(io.length() == 0){
             io.writeInt(0);
@@ -54,10 +47,12 @@ public class IndexFileHandler {
     public TreeNode readRoot() throws IOException {
         return readTreeNode(getRootPointer());
     }
+
     public void setRootPointer(int rootPointer) throws IOException {
         io.seek(0);
         io.writeInt(rootPointer);
     }
+
     public int getRootPointer() throws IOException {
         io.seek(0);
         return io.readInt();
@@ -93,9 +88,11 @@ public class IndexFileHandler {
     public int getSize() throws IOException {
         return (int) ((io.length() - headerSize) / nodeSize);
     }
+
     private int getOffset(int line){
         return headerSize + nodeSize * line;
     }
+
     public void close() throws IOException {
         io.close();
     }

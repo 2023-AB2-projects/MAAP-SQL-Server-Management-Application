@@ -13,16 +13,12 @@ public class BPlusTree {
     private IndexFileHandler io;
     private ArrayList<String> keyStructure;
 
-    public BPlusTree(String databaseName, String tableName, String indexName) throws IOException {
-        io = new IndexFileHandler(databaseName, tableName, indexName);
-
-        //get keyStructure from catalog
-        //remove later
-        keyStructure = new ArrayList<>();
-        keyStructure.add("int");
+    public BPlusTree(ArrayList<String> keyStructure, String fileLocation) throws IOException {
+        io = new IndexFileHandler(keyStructure, fileLocation);
+        this.keyStructure = keyStructure;
     }
 
-    public void CreateEmptyTree() throws IOException {
+    public void createEmptyTree() throws IOException {
         TreeNode root = new TreeNode(true, keyStructure);
         io.writeNode(root, 0);
         io.setRootPointer(0);
@@ -31,15 +27,9 @@ public class BPlusTree {
 
     public int find(Key key) throws IOException, RecordNotFoundException {
         TreeNode node = io.readRoot();
-        // log.info(node.toString());
-        // ArrayList<Integer> path = new ArrayList<>();
-        // path.add(io.getRootPointer());
         while(!node.isLeaf()){
-            // path.add(node.findNextNode(key));
             node = io.readTreeNode(node.findNextNode(key));
-            // log.info(node.toString());
         }
-        // System.out.println("Path: " + path);
         return node.findKeyInLeaf(key);
     }
 
@@ -59,9 +49,6 @@ public class BPlusTree {
             int rightNodePointer = io.popEmptyNodePointer();
             TreeNode rightNode = node.splitLeaf(rightNodePointer);
 
-            log.info(node.toString());
-            log.info(rightNode.toString());
-
             int leftNodePointer = parents.pop();
             io.writeNode(node, leftNodePointer);
             io.writeNode(rightNode, rightNodePointer);
@@ -72,7 +59,6 @@ public class BPlusTree {
 
         }else {
             node.insertInLeaf(key, pointer);
-            log.info(node.toString());
             io.writeNode(node, parents.pop());
         }
     }
@@ -90,7 +76,6 @@ public class BPlusTree {
             io.writeNode(rootNode, newRootPointer);
             io.setRootPointer(newRootPointer);
 
-            log.info(rootNode.toString());
         } else {
             int parentPointer = parents.pop();
             TreeNode parentNode = io.readTreeNode(parentPointer);
@@ -106,21 +91,15 @@ public class BPlusTree {
                 io.writeNode(parentNode, parentPointer);
                 io.writeNode(rightParentNode, rightParentPointer);
 
-                log.info(parentNode.toString());
-                log.info(parentNode.toString());
-                log.info(middleKey.toString());
-
                 insertInParent(parentPointer, rightParentPointer, middleKey, parents);
             }else{
                 parentNode.insertInNode(smallestKey, rightNodePointer);
                 io.writeNode(parentNode, parentPointer);
-
-                log.info(parentNode.toString());
             }
         }
     }
 
-    public void delete(Key key, Integer pointer) throws IOException {
+    public void delete(Key key) throws IOException {
         Stack<Integer> parents = new Stack<>();
         parents.add(io.getRootPointer());
 
@@ -130,8 +109,10 @@ public class BPlusTree {
             node = io.readTreeNode(nodePointer);
             parents.add(nodePointer);
         }
-
-        delete(node, parents.pop(), key, pointer, parents);
+        try{
+            Integer pointer = node.getValueOfKey(key);
+            delete(node, parents.pop(), key, pointer, parents);
+        }catch (KeyNotFoundException ignored){}
     }
 
     private void delete(TreeNode node, Integer nodePointer, Key deleteKey, Integer deletePointer, Stack<Integer> parents) throws IOException {
@@ -168,7 +149,6 @@ public class BPlusTree {
                 isLeftSibling = false;
                 siblingPointer = parentNode.getRightSiblingPointer(nodePointer);
                 if(siblingPointer == null){
-                    log.warn("Something went wrong");
                     return;
                 }
             }
