@@ -121,7 +121,7 @@ public class BPlusTree {
         }
     }
 
-    public void delete(Key key) throws IOException {
+    public void delete(Key key, Integer pointer) throws IOException {
         Stack<Integer> parents = new Stack<>();
         parents.add(io.getRootPointer());
 
@@ -132,12 +132,12 @@ public class BPlusTree {
             parents.add(nodePointer);
         }
 
-        delete(node, parents.pop(), key, parents);
+        delete(node, parents.pop(), key, pointer, parents);
     }
 
-    private void delete(TreeNode node, Integer nodePointer, Key key, Stack<Integer> parents) throws IOException {
+    private void delete(TreeNode node, Integer nodePointer, Key deleteKey, Integer deletePointer, Stack<Integer> parents) throws IOException {
         try{
-            node.removeKey(key);
+            node.removeKeyAndPointer(deleteKey, deletePointer);
         }catch (KeyNotFoundException e){
             return;
         }
@@ -159,7 +159,6 @@ public class BPlusTree {
             return;
         }
 
-        //
         if(node.isTooSmall()){ //node became too small
             Integer parentNodePointer = parents.pop();
             TreeNode parentNode = io.readTreeNode(parentNodePointer);
@@ -176,14 +175,6 @@ public class BPlusTree {
             }
 
             TreeNode siblingNode = io.readTreeNode(siblingPointer);
-
-//            System.out.println(nodePointer);
-//            System.out.println(siblingPointer);
-//            System.out.println(parentNode);
-//
-//            System.out.println(isLeftSibling);
-//            System.out.println(siblingNode);
-//            System.out.println(node);
             Key siblingSeparatorKey = parentNode.getKeyBetween(nodePointer, siblingPointer);
 
             if(siblingNode.keyCount() + node.keyCount() < Consts.D * 2){ //join Nodes
@@ -208,13 +199,8 @@ public class BPlusTree {
                 io.writeNode(node, nodePointer);
                 io.addEmptyNode(siblingPointer);
 
-                delete(parentNode, parentNodePointer, siblingSeparatorKey, parents);
+                delete(parentNode, parentNodePointer, siblingSeparatorKey, siblingPointer, parents);
             } else{ //unable to join, must borrow
-//                System.out.println("Before");
-//                System.out.println("Current node: " +node);
-//                System.out.println("Sibling node: " + siblingNode);
-//                System.out.println("Parent node: " + parentNode);
-
                 Key borrowedKey;
                 if(isLeftSibling) { //siblingNode is the left sibling of node
                     borrowedKey = siblingNode.popBackKey();
@@ -234,20 +220,13 @@ public class BPlusTree {
                         node.insertInLeaf(borrowedKey, borrowedPointer);
                         parentNode.replaceKey(siblingSeparatorKey, siblingNode.getSmallestKey());
                     }else{
-                        Integer borrowedPointer = siblingNode.popFrontPointerFromNode();
+                        Integer borrowedPointer = siblingNode.popFrontPointerFromLeaf();
 
                         node.insertInNode(siblingSeparatorKey, borrowedPointer);
                         parentNode.replaceKey(siblingSeparatorKey, borrowedKey);
                     }
 
                 }
-
-
-//                System.out.println("After");
-//                System.out.println("Current node: " +node);
-//                System.out.println("Sibling node: " + siblingNode);
-//                System.out.println("Parent node: " + parentNode);
-
                 io.writeNode(node, nodePointer);
                 io.writeNode(siblingNode, siblingPointer);
                 io.writeNode(parentNode, parentNodePointer);
@@ -262,7 +241,9 @@ public class BPlusTree {
         System.out.println("Rootpointer: " + io.getRootPointer());
         System.out.println("EmptyPointer: " + io.getDeletedNodePointer());
         for (int i = 0; i < io.getSize(); i++){
-            System.out.println(i + ": " + io.readTreeNode(i));
+            TreeNode node = io.readTreeNode(i);
+            if(node.keyCount() == 0) continue;
+            System.out.println(i + ": " + node);
         }
     }
 

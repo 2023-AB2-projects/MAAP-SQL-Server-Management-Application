@@ -220,6 +220,14 @@ public class TreeNode {
         }
         pointers.remove(i);
     }
+
+    public void removeKeyAndPointer(Key key, Integer pointer) throws KeyNotFoundException {
+        if(!keys.contains(key) || !pointers.contains(pointer)){
+            throw new KeyNotFoundException();
+        }
+        keys.remove(key);
+        pointers.remove(pointer);
+    }
     public void replaceKey(Key oldKey, Key newKey){
         keys.set(keys.indexOf(oldKey), newKey);
     }

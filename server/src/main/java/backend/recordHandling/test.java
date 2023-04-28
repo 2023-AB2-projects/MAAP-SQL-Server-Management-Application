@@ -56,7 +56,7 @@ public class test {
         Random r = new Random(6);
         ArrayList<Integer> nums = new ArrayList<>(), pointers = new ArrayList<>();
         ArrayList<Key> keys = new ArrayList<>();
-        int n = 80;
+        int n = 1000;
         for(int i = 0; i < n; i++){
             ByteBuffer buffer = ByteBuffer.allocate(4);
             int num = r.nextInt() % 10000, pointer = r.nextInt() % 10000;
@@ -82,8 +82,9 @@ public class test {
 
         tree.printTree();
 
-        for(var key : keys){
-            tree.delete(key);
+        for(int i = 0; i < n; i++){
+            tree.delete(keys.get(i), pointers.get(i));
+            //tree.printTree();
         }
 
 //        for(int i = 0; i < n; i++){
