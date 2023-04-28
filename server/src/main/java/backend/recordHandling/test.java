@@ -37,7 +37,7 @@ public class test {
         System.out.println(node);
 
         System.out.println(node.popBackKey());
-        System.out.println(node.popBackPointerFromLeaf());
+        System.out.println(node.popSecondToLastPointer());
         System.out.println(node);
 //        try{
 //            node.removeKey(key2);
@@ -100,6 +100,8 @@ public class test {
         System.out.println(keys);
         System.out.println(pointers);
         tree.printTree();
+
+        tree.close();
     }
     public static void main(String[] args) throws IOException, InvalidReadException, RecordNotFoundException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};

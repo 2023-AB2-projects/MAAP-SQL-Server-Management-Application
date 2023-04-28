@@ -26,7 +26,7 @@ public class IndexFileHandler {
         keyStructure.add("int");
 
         int keySize = (int) TypeConverter.sizeofStructure(keyStructure);
-        nodeSize = 1 + Integer.BYTES + (2 * Consts.D) * keySize + (2 * Consts.D + 1) * Integer.BYTES;
+        nodeSize = 1 + Integer.BYTES + (2 * Constants.D) * keySize + (2 * Constants.D + 1) * Integer.BYTES;
 
         String filename = Config.getDbRecordsPath() + File.separator + "test.index.bin";
         io = new RandomAccessFile(filename, "rw");
@@ -81,7 +81,7 @@ public class IndexFileHandler {
 
     public int popEmptyNodePointer() throws IOException {
         int pointer = getDeletedNodePointer();
-        if(pointer != Consts.nullPointer){
+        if(pointer != Constants.nullPointer){
             TreeNode node = readTreeNode(pointer);
             setDeletedNodePointer(node.getFirstPointer());
             return pointer;

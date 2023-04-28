@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.Stack;
 
 @Slf4j
@@ -27,7 +26,7 @@ public class BPlusTree {
         TreeNode root = new TreeNode(true, keyStructure);
         io.writeNode(root, 0);
         io.setRootPointer(0);
-        io.setDeletedNodePointer(Consts.nullPointer);
+        io.setDeletedNodePointer(Constants.nullPointer);
     }
 
     public int find(Key key) throws IOException, RecordNotFoundException {
@@ -177,7 +176,7 @@ public class BPlusTree {
             TreeNode siblingNode = io.readTreeNode(siblingPointer);
             Key siblingSeparatorKey = parentNode.getKeyBetween(nodePointer, siblingPointer);
 
-            if(siblingNode.keyCount() + node.keyCount() < Consts.D * 2){ //join Nodes
+            if(siblingNode.keyCount() + node.keyCount() < Constants.D * 2){ //join Nodes
                 if(isLeftSibling){
                     TreeNode temp = node;
                     node = siblingNode;
@@ -205,7 +204,7 @@ public class BPlusTree {
                 if(isLeftSibling) { //siblingNode is the left sibling of node
                     borrowedKey = siblingNode.popBackKey();
                     if(node.isLeaf()){
-                        Integer borrowedPointer = siblingNode.popBackPointerFromLeaf();
+                        Integer borrowedPointer = siblingNode.popSecondToLastPointer();
                         node.insertInLeaf(borrowedKey, borrowedPointer);
                     }else {
                         Integer borrowedPointer = siblingNode.popBackPointerFromNode();
@@ -216,11 +215,11 @@ public class BPlusTree {
                 } else{ //siblingNode is the right sibling of node
                     borrowedKey = siblingNode.popFrontKey();
                     if(node.isLeaf()){
-                        Integer borrowedPointer = siblingNode.popFrontPointerFromLeaf();
+                        Integer borrowedPointer = siblingNode.popFrontPointer();
                         node.insertInLeaf(borrowedKey, borrowedPointer);
                         parentNode.replaceKey(siblingSeparatorKey, siblingNode.getSmallestKey());
                     }else{
-                        Integer borrowedPointer = siblingNode.popFrontPointerFromLeaf();
+                        Integer borrowedPointer = siblingNode.popFrontPointer();
 
                         node.insertInNode(siblingSeparatorKey, borrowedPointer);
                         parentNode.replaceKey(siblingSeparatorKey, borrowedKey);
@@ -247,22 +246,8 @@ public class BPlusTree {
         }
     }
 
-    public void travelTree() throws IOException {
-        TreeNode node = io.readRoot();
-        System.out.println(node);
-        Scanner scanner = new Scanner(System.in);
-        do{
-            int pointer = scanner.nextInt();
-            if(pointer == -1){
-                return;
-            }
-            node = io.readTreeNode(pointer);
-            System.out.println(node);
-        }while (true);
-    }
-
     private boolean nullPointer(int pointer){
-        return pointer == Consts.nullPointer;
+        return pointer == Constants.nullPointer;
     }
 
     public void close() throws IOException {
