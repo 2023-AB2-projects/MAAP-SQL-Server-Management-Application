@@ -4,17 +4,19 @@ import backend.exceptions.recordHandlingExceptions.KeyAlreadyInTreeException;
 import backend.exceptions.recordHandlingExceptions.KeyNotFoundException;
 import backend.recordHandling.TypeConverter;
 import backend.service.CatalogManager;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
+@Slf4j
 public class UniqueIndexManager {
     private final ArrayList<String> keyStructure;
     private final BPlusTree bPlusTree;
 
     private final String databaseName, tableName;
 
-    public UniqueIndexManager(String databaseName, String tableName, String indexName) throws IOException {
+    public UniqueIndexManager(String databaseName, String tableName, String indexName) {
         this.databaseName = databaseName;
         this.tableName = tableName;
 
@@ -22,7 +24,12 @@ public class UniqueIndexManager {
         keyStructure = (ArrayList<String>) CatalogManager.getIndexFieldTypes(databaseName, tableName, indexName);
         String filename = CatalogManager.getTableIndexFilePath(databaseName, tableName, indexName);
 
-        bPlusTree = new BPlusTree(keyStructure, filename);
+        try {
+            bPlusTree = new BPlusTree(keyStructure, filename);
+        } catch (IOException e) {
+            log.error("Could not load B+ tree, databaseName=" + databaseName + ", tableName=" + tableName + ", indexName=" + indexName);
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isPresent(ArrayList<String> values){

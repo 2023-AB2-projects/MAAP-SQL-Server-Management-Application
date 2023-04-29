@@ -5,6 +5,7 @@ import backend.exceptions.databaseActionsExceptions.*;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.recordHandling.RecordDeleter;
 import backend.recordHandling.RecordInserter;
+import backend.service.InsertRowValidator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.AllArgsConstructor;
@@ -24,13 +25,13 @@ public class InsertAction implements DatabaseAction {
 
     @Override
     public Object actionPerform() throws IOException {
-        RecordInserter recordInserter = new RecordInserter(databaseName, tableName);
+        InsertRowValidator rowValidator = new InsertRowValidator(this.databaseName, this.tableName);
+
         for (var row : values) {
             // Validate rows and throw exceptions
         }
 
         for (var row: values) {
-            recordInserter.insert(row);
         }
 
         //TODO

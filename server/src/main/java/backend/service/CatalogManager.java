@@ -2,6 +2,7 @@ package backend.service;
 
 import backend.config.Config;
 import backend.databaseModels.ForeignKeyModel;
+import backend.databaseModels.IndexFileModel;
 import backend.exceptions.recordHandlingExceptions.DeletedRecordLinesEmpty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -90,7 +91,7 @@ public class CatalogManager {
             }
         }
         log.error("findTableNode() ->  No table were found with given name " + tableName);
-        return null;
+        throw new RuntimeException();
     }
 
     private static JsonNode findTableNode(String databaseName, String tableName) {
@@ -278,6 +279,39 @@ public class CatalogManager {
         return pks;
     }
 
+    public static List<String> getPrimaryKeyTypes (String databaseName, String tableName){
+        List<String> col_type = getFieldTypes(databaseName, tableName);
+        List<String> col_name = getFieldNames(databaseName, tableName);
+        List<String> key_name = getPrimaryKeyFieldNames(databaseName, tableName);
+
+        ArrayList<String> key_type = new ArrayList<>();
+        for (String key : key_name) {
+            int index = col_name.indexOf(key);
+            if (index != -1) {
+                key_type.add(col_type.get(index));
+            } else {
+                log.warn("getPrimaryKeyTypes() " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
+            }
+        }
+        return key_type;
+    }
+
+    public static List<Integer> getPrimaryKeyIndexes (String databaseName, String tableName){
+        List<String> col_name = getFieldNames(databaseName, tableName);
+        List<String> key_name = getPrimaryKeyFieldNames(databaseName, tableName);
+
+        ArrayList<Integer> key_index = new ArrayList<>();
+        for (String key : key_name) {
+            int index = col_name.indexOf(key);
+            if (index != -1) {
+                key_index.add(index);
+            } else {
+                log.warn("getPrimaryKeyTypes() " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
+            }
+        }
+        return key_index;
+    }
+
     public static List<String> getUniqueFieldNames(String databaseName, String tableName) {
         List<String> fields = new ArrayList<>();
 
@@ -307,6 +341,20 @@ public class CatalogManager {
         return foreignKeys;
     }
 
+    public static boolean isFieldUnique(String databaseName, String tableName, String fieldName) {
+        // Find the table json node
+        JsonNode fieldNode = CatalogManager.findTableFieldNode(databaseName, tableName, fieldName);
+        if(fieldNode == null) {
+            log.error("Database=" + databaseName + ", table=" + tableName + ", field=" + fieldName + " not found!");
+            throw new RuntimeException();
+        }
+
+        // Is unique, when it's not nullable
+        return !fieldNode.get("nullable").asBoolean();
+    }
+    /* ------------------- / Fields ------------------ */
+
+    /* ----------------- Field types ----------------- */
     public static List<String> getFieldTypes(String databaseName, String tableName) {
         ArrayList<String> columnNames = new ArrayList<>();
 
@@ -332,53 +380,9 @@ public class CatalogManager {
 
         return fieldNode.get("type").asText();
     }
+    /* ---------------- / Field types ---------------- */
 
-    public static boolean isFieldUnique(String databaseName, String tableName, String fieldName) {
-        // Find the table json node
-        JsonNode fieldNode = CatalogManager.findTableFieldNode(databaseName, tableName, fieldName);
-        if(fieldNode == null) {
-            log.error("Database=" + databaseName + ", table=" + tableName + ", field=" + fieldName + " not found!");
-            throw new RuntimeException();
-        }
-
-        // Is unique, when it's not nullable
-        return !fieldNode.get("nullable").asBoolean();
-    }
-
-    public static List<String> getPrimaryKeyTypes (String databaseName, String tableName){
-        List<String> col_type = getFieldTypes(databaseName, tableName);
-        List<String> col_name = getFieldNames(databaseName, tableName);
-        List<String> key_name = getPrimaryKeyFieldNames(databaseName, tableName);
-
-        ArrayList<String> key_type = new ArrayList<>();
-        for (String key : key_name) {
-            int index = col_name.indexOf(key);
-            if (index != -1) {
-                key_type.add(col_type.get(index));
-            } else {
-                log.warn("getPrimaryKeyTypes() " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
-            }
-        }
-        return key_type;
-    }
-
-    public static List<Integer> getPrimaryKeyIndexes (String databaseName, String tableName){
-//        List<String> col_type = getColumnTypes(databaseName, tableName);
-        List<String> col_name = getFieldNames(databaseName, tableName);
-        List<String> key_name = getPrimaryKeyFieldNames(databaseName, tableName);
-
-        ArrayList<Integer> key_index = new ArrayList<>();
-        for (String key : key_name) {
-            int index = col_name.indexOf(key);
-            if (index != -1) {
-                key_index.add(index);
-            } else {
-                log.warn("getPrimaryKeyTypes() " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
-            }
-        }
-        return key_index;
-    }
-
+    /* ------------------- Indexes ------------------- */
     public static List<String> getIndexFieldNames(String databaseName, String tableName, String indexName) {
         ArrayList<String> fieldNames = new ArrayList<>();
 
@@ -433,7 +437,32 @@ public class CatalogManager {
         return fieldTypes;
     }
 
-    public static List<String> getTableIndexNames(String databaseName, String tableName) {
+    public static String getPrimaryKeyIndexName(String databaseName, String tableName) {
+        List<String> pkFields = getPrimaryKeyFieldNames(databaseName, tableName);
+
+        // Look through each index file and find the one that corresponds to PK
+        // Find table JSON node
+        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+            throw new RuntimeException();
+        }
+
+        // Iterate over index files
+        for(final JsonNode indexFileNode : tableNode.get("indexFiles")) {
+            // Read as object
+            try {
+                IndexFileModel index = Utility.getObjectMapper().readValue(indexFileNode.get("indexFile").toString(), new TypeReference<>() {});
+            } catch (JsonProcessingException e) {
+                log.error("PK index name -> Could not read index file");
+                throw new RuntimeException(e);
+            }
+        }
+
+        return "";
+    }
+
+    public static List<String> getIndexNames(String databaseName, String tableName) {
         ArrayList<String> indexNames = new ArrayList<>();
 
         // Find table JSON node
@@ -453,7 +482,7 @@ public class CatalogManager {
         return indexNames;
     }
 
-    public static List<String> getTableIndexFileNames(String databaseName, String tableName) {
+    public static List<String> getIndexFileNames(String databaseName, String tableName) {
         ArrayList<String> fileNames = new ArrayList<>();
 
         // Find table JSON node
@@ -499,6 +528,7 @@ public class CatalogManager {
         // Now get field type
         return CatalogManager.isFieldUnique(databaseName, tableName, indexFieldName);
     }
+    /* ------------------ / Indexes ------------------ */
 
     public static List<String> getCurrentDatabaseTableNames() {
         List<String> tableNames = new ArrayList<>();

@@ -115,7 +115,6 @@ public class test {
 
     public static void testUniqueIndexManager() throws IOException, KeyAlreadyInTreeException, KeyNotFoundException {
         UniqueIndexManager manager = new UniqueIndexManager("asd", "asd", "asd");
-        manager.removeLater();
 
         ArrayList<String> values = new ArrayList<>();
         values.add("1");

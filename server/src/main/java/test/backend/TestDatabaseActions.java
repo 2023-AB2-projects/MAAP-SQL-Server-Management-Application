@@ -1,20 +1,13 @@
 package test.backend;
 
 import backend.databaseActions.DatabaseAction;
-import backend.databaseActions.createActions.CreateDatabaseAction;
 import backend.databaseActions.createActions.CreateIndexAction;
 import backend.databaseActions.createActions.CreateTableAction;
-import backend.databaseActions.dropActions.DropDatabaseAction;
-import backend.databaseActions.dropActions.DropTableAction;
-import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.*;
 import backend.exceptions.databaseActionsExceptions.*;
-import backend.exceptions.recordHandlingExceptions.DeletedRecordLinesEmpty;
-import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -174,11 +167,9 @@ public class TestDatabaseActions {
             System.out.println(CatalogManager.isIndexFieldUnique(databaseName, tableName, indexName, fieldName));
         }
 
-        List<String> indexNames = CatalogManager.getTableIndexNames(databaseName, tableName);
+        List<String> indexNames = CatalogManager.getIndexNames(databaseName, tableName);
         System.out.println(indexNames);
 
-        List<String> indexFileNames = CatalogManager.getTableIndexFileNames(databaseName, tableName);
-        System.out.println(indexFileNames);
 
 //        try {
 //            Integer value = CatalogManager.deletedRecordLinesPop(databaseName, tableName);
