@@ -1,15 +1,11 @@
 package backend.databaseModels;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+@Data
 public class FieldModel {
-    @Getter
-    @Setter
     private String fieldName, type;
 
-    @Getter
-    @Setter
     private boolean isNullable;
 
     public FieldModel() {

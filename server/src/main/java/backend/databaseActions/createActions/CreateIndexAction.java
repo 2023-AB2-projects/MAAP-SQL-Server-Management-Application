@@ -6,15 +6,14 @@ import backend.databaseModels.IndexFileModel;
 import backend.exceptions.databaseActionsExceptions.DatabaseDoesntExist;
 import backend.exceptions.databaseActionsExceptions.IndexAlreadyExists;
 import backend.exceptions.databaseActionsExceptions.TableDoesntExist;
-import backend.exceptions.databaseActionsExceptions.TableNameAlreadyExists;
 import backend.service.Utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.IOException;
 
 @Slf4j
@@ -104,6 +103,26 @@ public class CreateIndexAction implements DatabaseAction {
             }
         }
 
+        // Create new index file in 'records' folder
+        String tableFolderPath = Config.getDbRecordsPath() + File.separator + this.databaseName + File.separator + tableName;
+        String indexFilePath = tableFolderPath + File.separator + this.indexFile.getIndexFileName();
+
+        File tableDataFile = new File(indexFilePath);
+        if (tableDataFile.exists()) {
+            log.error("Index binary file already exists!");
+            throw new RuntimeException();
+        }
+        try {
+            if(tableDataFile.createNewFile()) {
+                log.info("Index file created!");
+            } else {
+                log.error("Binary Index file already exists!");
+                throw new RuntimeException();
+            }
+        } catch (IOException e) {
+            log.error("CreateNewFile failed!");
+            throw new RuntimeException(e);
+        }
 
         // Add index to table
         JsonNode newIndex = JsonNodeFactory.instance.objectNode().putPOJO("indexFile", this.indexFile);

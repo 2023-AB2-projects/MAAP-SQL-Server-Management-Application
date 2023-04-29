@@ -23,7 +23,7 @@ public class CommandHandler {
 
         DatabaseAction databaseAction = null;
         try {
-            databaseAction = parser.parseInput(serverController.getSqlCommand(), serverController.getCurrentDatabaseName());
+            databaseAction = parser.parseInput(serverController.getSqlCommand(), ServerController.getCurrentDatabaseName());
         } catch (SQLParseException e) {
             log.error(e.getMessage());
             updateControllerNodes(e);
@@ -46,6 +46,9 @@ public class CommandHandler {
             serverController.setResponse("Database Created Successfully!");
         }
         if (databaseAction instanceof DropDatabaseAction) {
+            // Update server current databaseName
+            serverController.setCurrentDatabaseName("master");
+
             serverController.updateRootNodeAndNamesList();
             serverController.setResponse("Database Dropped Successfully!");
         }
@@ -55,10 +58,10 @@ public class CommandHandler {
         }
         if (databaseAction instanceof DropTableAction) {
             //serverController.updateRootNodeAndNamesList();
-            serverController.setResponse("Table Dropped Successfully!");
+            serverController.setResponse("Table dropped successfully");
         }
         if (databaseAction instanceof UseDatabaseAction) {
-            serverController.setCurrentDatabaseName((String) returnValue);
+            ServerController.setCurrentDatabaseName((String) returnValue);
             serverController.setResponse("Now using " + returnValue);
         }
         if (databaseAction instanceof InsertAction) {

@@ -2,6 +2,7 @@ package backend.databaseActions.dropActions;
 
 import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
+import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.DatabaseModel;
 import backend.exceptions.databaseActionsExceptions.DatabaseDoesntExist;
 import backend.service.Utility;
@@ -13,12 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 @Slf4j
 public class DropDatabaseAction implements DatabaseAction {
     private final DatabaseModel database;
 
-    // TODO: replace DatabaseModel with simple String
     public DropDatabaseAction(DatabaseModel databaseModel) {
         this.database = databaseModel;
     }
@@ -77,7 +78,12 @@ public class DropDatabaseAction implements DatabaseAction {
                     log.error("CreateDatabaseAction -> Write value (mapper) failed");
                     throw new RuntimeException(e);
                 }
-                return null;
+
+                // Switch to 'master' database
+                UseDatabaseAction useMaster = new UseDatabaseAction(new DatabaseModel("master", new ArrayList<>()));
+                useMaster.actionPerform();
+
+                return this.database.getDatabaseName();
             }
 
             // Next database index

@@ -9,17 +9,19 @@ import backend.databaseActions.dropActions.DropTableAction;
 import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseModels.*;
 import backend.exceptions.databaseActionsExceptions.*;
+import backend.exceptions.recordHandlingExceptions.DeletedRecordLinesEmpty;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
+import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class TestDatabaseActions {
     public TableModel createPeopleTableModel() {
         String tableName = "people", fileName = "people.data.bin";
-        int rowLength = 50;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
             add(new FieldModel("id", "int", false));
             add(new FieldModel("name", "char(100)", true));
@@ -69,7 +71,6 @@ public class TestDatabaseActions {
     public void createCarsTable(String databaseName) {
         // Other table
         String tableName = "cars", fileName = "cars.data.bin";
-        int rowLength = 100;
         ArrayList<FieldModel> fields = new ArrayList<>(){{
             add(new FieldModel("id", "int", false));
             add(new FieldModel("name", "char(100)", true));
@@ -103,110 +104,96 @@ public class TestDatabaseActions {
     }
 
     public static void main(String[] args) {
-        TestDatabaseActions test = new TestDatabaseActions();
+//        TestDatabaseActions test = new TestDatabaseActions();
+//        test.createCarsTable("master");
+//        test.createPeopleTable("master");
 
-        CreateDatabaseAction createDatabaseAction = new CreateDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
-        try {
-            createDatabaseAction.actionPerform();
-        } catch (DatabaseNameAlreadyExists e) {
-            System.out.println("Database already exists");
-        }
-
-        UseDatabaseAction useDatabaseAction = new UseDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
-        try {
-            useDatabaseAction.actionPerform();
-        } catch (DatabaseDoesntExist e) {
-            throw new RuntimeException(e);
-        }
-
-        test.createCarsTable("adatbazis_1");
-        test.createPeopleTable("adatbazis_1");
-
-        DatabaseAction deleteTable = new DropTableAction("people", "adatbazis_1");
-        try {
-            deleteTable.actionPerform();
-        } catch (Exception e) {
-            System.out.println("nem jo!");
-        }
-
-        DropDatabaseAction dropDatabaseAction = new DropDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
-        try {
-            dropDatabaseAction.actionPerform();
-        } catch (DatabaseDoesntExist e) {
-            System.out.println("Database doesn't exist!");
-        }
-
-
-        // Create Database
-//        DatabaseModel newDatabase = new DatabaseModel();
-//        newDatabase.setDatabaseName("adatbaziska_1");
-//        DatabaseAction createDatabase = new CreateDatabaseAction(newDatabase);
+//        CreateDatabaseAction createDatabaseAction = new CreateDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
 //        try {
-//            createDatabase.actionPerform();
+//            createDatabaseAction.actionPerform();
 //        } catch (DatabaseNameAlreadyExists e) {
-//            log.info("CreateDatabaseAction -> DatabaseAlreadyExists");
-//        } catch (Exception e) {
-//            log.error("ERROR -> CreateDatabaseAction should now throw this!");
+//            System.out.println("Database already exists");
 //        }
 //
-//        newDatabase.setDatabaseName("adatbaziska_2");
-//        createDatabase = new CreateDatabaseAction(newDatabase);
+//        UseDatabaseAction useDatabaseAction = new UseDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
 //        try {
-//            createDatabase.actionPerform();
-//        } catch (DatabaseNameAlreadyExists e) {
-//            log.info("CreateDatabaseAction -> DatabaseAlreadyExists");
+//            useDatabaseAction.actionPerform();
+//        } catch (DatabaseDoesntExist e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        test.createCarsTable("adatbazis_1");
+//        test.createPeopleTable("adatbazis_1");
+//
+//        DatabaseAction deleteTable = new DropTableAction("people", "adatbazis_1");
+//        try {
+//            deleteTable.actionPerform();
 //        } catch (Exception e) {
-//            log.error("ERROR -> CreateDatabaseAction should now throw this!");
+//            System.out.println("nem jo!");
 //        }
-
-        // Use Database
-//        DatabaseAction useDatabase = new UseDatabaseAction(new DatabaseModel("master", new ArrayList<>()));
+//
+//        DropDatabaseAction dropDatabaseAction = new DropDatabaseAction(new DatabaseModel("adatbazis_1", new ArrayList<>()));
 //        try {
-//            String databaseName = (String) useDatabase.actionPerform();
-//            System.out.println("DatabaseName=" + databaseName);
+//            dropDatabaseAction.actionPerform();
 //        } catch (DatabaseDoesntExist e) {
 //            System.out.println("Database doesn't exist!");
-//        } catch (Exception exception) {
-//            System.out.println("ERROR -> UseDatabaseAction should not invoke this exception!");
-//        }
-
-        // Drop database
-//        DatabaseAction dropDatabase = new DropDatabaseAction(new DatabaseModel("akosksadfjlaskfjd", new ArrayList<>()));
-//        try {
-//            dropDatabase.actionPerform();
-//        } catch (DatabaseDoesntExist e) {
-//            System.out.println("Database doesn't exist!");
-//        } catch (Exception exception) {
-//            System.out.println("ERROR -> DropDatabaseAction should not invoke this exception!");
-//        }
-
-        // Drop table
-//        DatabaseAction dropTable = new DropTableAction("Cars", "master");
-//        try {
-//            dropTable.actionPerform();
-//        } catch (DatabaseDoesntExist e) {
-//            System.out.println("Database doesn't exist!");
-//        } catch (TableDoesntExist e) {
-//            System.out.println("Table doesn't exist!");
-//        } catch (Exception e) {
-//            System.out.println("ERROR -> DropTableAction should not invoke this exception!");
 //        }
 
         // Create index file
-//        DatabaseAction createIndex = new CreateIndexAction("Cars",  "master", new IndexFileModel(
-//                "indexName", 10, true, "indexType",
-//                new ArrayList<>()
-//        ));
+
+        DatabaseAction createIndex = new CreateIndexAction("people",  "master",
+                new IndexFileModel(
+
+                        "id_index",
+                        "people.index.id_index.bin",
+                        true,
+                        new ArrayList<>(){{
+                            add("id");
+                        }}
+        ));
+        try {
+            createIndex.actionPerform();
+        } catch (DatabaseDoesntExist e) {
+            System.out.println("Database doesn't exist!");
+        } catch (TableDoesntExist e) {
+            System.out.println("Table doesn't exist!");
+        } catch (IndexAlreadyExists e) {
+            System.out.println("Index with given name already exists!");
+        } catch (Exception exception) {
+            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
+        }
+
+        String databaseName = "master", tableName = "people", indexName = "id_index";
+        List<String> fieldNames = CatalogManager.getIndexFieldNames(databaseName, tableName, indexName);
+        System.out.println(fieldNames);
+
+        List<String> fieldTypes = CatalogManager.getIndexFieldTypes(databaseName, tableName, indexName);
+        System.out.println(fieldTypes);
+
+        for(final String fieldName : fieldNames) {
+            System.out.println(CatalogManager.isIndexFieldUnique(databaseName, tableName, indexName, fieldName));
+        }
+
+        List<String> indexNames = CatalogManager.getTableIndexNames(databaseName, tableName);
+        System.out.println(indexNames);
+
+        List<String> indexFileNames = CatalogManager.getTableIndexFileNames(databaseName, tableName);
+        System.out.println(indexFileNames);
+
 //        try {
-//            createIndex.actionPerform();
-//        } catch (DatabaseDoesntExist e) {
-//            System.out.println("Database doesn't exist!");
-//        } catch (TableDoesntExist e) {
-//            System.out.println("Table doesn't exist!");
-//        } catch (IndexAlreadyExists e) {
-//            System.out.println("Index with given name already exists!");
-//        } catch (Exception exception) {
-//            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
+//            Integer value = CatalogManager.deletedRecordLinesPop(databaseName, tableName);
+//        } catch (DeletedRecordLinesEmpty e) {
+//            throw new RuntimeException(e);
 //        }
+
+//        CatalogManager.deletedRecordLinesEnqueue(databaseName, tableName, 12);
+
+//        CatalogManager.deletedRecordLinesEnqueueN(databaseName, tableName, new ArrayList<>(){{
+//            add(22);
+//            add(33);
+//        }});
+
+        List<Integer> recordLines = CatalogManager.deletedRecordLinesPopN(databaseName, tableName, 5);
+        System.out.println(recordLines);
     }
 }
