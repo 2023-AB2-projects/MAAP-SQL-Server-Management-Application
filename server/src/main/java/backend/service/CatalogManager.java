@@ -1,7 +1,10 @@
 package backend.service;
 
 import backend.config.Config;
+import backend.databaseModels.ForeignKeyModel;
 import backend.exceptions.recordHandlingExceptions.DeletedRecordLinesEmpty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -236,6 +239,7 @@ public class CatalogManager {
 
 
     /* ------------------------------------------------ Getters ----------------------------------------------------- */
+    /* --------------------- Paths ------------------- */
     public static String getTableDataPath(String databaseName, String tableName) {
         return Config.getDbRecordsPath() + File.separator + databaseName + File.separator + tableName + File.separator + tableName + ".data.bin";
     }
@@ -243,7 +247,9 @@ public class CatalogManager {
     public static String getTableIndexFilePath(String databaseName, String tableName, String indexName) {
         return Config.getDbCatalogPath() + File.separator + databaseName + File.separator + tableName + ".index." + indexName + ".bin";
     }
+    /* -------------------- / Paths ------------------ */
 
+    /* -------------------- Fields ------------------- */
     public static List<String> getFieldNames(String databaseName, String tableName) {
         ArrayList<String> columnNames = new ArrayList<>();
 
@@ -259,21 +265,49 @@ public class CatalogManager {
         return columnNames;
     }
 
-    public static List<String> getPrimaryKeys(String databaseName, String tableName) {
+    public static List<String> getPrimaryKeyFieldNames(String databaseName, String tableName) {
         List<String> pks = new ArrayList<>();
 
         // find the tableNode
         JsonNode tableNode = findTableNode(databaseName, tableName);
 
         ArrayNode primaryKeyArrayNode = (ArrayNode) tableNode.get("primaryKey").get("primaryKeyFields");
-        //System.out.println(primaryKeyArrayNode.toPrettyString());
         for (final JsonNode field : primaryKeyArrayNode) {
             pks.add(field.asText());
         }
         return pks;
     }
 
-    public static List<String> getColumnTypes(String databaseName, String tableName) {
+    public static List<String> getUniqueFieldNames(String databaseName, String tableName) {
+        List<String> fields = new ArrayList<>();
+
+        // find the tableNode
+        JsonNode tableNode = findTableNode(databaseName, tableName);
+
+        ArrayNode uniqueFieldsArrayNode = (ArrayNode) tableNode.get("uniqueFields");
+        for (final JsonNode field : uniqueFieldsArrayNode) {
+            fields.add(field.asText());
+        }
+        return fields;
+    }
+
+    public static List<ForeignKeyModel> getForeignKeys(String databaseName, String tableName) {
+        List<ForeignKeyModel> foreignKeys = new ArrayList<>();
+
+        // find the tableNode
+        JsonNode tableNode = findTableNode(databaseName, tableName);
+
+        ArrayNode foreignKeyNode = (ArrayNode) tableNode.get("foreignKeys");
+        try {
+            foreignKeys = Utility.getObjectMapper().readValue(foreignKeyNode.toString(), new TypeReference<>() {});
+        } catch (JsonProcessingException e) {
+            log.error("Could not read foreignKeys JSON to objects!");
+            throw new RuntimeException(e);
+        }
+        return foreignKeys;
+    }
+
+    public static List<String> getFieldTypes(String databaseName, String tableName) {
         ArrayList<String> columnNames = new ArrayList<>();
 
         // find the table json node
@@ -312,9 +346,9 @@ public class CatalogManager {
     }
 
     public static List<String> getPrimaryKeyTypes (String databaseName, String tableName){
-        List<String> col_type = getColumnTypes(databaseName, tableName);
+        List<String> col_type = getFieldTypes(databaseName, tableName);
         List<String> col_name = getFieldNames(databaseName, tableName);
-        List<String> key_name = getPrimaryKeys(databaseName, tableName);
+        List<String> key_name = getPrimaryKeyFieldNames(databaseName, tableName);
 
         ArrayList<String> key_type = new ArrayList<>();
         for (String key : key_name) {
@@ -331,7 +365,7 @@ public class CatalogManager {
     public static List<Integer> getPrimaryKeyIndexes (String databaseName, String tableName){
 //        List<String> col_type = getColumnTypes(databaseName, tableName);
         List<String> col_name = getFieldNames(databaseName, tableName);
-        List<String> key_name = getPrimaryKeys(databaseName, tableName);
+        List<String> key_name = getPrimaryKeyFieldNames(databaseName, tableName);
 
         ArrayList<Integer> key_index = new ArrayList<>();
         for (String key : key_name) {

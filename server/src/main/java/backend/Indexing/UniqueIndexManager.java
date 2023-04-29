@@ -25,10 +25,6 @@ public class UniqueIndexManager {
         bPlusTree = new BPlusTree(keyStructure, filename);
     }
 
-    public void removeLater() throws IOException {
-        bPlusTree.createEmptyTree();
-    }
-
     public boolean isPresent(ArrayList<String> values){
         Key key = TypeConverter.toKey(keyStructure, values);
         try{
