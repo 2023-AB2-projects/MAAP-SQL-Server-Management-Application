@@ -23,11 +23,17 @@ public class InsertAction implements DatabaseAction {
     private ArrayList<ArrayList<String>> values;
 
     @Override
-    public Object actionPerform() throws DatabaseNameAlreadyExists, TableNameAlreadyExists, DatabaseDoesntExist, PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique, TableDoesntExist, IndexAlreadyExists, ForeignKeyFieldNotFound, IOException, RecordNotFoundException {
+    public Object actionPerform() throws IOException {
         RecordInserter recordInserter = new RecordInserter(databaseName, tableName);
+        for (var row : values) {
+            // Validate rows and throw exceptions
+        }
+
         for (var row: values) {
             recordInserter.insert(row);
         }
+
+        //TODO
 
         return null;
     }

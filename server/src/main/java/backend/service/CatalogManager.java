@@ -244,7 +244,7 @@ public class CatalogManager {
         return Config.getDbCatalogPath() + File.separator + databaseName + File.separator + tableName + ".index." + indexName + ".bin";
     }
 
-    public static List<String> getColumnNames(String databaseName, String tableName) {
+    public static List<String> getFieldNames(String databaseName, String tableName) {
         ArrayList<String> columnNames = new ArrayList<>();
 
         // find the table json node
@@ -252,7 +252,6 @@ public class CatalogManager {
         assert tableNode != null;
 
         ArrayNode fields = (ArrayNode) tableNode.get("fields");
-        System.out.println(fields.asText());
         for (final JsonNode field : fields) {
             columnNames.add(field.get("fieldName").asText());
         }
@@ -314,7 +313,7 @@ public class CatalogManager {
 
     public static List<String> getPrimaryKeyTypes (String databaseName, String tableName){
         List<String> col_type = getColumnTypes(databaseName, tableName);
-        List<String> col_name = getColumnNames(databaseName, tableName);
+        List<String> col_name = getFieldNames(databaseName, tableName);
         List<String> key_name = getPrimaryKeys(databaseName, tableName);
 
         ArrayList<String> key_type = new ArrayList<>();
@@ -331,7 +330,7 @@ public class CatalogManager {
 
     public static List<Integer> getPrimaryKeyIndexes (String databaseName, String tableName){
 //        List<String> col_type = getColumnTypes(databaseName, tableName);
-        List<String> col_name = getColumnNames(databaseName, tableName);
+        List<String> col_name = getFieldNames(databaseName, tableName);
         List<String> key_name = getPrimaryKeys(databaseName, tableName);
 
         ArrayList<Integer> key_index = new ArrayList<>();
