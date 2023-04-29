@@ -246,7 +246,7 @@ public class CatalogManager {
     }
 
     public static String getTableIndexFilePath(String databaseName, String tableName, String indexName) {
-        return Config.getDbCatalogPath() + File.separator + databaseName + File.separator + tableName + ".index." + indexName + ".bin";
+        return Config.getDbRecordsPath() + File.separator + databaseName + File.separator + tableName + ".index." + indexName + ".bin";
     }
     /* -------------------- / Paths ------------------ */
 
@@ -453,13 +453,19 @@ public class CatalogManager {
             // Read as object
             try {
                 IndexFileModel index = Utility.getObjectMapper().readValue(indexFileNode.get("indexFile").toString(), new TypeReference<>() {});
+
+                if (index.getIndexFields().equals(pkFields)) {
+                    return index.getIndexName();
+                }
             } catch (JsonProcessingException e) {
                 log.error("PK index name -> Could not read index file");
                 throw new RuntimeException(e);
             }
         }
 
-        return "";
+        // Error
+        log.error("Could not find index name for PK!");
+        throw new RuntimeException();
     }
 
     public static List<String> getIndexNames(String databaseName, String tableName) {
