@@ -63,12 +63,17 @@ public class CommandHandler {
             ServerController.setCurrentDatabaseName((String) returnValue);
             serverController.setResponse("Now using " + returnValue);
         }
+
         if (databaseAction instanceof InsertIntoAction) {
             int rowCount = (int) returnValue;
             serverController.setResponse("Inserted " + rowCount + " rows into table succesfully!");
         }
         if (databaseAction instanceof DeleteFromAction) {
-            serverController.setResponse("DeleteAction parsed succesfully");
+            serverController.setResponse("Row(s) deleted succesfully");
+        }
+
+        if (databaseAction instanceof CreateIndexAction) {
+            serverController.setResponse("Index created succesfully");
         }
     }
 
