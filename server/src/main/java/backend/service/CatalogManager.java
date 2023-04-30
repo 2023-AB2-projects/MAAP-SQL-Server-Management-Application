@@ -2,7 +2,6 @@ package backend.service;
 
 import backend.config.Config;
 import backend.databaseModels.ForeignKeyModel;
-import backend.databaseModels.IndexFileModel;
 import backend.exceptions.recordHandlingExceptions.DeletedRecordLinesEmpty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -482,7 +481,7 @@ public class CatalogManager {
         return CatalogManager.getUniqueFieldNames(databaseName, tableName); // Each index file name is identical to field name
     }
 
-    public static List<String> getForeignKeyIndexNames(String databaseName, String tableName) {
+    public static List<String> getForeignKeyReferencedIndexNames(String databaseName, String tableName) {
         List<String> indexNames = new ArrayList<>();
 
         // Get all foreign keys and associate the names with them

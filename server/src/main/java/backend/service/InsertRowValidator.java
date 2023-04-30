@@ -2,6 +2,9 @@ package backend.service;
 
 import backend.Indexing.UniqueIndexManager;
 import backend.databaseModels.ForeignKeyModel;
+import backend.exceptions.validatorExceptions.ForeignKeyValueNotFoundInParentTable;
+import backend.exceptions.validatorExceptions.PrimaryKeyValueAlreadyInTable;
+import backend.exceptions.validatorExceptions.UniqueValueAlreadyInTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,15 +18,29 @@ public class InsertRowValidator {
     private final UniqueIndexManager primaryKeyIndexManager;
     private final List<UniqueIndexManager> uniqueIndexManagers, foreignKeyIndexManagers;
 
-    private void validateUniqueField(String uniqueFieldName, String uniqueFieldValue) {
-
+    private void validatePrimaryKey(ArrayList<String> primaryKeyFieldValues) throws PrimaryKeyValueAlreadyInTable {
+        if (this.primaryKeyIndexManager.isPresent(primaryKeyFieldValues)) {
+            throw new PrimaryKeyValueAlreadyInTable(primaryKeyFieldValues.toString());
+        }
     }
 
-    private void validateForeignKey(String foreignKeyName, String foreignKeyValue) {
-        // foreach foreign key
+    private void validateUniqueField(int uniqueInd, String uniqueFieldValue) throws UniqueValueAlreadyInTable {
+        if (this.uniqueIndexManagers.get(uniqueInd).isPresent(new ArrayList<>(){{
+            add(uniqueFieldValue);
+        }})) {
+            throw new UniqueValueAlreadyInTable(uniqueFieldValue);
+        }
     }
 
-    private void validatePrimaryKey(List<String> primaryKeyFieldValues) {
+    private void validateForeignKey(int foreignKeyInd, String foreignKeyValue) throws ForeignKeyValueNotFoundInParentTable {
+        //TODO -> Only works for one field
+        ArrayList<String> valueList = new ArrayList<>() {{
+            add(foreignKeyValue);
+        }};
+
+        if (!this.foreignKeyIndexManagers.get(foreignKeyInd).isPresent(valueList)) {
+            throw new ForeignKeyValueNotFoundInParentTable(foreignKeyValue);
+        }
     }
 
     public InsertRowValidator(String databaseName, String tableName) {
@@ -47,30 +64,49 @@ public class InsertRowValidator {
         }
 
         // All the foreign key index names
-        List<String> foreignKeyIndexNames = CatalogManager.getForeignKeyIndexNames(databaseName, tableName);
+        List<String> foreignKeyIndexNames = CatalogManager.getForeignKeyReferencedIndexNames(databaseName, tableName);
         this.foreignKeyIndexManagers = new ArrayList<>(this.foreignKeys.size());
-        for (final String indexName : foreignKeyIndexNames) {
-            this.foreignKeyIndexManagers.add(new UniqueIndexManager(databaseName, tableName, indexName));
+        int ind = 0;
+        for (final ForeignKeyModel foreignKey : this.foreignKeys) {
+            // The table is going to be the referenced table
+            String referencedTableName = foreignKey.getReferencedTable();
+            String indexName = foreignKeyIndexNames.get(ind++);
+
+            this.foreignKeyIndexManagers.add(new UniqueIndexManager(databaseName, referencedTableName, indexName));
         }
     }
 
-    public void validateRow(List<String> row) {
-        List<String> primaryKeyValues = new ArrayList<>();
+    public void validateRow(List<String> row) throws PrimaryKeyValueAlreadyInTable, UniqueValueAlreadyInTable, ForeignKeyValueNotFoundInParentTable {
+        ArrayList<String> primaryKeyValues = new ArrayList<>();
         for (final String primaryKeyFieldName : primaryKeyFieldNames) {
             primaryKeyValues.add(row.get(tableFieldNames.indexOf(primaryKeyFieldName)));
         }
 
-        List<String> uniqueFieldValues = new ArrayList<>();
+        ArrayList<String> uniqueFieldValues = new ArrayList<>();
         for (final String uniqueFieldName : uniqueFieldNames) {
             uniqueFieldValues.add(row.get(tableFieldNames.indexOf(uniqueFieldName)));
         }
 
-        List<String> foreignKeyValues = new ArrayList<>();
+        ArrayList<String> foreignKeyValues = new ArrayList<>();
         for (final ForeignKeyModel foreignKey : foreignKeys) {
-            foreignKeyValues.add(row.get(tableFieldNames.indexOf(foreignKey.getReferencingFields().get(0))));   //TODO!!!
+            //TODO!!!
+            foreignKeyValues.add(row.get(tableFieldNames.indexOf(foreignKey.getReferencingFields().get(0))));
         }
 
-        // Same for unique, foreign
+        // Validation process
+        // 1. Primary keys
+        this.validatePrimaryKey(primaryKeyValues);
 
+        // 2. Unique values
+        int ind = 0;
+        for (final String uniqueFieldValue : uniqueFieldValues) {
+            this.validateUniqueField(ind++, uniqueFieldValue);
+        }
+
+        // 3. Foreign key values
+        ind = 0;
+        for (final String foreignKeyValue : foreignKeyValues) {
+            this.validateForeignKey(ind++, foreignKeyValue);
+        }
     }
 }
