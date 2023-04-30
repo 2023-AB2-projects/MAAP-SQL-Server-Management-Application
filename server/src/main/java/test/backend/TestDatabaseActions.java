@@ -134,14 +134,16 @@ public class TestDatabaseActions {
 
         // Create index file
 
-        DatabaseAction createIndex = new CreateIndexAction("people",  "master",
+        String fieldName = "name";
+        String tableName = "people", databaseName = "master";
+        List<String> indexNames = CatalogManager.getUniqueFieldIndexNames(databaseName, tableName);
+        DatabaseAction createIndex = new CreateIndexAction(databaseName, tableName,
                 new IndexFileModel(
-
-                        "id_index",
-                        "people.index.id_index.bin",
+                        indexNames.get(0),
+                        CatalogManager.getIndexFileName(tableName, indexNames.get(0)),
                         true,
                         new ArrayList<>(){{
-                            add("id");
+                            add(fieldName);
                         }}
         ));
         try {
@@ -155,36 +157,36 @@ public class TestDatabaseActions {
         } catch (Exception exception) {
             System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
         }
-
-        String databaseName = "master", tableName = "people", indexName = "id_index";
-        List<String> fieldNames = CatalogManager.getIndexFieldNames(databaseName, tableName, indexName);
-        System.out.println(fieldNames);
-
-        List<String> fieldTypes = CatalogManager.getIndexFieldTypes(databaseName, tableName, indexName);
-        System.out.println(fieldTypes);
-
-        for(final String fieldName : fieldNames) {
-            System.out.println(CatalogManager.isIndexFieldUnique(databaseName, tableName, indexName, fieldName));
-        }
-
-        List<String> indexNames = CatalogManager.getIndexNames(databaseName, tableName);
-        System.out.println(indexNames);
-
-
-//        try {
-//            Integer value = CatalogManager.deletedRecordLinesPop(databaseName, tableName);
-//        } catch (DeletedRecordLinesEmpty e) {
-//            throw new RuntimeException(e);
+//
+//        String databaseName = "master", tableName = "people", indexName = "id_index";
+//        List<String> fieldNames = CatalogManager.getIndexFieldNames(databaseName, tableName, indexName);
+//        System.out.println(fieldNames);
+//
+//        List<String> fieldTypes = CatalogManager.getIndexFieldTypes(databaseName, tableName, indexName);
+//        System.out.println(fieldTypes);
+//
+//        for(final String fieldName : fieldNames) {
+//            System.out.println(CatalogManager.isIndexFieldUnique(databaseName, tableName, indexName, fieldName));
 //        }
-
-//        CatalogManager.deletedRecordLinesEnqueue(databaseName, tableName, 12);
-
-//        CatalogManager.deletedRecordLinesEnqueueN(databaseName, tableName, new ArrayList<>(){{
-//            add(22);
-//            add(33);
-//        }});
-
-        List<Integer> recordLines = CatalogManager.deletedRecordLinesPopN(databaseName, tableName, 5);
-        System.out.println(recordLines);
+//
+//        List<String> indexNames = CatalogManager.getIndexNames(databaseName, tableName);
+//        System.out.println(indexNames);
+//
+//
+////        try {
+////            Integer value = CatalogManager.deletedRecordLinesPop(databaseName, tableName);
+////        } catch (DeletedRecordLinesEmpty e) {
+////            throw new RuntimeException(e);
+////        }
+//
+////        CatalogManager.deletedRecordLinesEnqueue(databaseName, tableName, 12);
+//
+////        CatalogManager.deletedRecordLinesEnqueueN(databaseName, tableName, new ArrayList<>(){{
+////            add(22);
+////            add(33);
+////        }});
+//
+//        List<Integer> recordLines = CatalogManager.deletedRecordLinesPopN(databaseName, tableName, 5);
+//        System.out.println(recordLines);
     }
 }

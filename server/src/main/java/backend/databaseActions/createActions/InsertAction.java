@@ -28,7 +28,7 @@ public class InsertAction implements DatabaseAction {
         InsertRowValidator rowValidator = new InsertRowValidator(this.databaseName, this.tableName);
 
         for (var row : values) {
-            // Validate rows and throw exceptions
+            rowValidator.validateRow(row);
         }
 
         for (var row: values) {

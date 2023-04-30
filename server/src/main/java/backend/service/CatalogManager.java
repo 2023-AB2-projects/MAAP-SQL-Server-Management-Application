@@ -240,6 +240,19 @@ public class CatalogManager {
 
 
     /* ------------------------------------------------ Getters ----------------------------------------------------- */
+    public static String getFlattenedName(List<String> values) {
+        StringBuilder flattened = new StringBuilder();
+        for (int i = 0; i < values.size(); ++i) {
+            if (i == 0) {
+                flattened.append(values.get(i));
+            } else {
+                flattened.append("_").append(values.get(i));
+            }
+        }
+
+        return flattened.toString();
+    }
+
     /* --------------------- Paths ------------------- */
     public static String getTableDataPath(String databaseName, String tableName) {
         return Config.getDbRecordsPath() + File.separator + databaseName + File.separator + tableName + File.separator + tableName + ".data.bin";
@@ -296,7 +309,7 @@ public class CatalogManager {
         return key_type;
     }
 
-    public static List<Integer> getPrimaryKeyIndexes (String databaseName, String tableName){
+    public static List<Integer> getPrimaryKeyFieldIndexes(String databaseName, String tableName){
         List<String> col_name = getFieldNames(databaseName, tableName);
         List<String> key_name = getPrimaryKeyFieldNames(databaseName, tableName);
 
@@ -383,6 +396,26 @@ public class CatalogManager {
     /* ---------------- / Field types ---------------- */
 
     /* ------------------- Indexes ------------------- */
+    public static List<String> getIndexFileNames(String databaseName, String tableName) {
+        ArrayList<String> fileNames = new ArrayList<>();
+
+        // Find table JSON node
+        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+            throw new RuntimeException();
+        }
+
+        // Iterate over index files
+        for(final JsonNode indexFileNode : tableNode.get("indexFiles")) {
+            // Add index file name to list
+            String indexFileName = indexFileNode.get("indexFile").get("indexFileName").asText();
+            fileNames.add(indexFileName);
+        }
+
+        return fileNames;
+    }
+
     public static List<String> getIndexFieldNames(String databaseName, String tableName, String indexName) {
         ArrayList<String> fieldNames = new ArrayList<>();
 
@@ -437,75 +470,28 @@ public class CatalogManager {
         return fieldTypes;
     }
 
+    public static String getIndexFileName(String tableName, String indexName) {
+        return tableName + ".index." + indexName + ".bin";
+    }
+
     public static String getPrimaryKeyIndexName(String databaseName, String tableName) {
-        List<String> pkFields = getPrimaryKeyFieldNames(databaseName, tableName);
-
-        // Look through each index file and find the one that corresponds to PK
-        // Find table JSON node
-        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
-        if(tableNode == null) {
-            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
-            throw new RuntimeException();
-        }
-
-        // Iterate over index files
-        for(final JsonNode indexFileNode : tableNode.get("indexFiles")) {
-            // Read as object
-            try {
-                IndexFileModel index = Utility.getObjectMapper().readValue(indexFileNode.get("indexFile").toString(), new TypeReference<>() {});
-
-                if (index.getIndexFields().equals(pkFields)) {
-                    return index.getIndexName();
-                }
-            } catch (JsonProcessingException e) {
-                log.error("PK index name -> Could not read index file");
-                throw new RuntimeException(e);
-            }
-        }
-
-        // Error
-        log.error("Could not find index name for PK!");
-        throw new RuntimeException();
+        return getFlattenedName(CatalogManager.getPrimaryKeyFieldNames(databaseName, tableName));
     }
 
-    public static List<String> getIndexNames(String databaseName, String tableName) {
-        ArrayList<String> indexNames = new ArrayList<>();
+    public static List<String> getUniqueFieldIndexNames(String databaseName, String tableName) {
+        return CatalogManager.getUniqueFieldNames(databaseName, tableName); // Each index file name is identical to field name
+    }
 
-        // Find table JSON node
-        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
-        if(tableNode == null) {
-            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
-            throw new RuntimeException();
+    public static List<String> getForeignKeyIndexNames(String databaseName, String tableName) {
+        List<String> indexNames = new ArrayList<>();
+
+        // Get all foreign keys and associate the names with them
+        List<ForeignKeyModel> foreignKeys = getForeignKeys(databaseName, tableName);
+        for (final ForeignKeyModel key : foreignKeys) {
+            indexNames.add(getFlattenedName(key.getReferencedFields()));        // We flatten the referenced fields
+            // The flattened referenced fields are the names of the index files in the other table
         }
-
-        // Iterate over index files
-        for(final JsonNode indexFileNode : tableNode.get("indexFiles")) {
-            // Add index file name to list
-            String indexName = indexFileNode.get("indexFile").get("indexName").asText();
-            indexNames.add(indexName);
-        }
-
         return indexNames;
-    }
-
-    public static List<String> getIndexFileNames(String databaseName, String tableName) {
-        ArrayList<String> fileNames = new ArrayList<>();
-
-        // Find table JSON node
-        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
-        if(tableNode == null) {
-            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
-            throw new RuntimeException();
-        }
-
-        // Iterate over index files
-        for(final JsonNode indexFileNode : tableNode.get("indexFiles")) {
-            // Add index file name to list
-            String indexFileName = indexFileNode.get("indexFile").get("indexFileName").asText();
-            fileNames.add(indexFileName);
-        }
-
-        return fileNames;
     }
 
     public static boolean isIndexFieldUnique(String databaseName, String tableName, String indexName, String indexFieldName) {

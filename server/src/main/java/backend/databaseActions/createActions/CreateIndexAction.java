@@ -19,7 +19,7 @@ import java.io.IOException;
 @Slf4j
 public class CreateIndexAction implements DatabaseAction {
     // Information needed
-    private final String tableName, databaseName;
+    private final String databaseName, tableName;
 
     // Data
     private final IndexFileModel indexFile;
@@ -58,9 +58,9 @@ public class CreateIndexAction implements DatabaseAction {
     }
     /* /Utility */
 
-    public CreateIndexAction(String tableName, String databaseName, IndexFileModel indexFile) {
-        this.tableName = tableName;
+    public CreateIndexAction(String databaseName, String tableName, IndexFileModel indexFile) {
         this.databaseName = databaseName;
+        this.tableName = tableName;
         this.indexFile = indexFile;
     }
 

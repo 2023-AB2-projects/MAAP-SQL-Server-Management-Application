@@ -14,7 +14,7 @@ public class RecordFinder {
     private ArrayList<String> keyColumnTypes;
     public RecordFinder(String databaseName, String tableName) throws FileNotFoundException {
         recordHandler = new RecordHandler(databaseName, tableName);
-        keyColumnIndexes = (ArrayList<Integer>) CatalogManager.getPrimaryKeyIndexes(databaseName, tableName);
+        keyColumnIndexes = (ArrayList<Integer>) CatalogManager.getPrimaryKeyFieldIndexes(databaseName, tableName);
         keyColumnTypes = (ArrayList<String>) CatalogManager.getPrimaryKeyTypes(databaseName, tableName);
     }
     public int findByPrimaryKey(ArrayList<String> keyValues) throws RecordNotFoundException, IOException {
