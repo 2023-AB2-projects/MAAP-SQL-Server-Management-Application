@@ -54,7 +54,7 @@ public class Parser {
     } 
 
     private enum NAME_TYPE {
-        DATABASE("database"), TABLE("table"), COLUMN("column");
+        DATABASE("database"), TABLE("table"), COLUMN("column"), INDEX("index");
         private final String value;
         private NAME_TYPE(String value) {
             this.value = value;
@@ -104,6 +104,9 @@ public class Parser {
                     }
                     if (secondWord.equals("table")) {
                         return parseCreateTable(tokens, databaseName, it);
+                    }
+                    if (secondWord.equals("index")) {
+                        return parseCreateIndex(tokens, databaseName, it);
                     }
                 }
                 if (firstWord.equals("drop")) {
@@ -544,6 +547,96 @@ public class Parser {
 
         DeleteAction da = new DeleteAction(databaseName, tableName, keys);
         return da;
+    }
+
+    private enum CreateIndexStates {
+        GET_TABLE_NAME, GET_FIELD_NAMES, GET_VALUES, GET_VALUES_STRINGS, CLOSING_BRACKET
+    }
+
+    private CreateIndexAction parseCreateIndex(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
+        String tableName = "";
+        String indexName = "";
+        ArrayList<String> columns = new ArrayList<>();
+        IndexFileModel ifm = new IndexFileModel();
+
+        String token;
+
+        try {
+            if (!it.hasNext()) {
+                throw(new SQLParseException("Missing token for index name"));
+            }
+
+            // get indexName and optional `unique` keyword first
+            token = it.next();
+            if (token.equals("unique")) {
+                ifm.setUnique(true);
+                indexName = it.next();
+            }
+            else {
+                ifm.setUnique(false);
+                indexName = token;
+            }
+            checkName(indexName, NAME_TYPE.INDEX);
+            ifm.setIndexName(indexName);
+
+            // `ON` keyword
+            if (!it.hasNext()) {
+                throw(new SQLParseException("Expected keyword `on` after index name"));
+            }
+            token = it.next();
+            if (!token.equals("on")) {
+                throw(new SQLParseException("Expected keyword `on` after index name"));
+            }
+
+            // get table name
+            tableName = it.next();
+            checkName(tableName, NAME_TYPE.TABLE);
+
+            // get parentheses first, and then column names to create index on
+            if (!it.hasNext()) {
+                throw new SQLParseException("Expected parenthesis after table name: `" + tableName + "`");
+            }
+            token = it.next();
+            if (!token.equals("(")) {
+                throw new SQLParseException("Expected parenthesis after table name: `" + tableName + "`");
+            }
+            if (!it.hasNext()) {
+                throw new SQLParseException("Expected column name(s) in parentheses");
+            }
+
+            while (it.hasNext()) {
+                String columnName = it.next();
+                checkName(columnName, NAME_TYPE.COLUMN);
+
+                columns.add(columnName);
+
+                // if comma continue reading other column names
+                String delimiter = it.next();
+                if (delimiter.equals(",")) {
+                    continue;
+                }
+                // if closing bracket, done
+                else if (delimiter.equals(")")) {
+                    break;
+                }
+                else {
+                    throw new SQLParseException("Expected either closing bracket or comma after column name `" + columnName + "`");
+                }
+            }
+
+            if (it.hasNext()) {
+                throw new SQLParseException("Expected end of input after closing bracket of column-list");
+            }
+
+            ifm.setIndexFields(columns);
+            ifm.setIndexFileName(tableName + ".index." + indexName + ".bin");
+
+            CreateIndexAction cia = new CreateIndexAction(tableName, databaseName, ifm);
+            return cia;
+        } 
+        catch (NoSuchElementException e) {
+            throw new SQLParseException("Unexpected end of command");
+        }
     }
 
     /**

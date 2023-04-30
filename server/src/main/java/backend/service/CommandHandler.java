@@ -65,10 +65,13 @@ public class CommandHandler {
             serverController.setResponse("Now using " + returnValue);
         }
         if (databaseAction instanceof InsertAction) {
-            serverController.setResponse("InsertAction parsed sucessfully");
+            serverController.setResponse("Row(s) inserted sucessfully");
         }
         if (databaseAction instanceof DeleteAction) {
-            serverController.setResponse("DeleteAction parsed succesfully");
+            serverController.setResponse("Row(s) deleted succesfully");
+        }
+        if (databaseAction instanceof CreateIndexAction) {
+            serverController.setResponse("Index created succesfully");
         }
     }
 
