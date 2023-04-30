@@ -15,7 +15,9 @@ public class InsertRowValidator {
     private final UniqueIndexManager primaryKeyIndexManager;
     private final List<UniqueIndexManager> uniqueIndexManagers, foreignKeyIndexManagers;
 
-    private void validateUniqueField(String uniqueFieldName, String uniqueFieldValue) {}
+    private void validateUniqueField(String uniqueFieldName, String uniqueFieldValue) {
+
+    }
 
     private void validateForeignKey(String foreignKeyName, String foreignKeyValue) {
         // foreach foreign key
@@ -47,7 +49,7 @@ public class InsertRowValidator {
         // All the foreign key index names
         List<String> foreignKeyIndexNames = CatalogManager.getForeignKeyIndexNames(databaseName, tableName);
         this.foreignKeyIndexManagers = new ArrayList<>(this.foreignKeys.size());
-        for (final String indexName : uniqueIndexNames) {
+        for (final String indexName : foreignKeyIndexNames) {
             this.foreignKeyIndexManagers.add(new UniqueIndexManager(databaseName, tableName, indexName));
         }
     }

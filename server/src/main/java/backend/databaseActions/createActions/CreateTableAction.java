@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Slf4j
@@ -261,7 +262,7 @@ public class CreateTableAction implements DatabaseAction {
         }
 
         // Create index files for primary and unique keys
-        String pKIndexName = CatalogManager.getFlattenedName(this.table.getPrimaryKey().getPrimaryKeyFields());
+        String pKIndexName = CatalogManager.getPrimaryKeyIndexName(this.databaseName, this.table.getTableName());
         CreateIndexAction pKIndexAction = new CreateIndexAction(this.databaseName, this.table.getTableName(), new IndexFileModel(
                 pKIndexName,
                 CatalogManager.getIndexFileName(this.table.getTableName(), pKIndexName),
@@ -277,6 +278,33 @@ public class CreateTableAction implements DatabaseAction {
         } catch (IndexAlreadyExists e) {
             log.error("CreateIndex for PK -> Index already exists!");
             throw new RuntimeException(e);
+        }
+
+        // For each unique key create another index
+        List<String> uniqueIndexNames = CatalogManager.getUniqueFieldIndexNames(this.databaseName, this.table.getTableName());
+        List<String> uniqueFieldNames = this.table.getUniqueFields();
+        int ind = 0;
+        for(final String indexName : uniqueIndexNames) {
+            int finalInd = ind;
+            CreateIndexAction uniqueIndexAction = new CreateIndexAction(this.databaseName, this.table.getTableName(), new IndexFileModel(
+               indexName,
+               CatalogManager.getIndexFileName(this.table.getTableName(), indexName),
+               true,
+                    new ArrayList<>() {{
+                        add(uniqueFieldNames.get(finalInd));
+                    }}
+            ));
+            ind++;
+
+            try {
+                uniqueIndexAction.actionPerform();
+            } catch (TableDoesntExist e) {
+                log.error("CreateIndex for unique=" + uniqueFieldNames.get(finalInd) + " -> Can't find table");
+                throw new RuntimeException(e);
+            } catch (IndexAlreadyExists e) {
+                log.error("CreateIndex for unique=" + uniqueFieldNames.get(finalInd) + " -> Index already exists!");
+                throw new RuntimeException(e);
+            }
         }
 
         return null;
