@@ -2,9 +2,7 @@ package backend.databaseActions.createActions;
 
 import backend.databaseActions.DatabaseAction;
 import backend.exceptions.recordHandlingExceptions.InvalidTypeException;
-import backend.exceptions.validatorExceptions.ForeignKeyValueNotFoundInParentTable;
-import backend.exceptions.validatorExceptions.PrimaryKeyValueAlreadyInTable;
-import backend.exceptions.validatorExceptions.UniqueValueAlreadyInTable;
+import backend.exceptions.validatorExceptions.*;
 import backend.recordHandling.RecordInserter;
 import backend.recordHandling.RecordStandardizer;
 import backend.service.CatalogManager;
@@ -16,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
@@ -28,10 +28,43 @@ public class InsertIntoAction implements DatabaseAction {
     private ArrayList<ArrayList<String>> values;
 
     @Override
-    public Object actionPerform() throws IOException {
+    public Object actionPerform() throws IOException, PrimaryKeyValuesContainDuplicates, UniqueFieldValuesContainDuplicates {
         //TODO -> Add database check, table check
-        //TODO check PK is set, unique columns are sets
-        //TODO standardize value matrix
+
+        // ----------------------------------- DUPLICATE VALUES CHECK ----------------------------------------------- //
+        List<String> fieldNames = CatalogManager.getFieldNames(this.databaseName, this.tableName);
+        // Check PK is set, unique columns are sets
+        // Find primary key fields indexes and unique column indexes
+        List<Integer> primaryKeyIndexes = CatalogManager.getPrimaryKeyFieldIndexes(this.databaseName, this.tableName);
+        List<Integer> uniqueFieldIndexes = CatalogManager.getUniqueFieldIndexes(this.databaseName, this.tableName);
+
+        // Now find the primary key values for each column and check if they are unique
+        int rowCount = values.size();
+        for(final Integer pKIndex : primaryKeyIndexes) {
+            // Extract from matrix only the column that we want to check -> Convert to set
+            Set<String> pKColumnValuesSet = values.stream()
+                    .map(row -> row.get(pKIndex))
+                    .collect(Collectors.toSet());
+
+            // Check if there were any duplicates in the column
+            if (pKColumnValuesSet.size() != rowCount) {
+                throw new PrimaryKeyValuesContainDuplicates(fieldNames.get(pKIndex));
+            }
+        }
+
+        // Same for unique columns
+        for(final Integer uniqueFieldIndex : uniqueFieldIndexes) {
+            // Extract from matrix only the column that we want to check -> Convert to set
+            Set<String> uniqueColumnSet = values.stream()
+                    .map(row -> row.get(uniqueFieldIndex))
+                    .collect(Collectors.toSet());
+
+            // Check if there were any duplicates in the column
+            if (uniqueColumnSet.size() != rowCount) {
+                throw new UniqueFieldValuesContainDuplicates(fieldNames.get(uniqueFieldIndex));
+            }
+        }
+        // ----------------------------------- DUPLICATE VALUES CHECK ----------------------------------------------- //
 
         // Standardize all string values (add padding basically)
         List<String> fieldTypes = CatalogManager.getFieldTypes(this.databaseName, this.tableName);

@@ -309,19 +309,19 @@ public class CatalogManager {
     }
 
     public static List<Integer> getPrimaryKeyFieldIndexes(String databaseName, String tableName){
-        List<String> col_name = getFieldNames(databaseName, tableName);
-        List<String> key_name = getPrimaryKeyFieldNames(databaseName, tableName);
+        List<String> fieldNames = getFieldNames(databaseName, tableName);
+        List<String> primaryKeyFieldNames = getPrimaryKeyFieldNames(databaseName, tableName);
 
-        ArrayList<Integer> key_index = new ArrayList<>();
-        for (String key : key_name) {
-            int index = col_name.indexOf(key);
+        ArrayList<Integer> primaryKeyIndexes = new ArrayList<>();
+        for (final String key : primaryKeyFieldNames) {
+            int index = fieldNames.indexOf(key);
             if (index != -1) {
-                key_index.add(index);
+                primaryKeyIndexes.add(index);
             } else {
-                log.warn("getPrimaryKeyTypes() " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
+                log.warn("In " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
             }
         }
-        return key_index;
+        return primaryKeyIndexes;
     }
 
     public static List<String> getUniqueFieldNames(String databaseName, String tableName) {
@@ -335,6 +335,22 @@ public class CatalogManager {
             fields.add(field.asText());
         }
         return fields;
+    }
+
+    public static List<Integer> getUniqueFieldIndexes(String databaseName, String tableName){
+        List<String> fieldNames = getFieldNames(databaseName, tableName);
+        List<String> uniqueFieldNames = getUniqueFieldNames(databaseName, tableName);
+
+        ArrayList<Integer> uniqueFieldIndexes = new ArrayList<>();
+        for (final String key : uniqueFieldNames) {
+            int index = fieldNames.indexOf(key);
+            if (index != -1) {
+                uniqueFieldIndexes.add(index);
+            } else {
+                log.warn("In " + databaseName + " : " + tableName + " : keyValue:" + key + " not found in table!");
+            }
+        }
+        return uniqueFieldIndexes;
     }
 
     public static List<ForeignKeyModel> getForeignKeys(String databaseName, String tableName) {
