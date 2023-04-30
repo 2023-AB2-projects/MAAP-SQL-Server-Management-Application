@@ -258,7 +258,7 @@ public class CatalogManager {
     }
 
     public static String getTableIndexFilePath(String databaseName, String tableName, String indexName) {
-        return Config.getDbRecordsPath() + File.separator + databaseName + File.separator + tableName + ".index." + indexName + ".bin";
+        return Config.getDbRecordsPath() + File.separator + databaseName + File.separator + tableName + File.separator + getIndexFileName(tableName, indexName);
     }
     /* -------------------- / Paths ------------------ */
 
