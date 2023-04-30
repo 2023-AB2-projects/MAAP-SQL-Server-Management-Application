@@ -31,7 +31,7 @@ public class InsertIntoAction implements DatabaseAction {
     private ArrayList<ArrayList<String>> values;
 
     @Override
-    public Object actionPerform() throws IOException, PrimaryKeyValuesContainDuplicates, UniqueFieldValuesContainDuplicates, DatabaseDoesntExist, TableDoesntExist {
+    public Object actionPerform() throws IOException, PrimaryKeyValuesContainDuplicates, UniqueFieldValuesContainDuplicates, DatabaseDoesntExist, TableDoesntExist, PrimaryKeyValueAlreadyInTable, UniqueValueAlreadyInTable, ForeignKeyValueNotFoundInParentTable {
         // ----------------------------------- CHECK DB, TABLE NAME ------------------------------------------------- //
         if (!CatalogManager.getDatabaseNames().contains(this.databaseName)) {
             throw new DatabaseDoesntExist(this.databaseName);
@@ -102,30 +102,19 @@ public class InsertIntoAction implements DatabaseAction {
         }
         // --------------------------------- / STANDARDIZE ALL STRINGS ---------------------------------------------- //
 
-
         InsertRowValidator rowValidator = new InsertRowValidator(this.databaseName, this.tableName);
 
+        // First validate rows and if any error occurs don't insert any rows into table
         for (final ArrayList<String> row : values) {
-            try {
-                rowValidator.validateRow(row);
-            } catch (PrimaryKeyValueAlreadyInTable e) {
-                log.error("PK already in table!");
-                throw new RuntimeException(e);
-            } catch (UniqueValueAlreadyInTable e) {
-                log.error("Unique field already in table!");
-                throw new RuntimeException(e);
-            } catch (ForeignKeyValueNotFoundInParentTable e) {
-                log.error("Foreign key value not found in parent table!");
-                throw new RuntimeException(e);
-            }
+            rowValidator.validateRow(row);
         }
 
+        // No errors -> Insert each row into table
         RecordInserter recordInserter = new RecordInserter(this.databaseName, this.tableName);
-
         for (final ArrayList<String> row : values) {
             recordInserter.insert(row);
         }
 
-        return null;
+        return rowCount;        // Display inserted row count to user
     }
 }

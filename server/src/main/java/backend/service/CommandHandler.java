@@ -42,18 +42,18 @@ public class CommandHandler {
     private void updateControllerNodes(DatabaseAction databaseAction, Object returnValue) {
         if (databaseAction instanceof CreateDatabaseAction) {
             serverController.updateRootNodeAndNamesList();
-            serverController.setResponse("Database Created Successfully!");
+            serverController.setResponse("Database created successfully!");
         }
         if (databaseAction instanceof DropDatabaseAction) {
             // Update server current databaseName
             serverController.setCurrentDatabaseName("master");
 
             serverController.updateRootNodeAndNamesList();
-            serverController.setResponse("Database Dropped Successfully!");
+            serverController.setResponse("Database dropped successfully!\nSwitched back to database 'master'!");
         }
         if (databaseAction instanceof CreateTableAction) {
             //serverController.updateRootNodeAndNamesList();
-            serverController.setResponse("Table Created Successfully!");
+            serverController.setResponse("Table created successfully!");
         }
         if (databaseAction instanceof DropTableAction) {
             //serverController.updateRootNodeAndNamesList();
@@ -64,7 +64,8 @@ public class CommandHandler {
             serverController.setResponse("Now using " + returnValue);
         }
         if (databaseAction instanceof InsertIntoAction) {
-            serverController.setResponse("InsertAction parsed sucessfully");
+            int rowCount = (int) returnValue;
+            serverController.setResponse("Inserted " + rowCount + " rows into table succesfully!");
         }
         if (databaseAction instanceof DeleteFromAction) {
             serverController.setResponse("DeleteAction parsed succesfully");
