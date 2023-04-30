@@ -1,5 +1,6 @@
 package backend.databaseActions.createActions;
 
+import backend.Indexing.UniqueIndexManager;
 import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.IndexFileModel;
@@ -13,7 +14,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
 import java.io.IOException;
 
 @Slf4j
@@ -103,27 +103,6 @@ public class CreateIndexAction implements DatabaseAction {
             }
         }
 
-        // Create new index file in 'records' folder
-        String tableFolderPath = Config.getDbRecordsPath() + File.separator + this.databaseName + File.separator + tableName;
-        String indexFilePath = tableFolderPath + File.separator + this.indexFile.getIndexFileName();
-
-        File tableDataFile = new File(indexFilePath);
-        if (tableDataFile.exists()) {
-            log.error("Index binary file already exists!");
-            throw new RuntimeException();
-        }
-        try {
-            if(tableDataFile.createNewFile()) {
-                log.info("Index file created!");
-            } else {
-                log.error("Binary Index file already exists!");
-                throw new RuntimeException();
-            }
-        } catch (IOException e) {
-            log.error("CreateNewFile failed!");
-            throw new RuntimeException(e);
-        }
-
         // Add index to table
         JsonNode newIndex = JsonNodeFactory.instance.objectNode().putPOJO("indexFile", this.indexFile);
         indexFilesNode.add(newIndex);
@@ -133,6 +112,14 @@ public class CreateIndexAction implements DatabaseAction {
             mapper.writeValue(Config.getCatalogFile(), rootNode);
         } catch (IOException e) {
             log.error("CreateIndexAction -> Write value (mapper) failed");
+            throw new RuntimeException(e);
+        }
+
+        //TODO: Handle non-unique !!!!!!!!!!!!!!
+        try {
+            UniqueIndexManager.createEmptyIndex(this.databaseName, this.tableName, this.indexFile.getIndexName());
+        } catch (IOException e) {
+            log.error("Can't create index file -> IO exception!");
             throw new RuntimeException(e);
         }
 

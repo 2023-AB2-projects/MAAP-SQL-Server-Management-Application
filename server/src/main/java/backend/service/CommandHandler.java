@@ -5,7 +5,6 @@ import backend.databaseActions.createActions.*;
 import backend.databaseActions.dropActions.*;
 import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.exceptions.SQLParseException;
-import backend.exceptions.databaseActionsExceptions.*;
 import backend.parser.Parser;
 import lombok.extern.slf4j.Slf4j;
 
@@ -64,10 +63,10 @@ public class CommandHandler {
             ServerController.setCurrentDatabaseName((String) returnValue);
             serverController.setResponse("Now using " + returnValue);
         }
-        if (databaseAction instanceof InsertAction) {
+        if (databaseAction instanceof InsertIntoAction) {
             serverController.setResponse("InsertAction parsed sucessfully");
         }
-        if (databaseAction instanceof DeleteAction) {
+        if (databaseAction instanceof DeleteFromAction) {
             serverController.setResponse("DeleteAction parsed succesfully");
         }
     }
