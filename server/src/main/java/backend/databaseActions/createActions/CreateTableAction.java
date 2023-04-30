@@ -4,6 +4,7 @@ import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.*;
 import backend.exceptions.databaseActionsExceptions.*;
+import backend.service.CatalogManager;
 import backend.service.Utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -227,7 +228,6 @@ public class CreateTableAction implements DatabaseAction {
         }
 
         // Create new table file in 'records' folder
-        ///////////////////////////// REMOVE LATER ///////////////////
         String tableDataFilePath = tableFolderPath + File.separator + this.table.getFileName();
 
         File tableDataFile = new File(tableDataFilePath);
@@ -259,6 +259,26 @@ public class CreateTableAction implements DatabaseAction {
             log.error("CreateTableAction -> Write value (mapper) failed");
             throw new RuntimeException(e);
         }
+
+        // Create index files for primary and unique keys
+        String pKIndexName = CatalogManager.getFlattenedName(this.table.getPrimaryKey().getPrimaryKeyFields());
+        CreateIndexAction pKIndexAction = new CreateIndexAction(this.databaseName, this.table.getTableName(), new IndexFileModel(
+                pKIndexName,
+                CatalogManager.getIndexFileName(this.table.getTableName(), pKIndexName),
+                true,       // Unique
+                this.table.getPrimaryKey().getPrimaryKeyFields()
+        ));
+
+        try {
+            pKIndexAction.actionPerform();
+        } catch (TableDoesntExist e) {
+            log.error("CreateIndex for PK -> Can't find table");
+            throw new RuntimeException(e);
+        } catch (IndexAlreadyExists e) {
+            log.error("CreateIndex for PK -> Index already exists!");
+            throw new RuntimeException(e);
+        }
+
         return null;
     }
 }
