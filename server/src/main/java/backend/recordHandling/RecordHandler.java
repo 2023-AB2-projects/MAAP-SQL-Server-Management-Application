@@ -15,7 +15,7 @@ public class RecordHandler {
     public RecordHandler(String databaseName, String tableName) throws FileNotFoundException {
         String fileLocation = CatalogManager.getTableDataPath(databaseName, tableName);
 
-        tableStructure = (ArrayList<String>) CatalogManager.getColumnTypes(databaseName, tableName);
+        tableStructure = (ArrayList<String>) CatalogManager.getFieldTypes(databaseName, tableName);
 
         recordSize = 1 + tableStructure.size();
         for (String type : tableStructure) {

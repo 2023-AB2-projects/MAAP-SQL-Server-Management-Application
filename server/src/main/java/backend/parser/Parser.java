@@ -393,7 +393,7 @@ public class Parser {
         GET_TABLE_NAME, GET_FIELD_NAMES, GET_VALUES, GET_VALUES_STRINGS, CLOSING_BRACKET
     }
     // TODO: create DatabaseAction for insert into
-    private InsertAction parseInsertInto(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
+    private InsertIntoAction parseInsertInto(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
         String tableName = "";
         ArrayList<String> fieldNames = new ArrayList<>();
         ArrayList<ArrayList<String>> values = new ArrayList<>();
@@ -525,10 +525,10 @@ public class Parser {
         log.info(fieldNames.toString());
         log.info(values.toString());
 
-        return new InsertAction(databaseName, tableName, values);
+        return new InsertIntoAction(databaseName, tableName, values);
     }
 
-    private DeleteAction parseDeleteFrom(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
+    private DeleteFromAction parseDeleteFrom(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
         String tableName = "";
         ArrayList<String> keys = new ArrayList<>();
 
@@ -545,7 +545,7 @@ public class Parser {
         log.info(tableName);
         log.info(keys.toString());
 
-        DeleteAction da = new DeleteAction(databaseName, tableName, keys);
+        DeleteFromAction da = new DeleteFromAction(databaseName, tableName, keys);
         return da;
     }
 

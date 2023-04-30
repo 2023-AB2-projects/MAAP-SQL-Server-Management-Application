@@ -9,8 +9,8 @@ plugins {
 application {
 //        mainClass = "test.backend.TestCatalogManager"
 //      mainClass = "test.backend.TestDatabaseActions"
-      mainClass = "backend.recordHandling.test"
-//      mainClass = "test.backend.Main"
+//      mainClass = "backend.recordHandling.test"
+      mainClass = "test.backend.Main"
 }
 
 repositories {

@@ -7,13 +7,11 @@ import backend.recordHandling.RecordDeleter;
 import lombok.Setter;
 import lombok.AllArgsConstructor;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 @AllArgsConstructor
-public class DeleteAction implements DatabaseAction {
+public class DeleteFromAction implements DatabaseAction {
     @Setter
     private String databaseName;
     @Setter
