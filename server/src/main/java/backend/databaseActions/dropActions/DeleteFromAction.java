@@ -2,6 +2,7 @@ package backend.databaseActions.dropActions;
 
 import backend.databaseActions.DatabaseAction;
 import backend.exceptions.databaseActionsExceptions.*;
+import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.recordHandling.RecordDeleter;
 import lombok.Setter;
@@ -20,10 +21,9 @@ public class DeleteFromAction implements DatabaseAction {
     private ArrayList<String> primaryKeys;
 
     @Override
-    public Object actionPerform() throws DatabaseNameAlreadyExists, TableNameAlreadyExists, DatabaseDoesntExist, PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique, TableDoesntExist, IndexAlreadyExists, ForeignKeyFieldNotFound, IOException, RecordNotFoundException {
+    public Object actionPerform() throws DatabaseNameAlreadyExists, TableNameAlreadyExists, DatabaseDoesntExist, PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique, TableDoesntExist, IndexAlreadyExists, ForeignKeyFieldNotFound, IOException, RecordNotFoundException, InvalidReadException {
         RecordDeleter recordDeleter = new RecordDeleter(databaseName, tableName);
         recordDeleter.deleteByPrimaryKey(primaryKeys);
-        
         return null;
     }
 }

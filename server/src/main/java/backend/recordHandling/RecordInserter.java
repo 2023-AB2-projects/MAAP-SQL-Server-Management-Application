@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class RecordInserter {
     private final RecordHandler recordHandler;
     private final MultipleIndexUpdater multipleIndexUpdater;
-    private String databaseName, tableName;
+    private final String databaseName, tableName;
 
     public RecordInserter(String databaseName, String tableName) throws IOException {
         this.databaseName = databaseName;
@@ -21,7 +21,7 @@ public class RecordInserter {
     }
 
     public void insert(ArrayList<String> values) throws IOException {
-        Integer pointer;
+        int pointer;
         try{
             pointer = CatalogManager.deletedRecordLinesPop(databaseName, tableName);
         }catch (Exception e){
@@ -34,5 +34,6 @@ public class RecordInserter {
 
     public void close() throws IOException {
         recordHandler.close();
+        multipleIndexUpdater.close();
     }
 }
