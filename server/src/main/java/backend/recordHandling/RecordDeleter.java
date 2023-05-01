@@ -4,7 +4,6 @@ import backend.Indexing.MultipleIndexUpdater;
 import backend.Indexing.UniqueIndexManager;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.KeyNotFoundException;
-import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +25,11 @@ public class RecordDeleter {
         recordHandler = new RecordHandler(databaseName, tableName);
         multipleIndexUpdater = new MultipleIndexUpdater(databaseName, tableName);
         primaryKeyIndexManager = new UniqueIndexManager(databaseName, tableName, CatalogManager.getPrimaryKeyIndexName(databaseName, tableName));
+    }
+
+    public ArrayList<String> readLineToBeDeleted(ArrayList<String> keyValues) throws IOException, KeyNotFoundException, InvalidReadException {
+        int line = primaryKeyIndexManager.findLocation(keyValues);
+        return recordHandler.readLine(line);
     }
 
     public void deleteByPrimaryKey(ArrayList<String> keyValues){
