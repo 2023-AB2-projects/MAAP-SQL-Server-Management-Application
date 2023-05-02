@@ -8,7 +8,7 @@ import backend.exceptions.validatorExceptions.*;
 import backend.recordHandling.RecordInserter;
 import backend.recordHandling.RecordStandardizer;
 import backend.service.CatalogManager;
-import backend.service.InsertRowValidator;
+import backend.Indexing.indexValidators.InsertRowValidator;
 import lombok.Setter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

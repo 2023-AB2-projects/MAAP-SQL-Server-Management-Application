@@ -12,5 +12,5 @@ public interface DatabaseAction {
             PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique, TableDoesntExist,
             IndexAlreadyExists, ForeignKeyFieldNotFound, IOException, RecordNotFoundException,
             PrimaryKeyValuesContainDuplicates, UniqueFieldValuesContainDuplicates,
-            PrimaryKeyValueAlreadyInTable, UniqueValueAlreadyInTable, ForeignKeyValueNotFoundInParentTable, InvalidReadException;
+            PrimaryKeyValueAlreadyInTable, UniqueValueAlreadyInTable, ForeignKeyValueNotFoundInParentTable, InvalidReadException, ForeignKeyValueIsBeingReferencedInAnotherTable;
 }

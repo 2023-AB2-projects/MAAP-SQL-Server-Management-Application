@@ -1,10 +1,11 @@
-package backend.service;
+package backend.Indexing.indexValidators;
 
 import backend.Indexing.UniqueIndexManager;
 import backend.databaseModels.ForeignKeyModel;
 import backend.exceptions.validatorExceptions.ForeignKeyValueNotFoundInParentTable;
 import backend.exceptions.validatorExceptions.PrimaryKeyValueAlreadyInTable;
 import backend.exceptions.validatorExceptions.UniqueValueAlreadyInTable;
+import backend.service.CatalogManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +90,6 @@ public class InsertRowValidator {
 
         ArrayList<String> foreignKeyValues = new ArrayList<>();
         for (final ForeignKeyModel foreignKey : foreignKeys) {
-            //TODO!!!
             foreignKeyValues.add(row.get(tableFieldNames.indexOf(foreignKey.getReferencingFields().get(0))));
         }
 

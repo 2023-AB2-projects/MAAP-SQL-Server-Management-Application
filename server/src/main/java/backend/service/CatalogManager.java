@@ -369,6 +369,66 @@ public class CatalogManager {
         return foreignKeys;
     }
 
+    public static List<ForeignKeyModel> getForeignKeysReferencingThisTable(String databaseName, String tableName) {
+        List<ForeignKeyModel> referencingForeignKeys = new ArrayList<>();
+
+        // find the tableNode
+        JsonNode databaseNode = findDatabaseNode(databaseName);
+        if (databaseNode == null) {
+            log.error("Database node not found!");
+            throw new RuntimeException();
+        }
+
+        for (final JsonNode tableNode : databaseNode.get("database").get("tables")) {
+            // Foreign key node
+            ArrayNode foreignKeyNode = (ArrayNode) tableNode.get("table").get("foreignKeys");
+            try {
+                ArrayList<ForeignKeyModel> foreignKeys = Utility.getObjectMapper().readValue(foreignKeyNode.toString(), new TypeReference<>() {});
+
+                for (final ForeignKeyModel fKey : foreignKeys) {
+                    if (fKey.getReferencedTable().equals(tableName)) {
+                        referencingForeignKeys.add(fKey);
+                    }
+                }
+            } catch (JsonProcessingException e) {
+                log.error("Could not read foreignKeys JSON to objects!");
+                throw new RuntimeException(e);
+            }
+        }
+
+        return referencingForeignKeys;
+    }
+
+    public static List<String> getForeignKeysTableNamesReferencingThisTable(String databaseName, String tableName) {
+        List<String> tableNames = new ArrayList<>();
+
+        // find the tableNode
+        JsonNode databaseNode = findDatabaseNode(databaseName);
+        if (databaseNode == null) {
+            log.error("Database node not found!");
+            throw new RuntimeException();
+        }
+
+        for (final JsonNode tableNode : databaseNode.get("database").get("tables")) {
+            // Foreign key node
+            ArrayNode foreignKeyNode = (ArrayNode) tableNode.get("table").get("foreignKeys");
+            try {
+                ArrayList<ForeignKeyModel> foreignKeys = Utility.getObjectMapper().readValue(foreignKeyNode.toString(), new TypeReference<>() {});
+
+                for (final ForeignKeyModel fKey : foreignKeys) {
+                    if (fKey.getReferencedTable().equals(tableName)) {
+                        tableNames.add(tableNode.get("table").get("tableName").asText());
+                    }
+                }
+            } catch (JsonProcessingException e) {
+                log.error("Could not read foreignKeys JSON to objects!");
+                throw new RuntimeException(e);
+            }
+        }
+
+        return tableNames;
+    }
+
     public static boolean isFieldUnique(String databaseName, String tableName, String fieldName) {
         // Find the table json node
         JsonNode fieldNode = CatalogManager.findTableFieldNode(databaseName, tableName, fieldName);

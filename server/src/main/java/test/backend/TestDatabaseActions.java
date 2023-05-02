@@ -134,29 +134,29 @@ public class TestDatabaseActions {
 
         // Create index file
 
-        String fieldName = "name";
-        String tableName = "people", databaseName = "master";
-        List<String> indexNames = CatalogManager.getUniqueFieldIndexNames(databaseName, tableName);
-        DatabaseAction createIndex = new CreateIndexAction(databaseName, tableName,
-                new IndexFileModel(
-                        indexNames.get(0),
-                        CatalogManager.getIndexFileName(tableName, indexNames.get(0)),
-                        true,
-                        new ArrayList<>(){{
-                            add(fieldName);
-                        }}
-        ));
-        try {
-            createIndex.actionPerform();
-        } catch (DatabaseDoesntExist e) {
-            System.out.println("Database doesn't exist!");
-        } catch (TableDoesntExist e) {
-            System.out.println("Table doesn't exist!");
-        } catch (IndexAlreadyExists e) {
-            System.out.println("Index with given name already exists!");
-        } catch (Exception exception) {
-            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
-        }
+//        String fieldName = "name";
+//        String tableName = "people", databaseName = "master";
+//        List<String> indexNames = CatalogManager.getUniqueFieldIndexNames(databaseName, tableName);
+//        DatabaseAction createIndex = new CreateIndexAction(databaseName, tableName,
+//                new IndexFileModel(
+//                        indexNames.get(0),
+//                        CatalogManager.getIndexFileName(tableName, indexNames.get(0)),
+//                        true,
+//                        new ArrayList<>(){{
+//                            add(fieldName);
+//                        }}
+//        ));
+//        try {
+//            createIndex.actionPerform();
+//        } catch (DatabaseDoesntExist e) {
+//            System.out.println("Database doesn't exist!");
+//        } catch (TableDoesntExist e) {
+//            System.out.println("Table doesn't exist!");
+//        } catch (IndexAlreadyExists e) {
+//            System.out.println("Index with given name already exists!");
+//        } catch (Exception exception) {
+//            System.out.println("ERROR -> CreateIndexAction should not invoke this exception!");
+//        }
 //
 //        String databaseName = "master", tableName = "people", indexName = "id_index";
 //        List<String> fieldNames = CatalogManager.getIndexFieldNames(databaseName, tableName, indexName);
@@ -188,5 +188,8 @@ public class TestDatabaseActions {
 //
 //        List<Integer> recordLines = CatalogManager.deletedRecordLinesPopN(databaseName, tableName, 5);
 //        System.out.println(recordLines);
+//
+//        List<ForeignKeyModel> fKeys = CatalogManager.getForeignKeysReferencingThisTable("master", "parent");
+//        System.out.println(fKeys);
     }
 }
