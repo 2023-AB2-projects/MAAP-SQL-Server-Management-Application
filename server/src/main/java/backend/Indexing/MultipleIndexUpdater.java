@@ -1,10 +1,5 @@
 package backend.Indexing;
 
-import backend.databaseModels.ForeignKeyModel;
-import backend.exceptions.recordHandlingExceptions.KeyAlreadyInTreeException;
-import backend.exceptions.validatorExceptions.ForeignKeyValueNotFoundInParentTable;
-import backend.exceptions.validatorExceptions.PrimaryKeyValueAlreadyInTable;
-import backend.exceptions.validatorExceptions.UniqueValueAlreadyInTable;
 import backend.service.CatalogManager;
 
 import java.io.IOException;
@@ -61,10 +56,45 @@ public class MultipleIndexUpdater {
                 values.add(uniqueFieldValues.get(i));
                 uniqueIndexManagers.get(i).insert(values, pointer);
             }
+            //nonUniqueInsert
         }catch (Exception e){
             System.out.println("Something went wrong with insert");
             System.out.println(e.getMessage());
         }
+    }
 
+    public void delete(ArrayList<String> row, Integer pointer){
+        ArrayList<String> primaryKeyValues = new ArrayList<>();
+        for (final String primaryKeyFieldName : primaryKeyFieldNames) {
+            primaryKeyValues.add(row.get(tableFieldNames.indexOf(primaryKeyFieldName)));
+        }
+
+        ArrayList<String> uniqueFieldValues = new ArrayList<>();
+        for (final String uniqueFieldName : uniqueFieldNames) {
+            uniqueFieldValues.add(row.get(tableFieldNames.indexOf(uniqueFieldName)));
+        }
+
+        try {
+            primaryKeyIndexManager.delete(primaryKeyValues);
+            for(int i = 0; i < uniqueIndexManagers.size(); i++){
+                ArrayList<String> values = new ArrayList<>();
+                values.add(uniqueFieldValues.get(i));
+                uniqueIndexManagers.get(i).delete(values);
+            }
+            //nonUniqueDelete
+        }catch (Exception e){
+            System.out.println("Something went wrong with insert");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void close() throws IOException {
+        primaryKeyIndexManager.close();
+        for(var manager : uniqueIndexManagers){
+            manager.close();
+        }
+//        for(var manager : nonUniqueIndexManagers){
+//            manager.close();
+//        }
     }
 }
