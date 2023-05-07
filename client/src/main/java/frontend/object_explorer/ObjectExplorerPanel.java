@@ -2,6 +2,7 @@ package frontend.object_explorer;
 
 import service.CatalogManager;
 import service.ForeignKeyModel;
+import service.IndexFileModel;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -66,10 +67,20 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
                     DefaultMutableTreeNode foreignKeyNode = new DefaultMutableTreeNode(foreignKey.getReferencedTable());
 
                     // Add referenced and referencing nodes
-                    foreignKeyNode.add(new DefaultMutableTreeNode("Referenced: " + foreignKey.getReferencedFields().get(0)));
-                    foreignKeyNode.add(new DefaultMutableTreeNode("Referencing: " + foreignKey.getReferencingFields().get(0)));
+                    foreignKeyNode.add(new DefaultMutableTreeNode("Referenced: " + foreignKey.getReferencedFields()));
+                    foreignKeyNode.add(new DefaultMutableTreeNode("Referencing: " + foreignKey.getReferencingFields()));
 
                     foreignKeysNode.add(foreignKeyNode);
+                }
+                // Index files
+                for (final IndexFileModel indexFile : CatalogManager.getIndexFiles(databaseName, tableName)) {
+                    DefaultMutableTreeNode indexNode = new DefaultMutableTreeNode(indexFile.getIndexName());
+
+                    // Add referenced and referencing nodes
+                    indexNode.add(new DefaultMutableTreeNode("Fields: " + indexFile.getIndexFields()));
+                    indexNode.add(new DefaultMutableTreeNode("Unique: " + indexFile.isUnique()));
+
+                    indexFilesNode.add(indexNode);
                 }
 
                 // Add extra info nodes
