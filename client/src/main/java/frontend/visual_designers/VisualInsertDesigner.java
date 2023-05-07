@@ -3,9 +3,11 @@ package frontend.visual_designers;
 import control.ClientController;
 import frontend.center_panel.CenterClientPanel;
 import lombok.Setter;
+import service.CatalogManager;
 
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -39,7 +41,8 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
 
     /* Setters */
     public void updateTables() {
-        ArrayList<String> tableNames = this.clientController.getCurrentDatabaseTables();
+        String currentDatabaseName = this.clientController.getCurrentDatabaseName();
+        List<String> tableNames = CatalogManager.getCurrentDatabaseTableNames(currentDatabaseName);
 
         // Update items in combo box
         this.tableSelectComboBox.removeAllItems();
@@ -274,12 +277,14 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
     }//GEN-LAST:event_executeButtonMousePressed
 
     private void tableSelectComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tableSelectComboBoxActionPerformed
-        String tableName = (String) this.tableSelectComboBox.getSelectedItem();
+        if(this.tableSelectComboBox.getSelectedItem() != null) {
+            String tableName = (String) this.tableSelectComboBox.getSelectedItem();
 
-        // Update selection panel
-        ArrayList<String> columnNames = this.clientController.getTableAttributes(tableName);
+            // Update selection panel
+            ArrayList<String> columnNames = (ArrayList<String>) CatalogManager.getFieldNames(this.clientController.getCurrentDatabaseName(), tableName);
 
-        this.setColumnsAndRowCount(columnNames, this.DEFAULT_ROW_COUNT);
+            this.setColumnsAndRowCount(columnNames, this.DEFAULT_ROW_COUNT);
+        }
     }//GEN-LAST:event_tableSelectComboBoxActionPerformed
 
 

@@ -1,21 +1,20 @@
 package control;
 
 import backend.MessageModes;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import frontend.ClientFrame;
 import frontend.ConnectionFrame;
 
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 import javax.swing.LookAndFeel;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import service.CatalogManager;
+import service.Config;
 
 @Slf4j
 public class ClientController {
@@ -27,14 +26,11 @@ public class ClientController {
     // Other variables
     private LookAndFeel lookAndFeel;
 
-    // JSON logic
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private JsonNode rootNode, databaseNode;
-
     // Data/Logic
-    private String catalogJSON; //TODO
+    private String catalogJSON;
+
+    @Getter
     private String currentDatabaseName;
-    private ArrayList<String> databaseNames;
 
     public ClientController() {
         // Init Client side components
@@ -64,26 +60,9 @@ public class ClientController {
     }
 
     private void initVariables() {
-        // Init variables
-        this.databaseNames = new ArrayList<>();
-
         // Other
         this.catalogJSON = "";
         this.currentDatabaseName = "master";
-    }
-
-    private void updateCurrentDatabases() {
-        // Clear current database names
-        this.databaseNames.clear();
-
-        // Update databases list
-        for(final JsonNode databaseNode : rootNode.get("databases")) {
-            this.databaseNames.add(databaseNode.get("database").get("databaseName").asText());
-        }
-
-        // Update Tree node
-        this.clientFrame.updateDatabaseNamesTree(this.databaseNames);
-        System.out.println("Info -> Database names: " + this.databaseNames);
     }
 
     private void updateJSON(String receivedJSON) {
@@ -92,43 +71,22 @@ public class ClientController {
             // Refresh catalog JSON string
             this.catalogJSON = receivedJSON;
 
-            // Update root node
-            try {
-                this.rootNode = this.objectMapper.readTree(this.catalogJSON);
-            } catch (JsonProcessingException e) {
-                log.error("Could not process received JSON catalog!");
+            // Refresh stored JSON file
+            try (FileWriter writer = new FileWriter(Config.getDbCatalogPath())) {
+                writer.write(this.catalogJSON);
+                log.info("Updated stored JSON file!");
+            } catch (IOException e) {
+                log.error("Could not update stored JSON file!");
+                throw new RuntimeException(e);
             }
 
             // Update database node
-            this.databaseNode = this.findDatabaseNodeFromRoot(this.currentDatabaseName);
+            JsonNode databaseNode = CatalogManager.findDatabaseNode(this.currentDatabaseName);
             if(databaseNode == null) {
                 this.currentDatabaseName = "master";
                 this.clientFrame.setCurrentDatabaseName(this.currentDatabaseName);
-                this.databaseNode = this.findDatabaseNodeFromRoot(this.currentDatabaseName);
             }
         }
-    }
-
-    private JsonNode findDatabaseNodeFromRoot(String databaseName) {
-        // Check if database exists
-        ArrayNode databasesArray = (ArrayNode) this.rootNode.get("databases");
-        for (final JsonNode databaseNode : databasesArray) {
-            // For each "Database" node find the name of the database
-            JsonNode currentDatabaseNodeValue = databaseNode.get("database").get("databaseName");
-
-            if (currentDatabaseNodeValue == null) {
-                log.error("ServerController -> Database null -> \"databaseName\" not found");
-                continue;
-            }
-
-            // Check if a database exists with the given database name
-            String currentDatabaseName = currentDatabaseNodeValue.asText();
-            if(currentDatabaseName.equals(databaseName)) {
-                return databaseNode;
-            }
-        }
-
-        return null;
     }
     /* / Utility */
 
@@ -158,8 +116,7 @@ public class ClientController {
     public void receiveMessageAndPerformAction(int mode) {
         try {
             String response = this.receiveMessage();
-            log.info("Received message: " + response);
-            
+
             if (response.equals("SERVER DISCONNECTED")) {
                 this.stopConnection();
                 log.info("Server was shut down");
@@ -168,7 +125,7 @@ public class ClientController {
 
             switch(mode) {
                 case MessageModes.setTextArea -> {
-                    log.info("SetTextArea mode!");
+                    log.info("Updated output textArea!");
                     this.setOutputAreaString(response);
 
                     // Check if we need to update current database
@@ -181,8 +138,11 @@ public class ClientController {
                 }
                 case MessageModes.refreshJSONCatalog -> {
                     log.info("RefreshCatalog mode!");
+
                     this.updateJSON(response);
-                    this.updateCurrentDatabases();
+
+                    // Update object explorer
+                    this.clientFrame.updateObjectExplorer();
 
                     // Update tables combo boxes etc.
                     this.clientFrame.update();
@@ -205,40 +165,6 @@ public class ClientController {
 
     /* Getters */
     public String getInputTextAreaString() { return this.clientFrame.getInputTextAreaString(); }
-
-    public ArrayList<String> getCurrentDatabaseTables() {
-        if(this.databaseNode != null) {
-            ArrayList<String> tableNames = new ArrayList<>();
-
-            for(final JsonNode tableNode : this.databaseNode.get("database").get("tables")) {
-                tableNames.add(tableNode.get("table").get("tableName").asText());
-            }
-            return tableNames;
-        }
-        return new ArrayList<>();
-    }
-
-    public ArrayList<String> getTableAttributes(String tableName) {
-        // Check if table name exists
-        if(this.getCurrentDatabaseTables().contains(tableName)) {
-            ArrayList<String> attributes = new ArrayList<>();
-            // Find table
-            for(final JsonNode tableNode : this.databaseNode.get("database").get("tables")) {
-                if(tableNode.get("table").get("tableName").asText().equals(tableName)) {
-                    for(final JsonNode field : tableNode.get("table").get("fields")) {
-                        attributes.add(field.get("fieldName").asText());
-                    }
-                    break;
-                }
-            }
-
-            return attributes;
-        } else {
-            return new ArrayList<>(){{
-                add("Err: Table not found");
-            }};
-        }
-    }
 
     /* Main */
     public static void main(String[] args) {

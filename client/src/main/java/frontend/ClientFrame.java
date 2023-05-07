@@ -69,6 +69,8 @@ public class ClientFrame extends javax.swing.JFrame {
         this.centerClientPanel1.update();
     }
 
+    public void updateObjectExplorer() { this.objectExplorerPanel1.update(); }
+
     /* Getters */
     public String getInputTextAreaString() { return this.centerClientPanel1.getInputAreaText(); }
     

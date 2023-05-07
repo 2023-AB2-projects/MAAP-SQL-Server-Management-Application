@@ -1,6 +1,9 @@
 package frontend.object_explorer;
 
+import service.CatalogManager;
+
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -27,6 +30,21 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
             this.databasesNode.add(new DefaultMutableTreeNode(databaseName));
         }
 
+        this.jTreeNode.setRoot(this.databasesNode);
+    }
+
+    public void update() {
+        // Get current databaseNames
+        List<String> databaseNames = CatalogManager.getDatabaseNames();
+
+        // Update nodes
+        this.databasesNode.removeAllChildren(); // Clear the tree
+
+        for(final String databaseName : databaseNames) {
+            this.databasesNode.add(new DefaultMutableTreeNode(databaseName));
+        }
+
+        // Update the tree node
         this.jTreeNode.setRoot(this.databasesNode);
     }
 
