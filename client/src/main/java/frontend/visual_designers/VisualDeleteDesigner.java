@@ -3,9 +3,10 @@ package frontend.visual_designers;
 import control.ClientController;
 import frontend.center_panel.CenterClientPanel;
 import lombok.Setter;
+import service.CatalogManager;
 
-import javax.swing.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class VisualDeleteDesigner extends javax.swing.JPanel {
     // References
@@ -15,7 +16,6 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
     @Setter
     private ClientController clientController;
 
-    private int test = 0;
 
     public VisualDeleteDesigner() {
         initComponents();
@@ -30,7 +30,8 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
     }
 
     public void updateTables() {
-        ArrayList<String> tableNames = this.clientController.getCurrentDatabaseTables();
+        String currentDatabaseName = this.clientController.getCurrentDatabaseName();
+        List<String> tableNames = CatalogManager.getCurrentDatabaseTableNames(currentDatabaseName);
 
         // Update items in combo box
         this.tableSelectComboBox.removeAllItems();
@@ -142,16 +143,19 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tableSelectComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tableSelectComboBoxActionPerformed
-        // Get selected index
-        String tableName = (String) this.tableSelectComboBox.getSelectedItem();
+        if(this.tableSelectComboBox.getSelectedItem() != null) {
 
-        // Update selection panel
-        ArrayList<String> columnNames = this.clientController.getTableAttributes(tableName);
-        ArrayList<String> tableNames = new ArrayList<>();
-        for(int i = 0; i < columnNames.size(); ++i) {
-            tableNames.add(tableName);
+            // Get selected index
+            String tableName = (String) this.tableSelectComboBox.getSelectedItem();
+
+            // Update selection panel
+            ArrayList<String> columnNames = (ArrayList<String>) CatalogManager.getFieldNames(this.clientController.getCurrentDatabaseName(), tableName);
+            ArrayList<String> tableNames = new ArrayList<>();
+            for (int i = 0; i < columnNames.size(); ++i) {
+                tableNames.add(tableName);
+            }
+            this.selectionPanel.setFieldPanelData(columnNames, tableNames);
         }
-        this.selectionPanel.setFieldPanelData(columnNames, tableNames);
     }//GEN-LAST:event_tableSelectComboBoxActionPerformed
 
     private void generateCodeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generateCodeButtonMousePressed

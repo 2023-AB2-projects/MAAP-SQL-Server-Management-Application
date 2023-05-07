@@ -1,6 +1,11 @@
 package frontend.object_explorer;
 
-import java.util.ArrayList;
+import service.CatalogManager;
+import service.ForeignKeyModel;
+import service.IndexFileModel;
+
+import java.util.List;
+import java.util.stream.IntStream;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -20,13 +25,75 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
         this.jTreeNode = new DefaultTreeModel(this.databasesNode);
     }
 
-    public void updateDatabases(ArrayList<String> databaseNames) {
-        this.databasesNode.removeAllChildren();
+    private void updateFieldNode(DefaultMutableTreeNode fieldNode, List<String> fieldNames, List<String> fieldTypes) {
+        IntStream
+                .range(0, Math.min(fieldNames.size(), fieldTypes.size()))
+                .mapToObj(i -> fieldNames.get(i) + " - " + fieldTypes.get(i))
+                .forEach(fieldData -> fieldNode.add(new DefaultMutableTreeNode(fieldData)));
+    }
+
+    public void update() {
+        // Get current databaseNames
+        List<String> databaseNames = CatalogManager.getDatabaseNames();
+
+        // Update nodes
+        this.databasesNode.removeAllChildren(); // Clear the tree
 
         for(final String databaseName : databaseNames) {
-            this.databasesNode.add(new DefaultMutableTreeNode(databaseName));
+            DefaultMutableTreeNode databaseNode = new DefaultMutableTreeNode(databaseName);
+            // Create a node for all the tables
+            DefaultMutableTreeNode tablesNode = new DefaultMutableTreeNode("Tables");
+            databaseNode.add(tablesNode);
+
+            // Add all the tables from this database to that node
+            for(final String tableName : CatalogManager.getCurrentDatabaseTableNames(databaseName)) {
+                DefaultMutableTreeNode tableNode = new DefaultMutableTreeNode(tableName);
+
+                // For all tables add a 'Fields', 'Unique Fields', 'Foreign Keys', 'IndexFiles'
+                DefaultMutableTreeNode fieldsNode = new DefaultMutableTreeNode("Fields");
+                DefaultMutableTreeNode primaryKeyNode = new DefaultMutableTreeNode("Primary Key");
+                DefaultMutableTreeNode uniqueFieldsNode = new DefaultMutableTreeNode("Unique Fields");
+                DefaultMutableTreeNode foreignKeysNode = new DefaultMutableTreeNode("Foreign Keys");
+                DefaultMutableTreeNode indexFilesNode = new DefaultMutableTreeNode("Index Files");
+
+                // Fields node
+                this.updateFieldNode(fieldsNode, CatalogManager.getFieldNames(databaseName, tableName), CatalogManager.getFieldTypes(databaseName, tableName));
+                // PK Fields
+                this.updateFieldNode(primaryKeyNode, CatalogManager.getPrimaryKeyFieldNames(databaseName, tableName), CatalogManager.getPrimaryKeyTypes(databaseName, tableName));
+                // Unique fields
+                this.updateFieldNode(uniqueFieldsNode, CatalogManager.getUniqueFieldNames(databaseName, tableName), CatalogManager.getUniqueFieldTypes(databaseName, tableName));
+                // Foreign Keys
+                for (final ForeignKeyModel foreignKey : CatalogManager.getForeignKeys(databaseName, tableName)) {
+                    DefaultMutableTreeNode foreignKeyNode = new DefaultMutableTreeNode(foreignKey.getReferencedTable());
+
+                    // Add referenced and referencing nodes
+                    foreignKeyNode.add(new DefaultMutableTreeNode("Referenced: " + foreignKey.getReferencedFields()));
+                    foreignKeyNode.add(new DefaultMutableTreeNode("Referencing: " + foreignKey.getReferencingFields()));
+
+                    foreignKeysNode.add(foreignKeyNode);
+                }
+                // Index files
+                for (final IndexFileModel indexFile : CatalogManager.getIndexFiles(databaseName, tableName)) {
+                    DefaultMutableTreeNode indexNode = new DefaultMutableTreeNode(indexFile.getIndexName());
+
+                    // Add referenced and referencing nodes
+                    indexNode.add(new DefaultMutableTreeNode("Fields: " + indexFile.getIndexFields()));
+                    indexNode.add(new DefaultMutableTreeNode("Unique: " + indexFile.isUnique()));
+
+                    indexFilesNode.add(indexNode);
+                }
+
+                // Add extra info nodes
+                tableNode.add(fieldsNode); tableNode.add(primaryKeyNode); tableNode.add(uniqueFieldsNode); tableNode.add(foreignKeysNode); tableNode.add(indexFilesNode);
+
+                // Add table to tables node
+                tablesNode.add(tableNode);
+            }
+
+            this.databasesNode.add(databaseNode);
         }
 
+        // Update the tree node
         this.jTreeNode.setRoot(this.databasesNode);
     }
 

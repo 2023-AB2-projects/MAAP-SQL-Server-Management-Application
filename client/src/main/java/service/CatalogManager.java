@@ -1,32 +1,24 @@
-package backend.service;
+package service;
 
-import backend.config.Config;
-import backend.databaseModels.ForeignKeyModel;
-import backend.exceptions.recordHandlingExceptions.DeletedRecordLinesEmpty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 public class CatalogManager {
-    private static final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
     private static final File catalog = Config.getCatalogFile();
     private static JsonNode root;
 
     static {
         try {
-            root = mapper.readTree(catalog);
+            root = Utility.getObjectMapper().readTree(catalog);
         } catch (IOException e) {
             log.error("CatalogManager -> Mapper couldn't build tree from catalog!");
             throw new RuntimeException(e);
@@ -36,7 +28,7 @@ public class CatalogManager {
     /* ------------------------------------------------ Utility ------------------------------------------------------*/
     private static void updateRoot () {
         try {
-            root = mapper.readTree(catalog);
+            root = Utility.getObjectMapper().readTree(catalog);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -50,14 +42,14 @@ public class CatalogManager {
     private static void updateCatalog() {
         // Mapper -> Write entire catalog
         try {
-            mapper.writeValue(Config.getCatalogFile(), root);
+            Utility.getObjectMapper().writeValue(Config.getCatalogFile(), root);
         } catch (IOException e) {
             log.error("CreateIndexAction -> Write value (mapper) failed");
             throw new RuntimeException(e);
         }
     }
 
-    private static JsonNode findDatabaseNode(String databaseName) {
+    public static JsonNode findDatabaseNode(String databaseName) {
         // Check if database exists
         ArrayNode databasesArray = (ArrayNode) getRoot().get(Config.getDbCatalogRoot());
         for (final JsonNode databaseNode : databasesArray) {
@@ -83,7 +75,7 @@ public class CatalogManager {
         // find the databases table nodes
         ArrayNode databaseTables = (ArrayNode) databaseNode.get("database").get("tables");
 
-        // check if given tablename was found
+        // check if given table name was found
         for (final JsonNode tableNode : databaseTables) {
             if (tableNode.get("table").get("tableName").asText().equals(tableName)) {
                 return tableNode.get("table");
@@ -153,89 +145,7 @@ public class CatalogManager {
         }
         return null;
     }
-
-    private static ArrayDeque<Integer> deletedRecordLinesQueue(String databaseName, String tableName) {
-        // Find table JSON node
-        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
-        if(tableNode == null) {
-            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
-            throw new RuntimeException();
-        }
-
-        // Build up the deque
-        ArrayDeque<Integer> recordLines = new ArrayDeque<>();
-        for(JsonNode recordLineNode : tableNode.get("deletedRecordLines")) {
-            recordLines.add(recordLineNode.asInt());
-        }
-        return recordLines;
-    }
-
-    private static void updateDeletedRecordLinesQueue(String databaseName, String tableName, ArrayDeque<Integer> queue) {
-        // Find table JSON node
-        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
-        if(tableNode == null) {
-            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
-            throw new RuntimeException();
-        }
-
-        // Update node and update catalog
-        ArrayNode newDeletedRecordLinesArray = mapper.valueToTree(queue);
-        ((ObjectNode) tableNode).set("deletedRecordLines", newDeletedRecordLinesArray);
-        CatalogManager.updateCatalog();     // Write root to catalog
-    }
     /* ----------------------------------------------- / Utility -----------------------------------------------------*/
-
-    /* ----------------------------------------- Deleted Record Lines ----------------------------------------------- */
-    public static Integer deletedRecordLinesPop(String databaseName, String tableName) throws DeletedRecordLinesEmpty {
-        ArrayDeque<Integer> deletedRecordLines = CatalogManager.deletedRecordLinesQueue(databaseName, tableName);
-        if(deletedRecordLines.isEmpty()) {
-            throw new DeletedRecordLinesEmpty();
-        }
-
-        // Remove first element
-        Integer first = deletedRecordLines.removeFirst();
-
-        // Update catalog with new deque
-        CatalogManager.updateDeletedRecordLinesQueue(databaseName, tableName, deletedRecordLines);
-        return first;
-    }
-
-    public static List<Integer> deletedRecordLinesPopN(String databaseName, String tableName, int n) {
-        // Returned value
-        List<Integer> recordLines = new ArrayList<>();
-
-        // Get current list
-        ArrayDeque<Integer> deletedRecordLines = CatalogManager.deletedRecordLinesQueue(databaseName, tableName);
-
-        // Try to add 'n' items
-        for(int i = 0; i < n; ++i) {
-            if(deletedRecordLines.isEmpty()) break;
-
-            // If not empty pop first element and add it to list
-            recordLines.add(deletedRecordLines.removeFirst());
-        }
-
-        // Update catalog with new deque
-        CatalogManager.updateDeletedRecordLinesQueue(databaseName, tableName, deletedRecordLines);
-        return recordLines;
-    }
-
-    public static void deletedRecordLinesEnqueue(String databaseName, String tableName, Integer recordLine) {
-        ArrayDeque<Integer> deletedRecordLines = CatalogManager.deletedRecordLinesQueue(databaseName, tableName);
-        deletedRecordLines.add(recordLine);
-
-        // Update catalog with new deque
-        CatalogManager.updateDeletedRecordLinesQueue(databaseName, tableName, deletedRecordLines);
-    }
-
-    public static void deletedRecordLinesEnqueueN(String databaseName, String tableName, List<Integer> recordLines) {
-        ArrayDeque<Integer> deletedRecordLines = CatalogManager.deletedRecordLinesQueue(databaseName, tableName);
-        deletedRecordLines.addAll(recordLines);
-
-        // Update catalog with new deque
-        CatalogManager.updateDeletedRecordLinesQueue(databaseName, tableName, deletedRecordLines);
-    }
-    /* ---------------------------------------- / Deleted Record Lines ---------------------------------------------- */
 
 
     /* ------------------------------------------------ Getters ----------------------------------------------------- */
@@ -251,16 +161,6 @@ public class CatalogManager {
 
         return flattened.toString();
     }
-
-    /* --------------------- Paths ------------------- */
-    public static String getTableDataPath(String databaseName, String tableName) {
-        return Config.getDbRecordsPath() + File.separator + databaseName + File.separator + tableName + File.separator + tableName + ".data.bin";
-    }
-
-    public static String getTableIndexFilePath(String databaseName, String tableName, String indexName) {
-        return Config.getDbRecordsPath() + File.separator + databaseName + File.separator + tableName + File.separator + getIndexFileName(tableName, indexName);
-    }
-    /* -------------------- / Paths ------------------ */
 
     /* -------------------- Fields ------------------- */
     public static List<String> getFieldNames(String databaseName, String tableName) {
@@ -497,6 +397,30 @@ public class CatalogManager {
     /* ---------------- / Field types ---------------- */
 
     /* ------------------- Indexes ------------------- */
+    public static List<IndexFileModel> getIndexFiles(String databaseName, String tableName) {
+        List<IndexFileModel> indexFiles = new ArrayList<>();
+
+        // Find table JSON node
+        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+            throw new RuntimeException();
+        }
+
+        // Iterate over index files
+        for(final JsonNode indexFileNode : tableNode.get("indexFiles")) {
+            try {
+                IndexFileModel indexFile = Utility.getObjectMapper().readValue(indexFileNode.get("indexFile").toString(), new TypeReference<>() {});
+                indexFiles.add(indexFile);
+            } catch (JsonProcessingException e) {
+                log.error("Could not read foreignKeys JSON to objects!");
+                throw new RuntimeException(e);
+            }
+        }
+
+        return indexFiles;
+    }
+
     public static List<String> getIndexFileNames(String databaseName, String tableName) {
         ArrayList<String> fileNames = new ArrayList<>();
 
@@ -623,11 +547,11 @@ public class CatalogManager {
     }
     /* ------------------ / Indexes ------------------ */
 
-    public static List<String> getCurrentDatabaseTableNames() {
+    public static List<String> getCurrentDatabaseTableNames(String databaseName) {
         List<String> tableNames = new ArrayList<>();
 
         // get the current database node
-        JsonNode currentDatabaseNode = findDatabaseNode(ServerController.getCurrentDatabaseName());
+        JsonNode currentDatabaseNode = findDatabaseNode(databaseName);
         if(currentDatabaseNode == null) {
             log.error("Database JSON node not found!");
             throw new RuntimeException();
@@ -648,7 +572,7 @@ public class CatalogManager {
         List<String> databaseNames = new ArrayList<>();
 
         // find the databases json array node
-        ArrayNode databasesArray = (ArrayNode) getRoot().get(Config.getDbCatalogRoot());
+        ArrayNode databasesArray = (ArrayNode) getRoot().get("databases");
         for (final JsonNode databaseNode : databasesArray) {
             // For each "Database" node find the name of the database
             String databaseName = databaseNode.get("database").get("databaseName").asText();
