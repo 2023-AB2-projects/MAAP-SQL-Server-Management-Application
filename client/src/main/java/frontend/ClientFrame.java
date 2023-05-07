@@ -3,9 +3,6 @@ package frontend;
 import control.ClientController;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-
-
 @Slf4j
 public class ClientFrame extends javax.swing.JFrame {
     // References
@@ -57,8 +54,6 @@ public class ClientFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /* Setters */
-    public void updateDatabaseNamesTree(ArrayList<String> databaseNames) { this.objectExplorerPanel1.updateDatabases(databaseNames); }
-
     public void setInputTextAreaString(String string) { this.centerClientPanel1.setInputTextAreaString(string); }
 
     public void setOutputAreaString(String string) { this.centerClientPanel1.setOutputAreaString(string); }

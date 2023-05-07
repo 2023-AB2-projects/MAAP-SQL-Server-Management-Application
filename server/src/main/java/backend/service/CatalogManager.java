@@ -337,6 +337,32 @@ public class CatalogManager {
         return fields;
     }
 
+    public static List<String> getUniqueFieldTypes(String databaseName, String tableName) {
+        List<String> fields = new ArrayList<>();
+
+        // find the tableNode
+        JsonNode tableNode = findTableNode(databaseName, tableName);
+
+        ArrayNode uniqueFieldsArrayNode = (ArrayNode) tableNode.get("uniqueFields");
+        for (final JsonNode field : uniqueFieldsArrayNode) {
+            fields.add(field.asText());
+        }
+
+        // Find their types
+        List<String> types = new ArrayList<>();
+        ArrayNode fieldsArrayNode = (ArrayNode) tableNode.get("fields");
+        for (final String fieldName : fields) {
+            for (final JsonNode field : fieldsArrayNode) {
+                if (field.get("fieldName").asText().equals(fieldName)) {
+                    types.add(field.get("type").asText());
+                    break;
+                }
+            }
+        }
+
+        return types;
+    }
+
     public static List<Integer> getUniqueFieldIndexes(String databaseName, String tableName){
         List<String> fieldNames = getFieldNames(databaseName, tableName);
         List<String> uniqueFieldNames = getUniqueFieldNames(databaseName, tableName);
