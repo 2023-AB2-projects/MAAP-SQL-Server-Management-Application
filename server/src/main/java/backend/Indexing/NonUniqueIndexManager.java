@@ -2,6 +2,7 @@ package backend.Indexing;
 
 import backend.exceptions.recordHandlingExceptions.KeyAlreadyInTreeException;
 import backend.exceptions.recordHandlingExceptions.KeyNotFoundException;
+import backend.exceptions.recordHandlingExceptions.UndefinedQueryException;
 import backend.recordHandling.RecordReader;
 import backend.recordHandling.TypeConverter;
 import backend.service.CatalogManager;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -50,6 +52,30 @@ public class NonUniqueIndexManager {
 //        Key key = TypeConverter.toKey(keyStructure, values);
 //        return null;
 //    }
+
+    public HashMap<Integer, Object> rangeQuery(Object lowerBound, Object upperBound, boolean allowEqualityLower, boolean allowEqualityUpper) throws UndefinedQueryException {
+        HashMap<Integer, Object> result = new HashMap<>();
+        if(keyStructure.size() != 2){
+            throw new UndefinedQueryException();
+        }
+        return result;
+    }
+
+    public HashMap<Integer, Object> lesserQuery(Object upperBound, boolean allowEquality) throws UndefinedQueryException {
+        HashMap<Integer, Object> result = new HashMap<>();
+        if(keyStructure.size() != 2){
+            throw new UndefinedQueryException();
+        }
+        return result;
+    }
+
+    public HashMap<Integer, Object> greaterQuery(Object lowerBound, boolean allowEquality) throws UndefinedQueryException {
+        HashMap<Integer, Object> result = new HashMap<>();
+        if(keyStructure.size() != 2){
+            throw new UndefinedQueryException();
+        }
+        return result;
+    }
 
     public void insert(ArrayList<String> values, Integer pointer) throws IOException, KeyAlreadyInTreeException {
         values.add(pointer.toString());

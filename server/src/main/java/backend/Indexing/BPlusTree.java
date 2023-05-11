@@ -7,12 +7,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.Stack;
 
 @Slf4j
 public class BPlusTree {
-    private IndexFileHandler io;
-    private ArrayList<String> keyStructure;
+    private final IndexFileHandler io;
+    private final ArrayList<String> keyStructure;
 
     public BPlusTree(ArrayList<String> keyStructure, String fileLocation) throws IOException {
         io = new IndexFileHandler(keyStructure, fileLocation);
@@ -32,6 +34,40 @@ public class BPlusTree {
             node = io.readTreeNode(node.findNextNode(key));
         }
         return node.getValueOfKey(key);
+    }
+
+    public HashMap<Integer, Object> rangeQuery(Key lowerBound, Key upperBound, Integer lowerCompareValue, Integer upperCompareValue) throws IOException {
+        HashMap<Integer, Object> result = new HashMap<>();
+        TreeNode node = io.readRoot();
+        while(!node.isLeaf()){
+            node = io.readTreeNode(node.findNextNode(lowerBound));
+        }
+        boolean cond = true;
+        while (cond){
+            ArrayList<Key> keys = node.getKeys();
+            for(int i = 0; i < keys.size() && cond; i++){
+                Key key = keys.get(i);
+                if(lowerBound.compareTo(key) < lowerCompareValue){
+                    if(key.compareTo(upperBound) >= upperCompareValue){
+                        cond = false;
+                    }else{
+                        try{
+                            result.put(node.getValueOfKey(key), key.getKey().get(0));
+                        }catch (KeyNotFoundException ignored) {}
+                    }
+                }
+            }
+
+            //yes this does remove the last pointer from the node, however the node is only in the memory and is not rewritten to disk, therefore it should not cause a problem
+            Integer pointer = node.popBackPointerFromNode();
+            if(nullPointer(pointer)){
+                cond = false;
+            }else{
+                node = io.readTreeNode(pointer);
+            }
+        }
+
+        return result;
     }
 
     public void insert(Key key, int pointer) throws IOException, KeyAlreadyInTreeException {

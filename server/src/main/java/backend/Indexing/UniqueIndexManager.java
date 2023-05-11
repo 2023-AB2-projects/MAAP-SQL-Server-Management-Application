@@ -2,14 +2,14 @@ package backend.Indexing;
 
 import backend.exceptions.recordHandlingExceptions.KeyAlreadyInTreeException;
 import backend.exceptions.recordHandlingExceptions.KeyNotFoundException;
+import backend.exceptions.recordHandlingExceptions.UndefinedQueryException;
 import backend.recordHandling.RecordReader;
 import backend.recordHandling.TypeConverter;
 import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 public class UniqueIndexManager {
@@ -47,6 +47,50 @@ public class UniqueIndexManager {
     public Integer findLocation(ArrayList<String> values) throws IOException, KeyNotFoundException {
         Key key = TypeConverter.toKey(keyStructure, values);
         return bPlusTree.find(key);
+    }
+
+    public HashMap<Integer, Object> rangeQuery(Object lowerBound, Object upperBound, boolean allowEqualityLower, boolean allowEqualityUpper) throws UndefinedQueryException, IOException {
+        if(keyStructure.size() != 1){
+            throw new UndefinedQueryException();
+        }
+        ArrayList<Object> lowerObjectList = new ArrayList<>(), upperObjectList = new ArrayList<>();
+        lowerObjectList.add(lowerBound);
+        upperObjectList.add(upperBound);
+        Key lowerKey = new Key(lowerObjectList, keyStructure);
+        Key upperKey = new Key(upperObjectList, keyStructure);
+
+        int lowerCompareValue, upperCompareValue;
+        if(allowEqualityLower){
+            lowerCompareValue = 1;
+        } else {
+            lowerCompareValue = 0;
+        }
+
+        if(allowEqualityUpper){
+            upperCompareValue = 1;
+        } else {
+            upperCompareValue = 0;
+        }
+
+        return bPlusTree.rangeQuery(lowerKey, upperKey, lowerCompareValue, upperCompareValue);
+    }
+
+    public HashMap<Integer, Object> lesserQuery(Object upperBound, boolean allowEquality) throws UndefinedQueryException {
+        HashMap<Integer, Object> result = new HashMap<>();
+        if(keyStructure.size() != 1){
+            throw new UndefinedQueryException();
+        }
+
+
+        return result;
+    }
+
+    public HashMap<Integer, Object> greaterQuery(Object lowerBound, boolean allowEquality) throws UndefinedQueryException {
+        HashMap<Integer, Object> result = new HashMap<>();
+        if(keyStructure.size() != 1){
+            throw new UndefinedQueryException();
+        }
+        return result;
     }
 
     public void insert(ArrayList<String> values, Integer pointer) throws IOException, KeyAlreadyInTreeException {

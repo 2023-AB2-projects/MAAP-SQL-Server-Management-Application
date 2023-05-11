@@ -2,10 +2,7 @@ package backend.recordHandling;
 
 import backend.Indexing.*;
 import backend.config.Config;
-import backend.exceptions.recordHandlingExceptions.InvalidReadException;
-import backend.exceptions.recordHandlingExceptions.KeyAlreadyInTreeException;
-import backend.exceptions.recordHandlingExceptions.KeyNotFoundException;
-import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
+import backend.exceptions.recordHandlingExceptions.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -135,16 +132,23 @@ public class test {
         pointers.add(1);
         pointers.add(2);
         System.out.println(io.scanLines(pointers));
-
     }
-    public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException {
+
+    public static void rangeQueryTest() throws UndefinedQueryException, IOException {
+        UniqueIndexManager manager = new UniqueIndexManager("master", "scan2", "id");
+        System.out.println(manager.rangeQuery(1,3, true, true));
+        System.out.println(manager.rangeQuery(1,3, false, true));
+        System.out.println(manager.rangeQuery(1,3, true, false));
+        System.out.println(manager.rangeQuery(-100,300, false, false));
+    }
+    public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
         types = new ArrayList<>();
         types.add("int");
         //TreeNodeTest();
         //BtreeDeleteTest();
         //testUniqueIndexManager();
-        scanTest();
-
+        //scanTest();
+        rangeQueryTest();
     }
 }
