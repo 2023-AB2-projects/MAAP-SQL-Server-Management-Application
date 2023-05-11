@@ -12,11 +12,9 @@ import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 @Slf4j
@@ -131,10 +129,17 @@ public class test {
 
     public static void scanTest() throws IOException, InvalidReadException {
         RecordReader io = new RecordReader("master", "scan");
+        ArrayList<String> columns = new ArrayList<>();
+        columns.add("id");
+        columns.add("nev");
+        System.out.println(io.scan(columns));
+
         ArrayList<Integer> pointers = new ArrayList<>();
         pointers.add(1);
         pointers.add(2);
-        System.out.println(io.scan(pointers));
+        System.out.println(io.scanLines(pointers));
+
+        System.out.println(io.scanLines(pointers, columns));
     }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};

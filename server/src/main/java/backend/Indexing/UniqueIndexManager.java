@@ -2,6 +2,7 @@ package backend.Indexing;
 
 import backend.exceptions.recordHandlingExceptions.KeyAlreadyInTreeException;
 import backend.exceptions.recordHandlingExceptions.KeyNotFoundException;
+import backend.recordHandling.RecordReader;
 import backend.recordHandling.TypeConverter;
 import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
@@ -72,14 +73,19 @@ public class UniqueIndexManager {
          emptyTree.createEmptyTree();
     }
 
-    public static void createIndex() {
-        // keyStruct = CatalogManager.getIndexStructure(databaseName, tableName, indexName);
-        // String filename = CatalogManager.getIndexFileName(databaseName, tableName, indexName);
+    public static void createIndex(String databaseName, String tableName, String indexName) throws IOException {
+        List<String> keyStruct = CatalogManager.getIndexFieldTypes(databaseName, tableName, indexName);
+        List<String> keyColumnNames = CatalogManager.getIndexFieldNames(databaseName, tableName, indexName);
 
-        // String filename = Config.getDbRecordsPath() + File.separator + "test.index.bin";
-        // BPlusTree emptyTree = new BPlusTree(keyStruct, filename);
-        // emptyTree.createEmptyTree();
+        String filename = CatalogManager.getTableIndexFilePath(databaseName, tableName, indexName);
 
-        //read lines and insert
+        BPlusTree tree = new BPlusTree((ArrayList<String>) keyStruct, filename);
+        tree.createEmptyTree();
+
+        RecordReader reader = new RecordReader(databaseName, tableName);
+
+        ArrayList<ArrayList<Object>> table = reader.scan((ArrayList<String>) keyColumnNames);
+
+
     }
 }
