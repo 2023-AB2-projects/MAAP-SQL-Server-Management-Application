@@ -12,6 +12,7 @@ import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -127,52 +128,22 @@ public class test {
 
         manager.close();
     }
-    public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException {
+
+    public static void scanTest() throws IOException, InvalidReadException {
+        RecordReader io = new RecordReader("master", "scan");
+        ArrayList<Integer> pointers = new ArrayList<>();
+        pointers.add(1);
+        pointers.add(2);
+        System.out.println(io.scan(pointers));
+    }
+    public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
         types = new ArrayList<>();
         types.add("int");
         //TreeNodeTest();
         //BtreeDeleteTest();
-        testUniqueIndexManager();
-//        types.add("bit");
-//
-//        Key key = new Key(bytes, types);
-//        System.out.println(Arrays.toString(key.toBytes()));
-//
-//        Object a = "asg", b = "asd";
-//        byte b1 = 1, b2 = 1;
-//        System.out.println(ByteConverter.compare("bit", b1, b2));
-
-//        byte[] bytes = {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-//
-//        TreeNode node = new TreeNode(bytes, types);
-
-//        System.out.println(node);
-
-//        IndexFileHandler indexFIleHandler = new IndexFileHandler("asd", "asd", "asd");
-//        indexFIleHandler.writeNode(node, 0);
-//        indexFIleHandler.writeNode(node, 1);
-//
-//        TreeNode node1 = indexFIleHandler.readTreeNode(0);
-//        System.out.println(Arrays.toString(node1.toBytes()));
-
-
-
-
-//        tree.close();
-
-
-//        BPlusTree tree = new BPlusTree("asd", "asd", "asd");
-//        tree.CreateEmptyTree();
-//        tree.close();
-//        IndexFileHandler handler = new IndexFileHandler("asd", "asd", "asd");
-//        System.out.println(handler.popEmptyNodePointer());
-//        System.out.println(handler.getDeletedNodePointer());
-////        System.out.println(handler.readTreeNode(0));
-////        System.out.println(handler.readTreeNode(1));
-////        System.out.println(handler.readTreeNode(2));
-//        handler.close();
-
+        //testUniqueIndexManager();
+        scanTest();
 
     }
 }
