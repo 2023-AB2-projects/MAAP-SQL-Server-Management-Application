@@ -74,18 +74,25 @@ public class UniqueIndexManager {
     }
 
     public static void createIndex(String databaseName, String tableName, String indexName) throws IOException {
-        List<String> keyStruct = CatalogManager.getIndexFieldTypes(databaseName, tableName, indexName);
-        List<String> keyColumnNames = CatalogManager.getIndexFieldNames(databaseName, tableName, indexName);
+        ArrayList<String> keyStruct = (ArrayList<String>) CatalogManager.getIndexFieldTypes(databaseName, tableName, indexName);
+        ArrayList<String> keyColumnNames = (ArrayList<String>) CatalogManager.getIndexFieldNames(databaseName, tableName, indexName);
 
         String filename = CatalogManager.getTableIndexFilePath(databaseName, tableName, indexName);
 
-        BPlusTree tree = new BPlusTree((ArrayList<String>) keyStruct, filename);
+        BPlusTree tree = new BPlusTree(keyStruct, filename);
         tree.createEmptyTree();
 
         RecordReader reader = new RecordReader(databaseName, tableName);
 
-        ArrayList<ArrayList<Object>> table = reader.scan((ArrayList<String>) keyColumnNames);
+        ArrayList<ArrayList<Object>> table = reader.scan(keyColumnNames);
 
+        for(int i = 0; i < table.size(); i++){
+            try{
+                tree.insert(new Key(table.get(i), keyStruct), i);
+            }catch (KeyAlreadyInTreeException ignored){}
+        }
 
+        tree.close();
     }
+
 }

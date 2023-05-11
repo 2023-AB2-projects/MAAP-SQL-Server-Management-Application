@@ -1,9 +1,6 @@
 package backend.recordHandling;
 
-import backend.Indexing.BPlusTree;
-import backend.Indexing.Key;
-import backend.Indexing.TreeNode;
-import backend.Indexing.UniqueIndexManager;
+import backend.Indexing.*;
 import backend.config.Config;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.KeyAlreadyInTreeException;
@@ -139,7 +136,6 @@ public class test {
         pointers.add(2);
         System.out.println(io.scanLines(pointers));
 
-        System.out.println(io.scanLines(pointers, columns));
     }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
