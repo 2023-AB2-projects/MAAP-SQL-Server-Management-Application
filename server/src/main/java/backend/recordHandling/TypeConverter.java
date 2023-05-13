@@ -255,4 +255,47 @@ public class TypeConverter {
             }
         }
     }
+
+    public static Key smallestKey(ArrayList<String> keyStructure){
+        ArrayList<Object> minValues = new ArrayList<>();
+        for (String type : keyStructure) {
+            minValues.add(smallestValue(type));
+        }
+        return new Key(minValues, keyStructure);
+    }
+    public static Object smallestValue(String type) {
+        switch (type) {
+            case "int" -> {
+                return Integer.MIN_VALUE;
+            }
+            case "float" -> {
+                return -Float.MAX_VALUE;
+            }
+            case "char" -> {
+                return Character.MIN_VALUE;
+            }
+            case "bit" -> {
+                return (byte) 0;
+            }
+            default -> {
+                try{
+                    Pattern pattern = Pattern.compile("char\\((\\d+)\\)");
+                    Matcher matcher = pattern.matcher(type);
+                    if (matcher.find()) {
+                        long size = Long.parseLong(matcher.group(1));
+                        StringBuilder minString = new StringBuilder();
+                        for (int i = 0 ; i < size; i++){
+                            minString.append('\0');
+                        }
+                        return minString.toString();
+                    }else{
+                        throw new InvalidTypeException();
+                    }
+                }catch (InvalidTypeException e){
+                    log.error("Invalid type given to comparator");
+                    return 0;
+                }
+            }
+        }
+    }
 }

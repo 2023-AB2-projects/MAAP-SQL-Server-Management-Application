@@ -2,13 +2,14 @@ package backend.Indexing;
 
 import backend.exceptions.recordHandlingExceptions.KeyAlreadyInTreeException;
 import backend.exceptions.recordHandlingExceptions.KeyNotFoundException;
+import backend.exceptions.recordHandlingExceptions.UndefinedQueryException;
+import backend.recordHandling.RecordReader;
 import backend.recordHandling.TypeConverter;
 import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 public class UniqueIndexManager {
@@ -48,6 +49,70 @@ public class UniqueIndexManager {
         return bPlusTree.find(key);
     }
 
+    public HashMap<Integer, Object> rangeQuery(Object lowerBound, Object upperBound, boolean allowEqualityLower, boolean allowEqualityUpper) throws UndefinedQueryException, IOException {
+        if(keyStructure.size() != 1){
+            throw new UndefinedQueryException();
+        }
+        ArrayList<Object> lowerObjectList = new ArrayList<>(), upperObjectList = new ArrayList<>();
+        lowerObjectList.add(lowerBound);
+        upperObjectList.add(upperBound);
+        Key lowerKey = new Key(lowerObjectList, keyStructure);
+        Key upperKey = new Key(upperObjectList, keyStructure);
+
+        int lowerCompareValue, upperCompareValue;
+        if(allowEqualityLower){
+            lowerCompareValue = 1;
+        } else {
+            lowerCompareValue = 0;
+        }
+
+        if(allowEqualityUpper){
+            upperCompareValue = 1;
+        } else {
+            upperCompareValue = 0;
+        }
+
+        return bPlusTree.rangeQuery(lowerKey, upperKey, lowerCompareValue, upperCompareValue);
+    }
+
+    public HashMap<Integer, Object> lesserQuery(Object upperBound, boolean allowEquality) throws UndefinedQueryException, IOException {
+        if(keyStructure.size() != 1){
+            throw new UndefinedQueryException();
+        }
+
+        ArrayList<Object> upperObjectList = new ArrayList<>();
+        upperObjectList.add(upperBound);
+        Key upperKey = new Key(upperObjectList, keyStructure);
+
+        int upperCompareValue;
+        if(allowEquality){
+            upperCompareValue = 1;
+        } else {
+            upperCompareValue = 0;
+        }
+
+        return bPlusTree.rangeQuery(TypeConverter.smallestKey(keyStructure), upperKey, 1, upperCompareValue);
+    }
+
+    public HashMap<Integer, Object> greaterQuery(Object lowerBound, boolean allowEquality) throws UndefinedQueryException, IOException {
+        if(keyStructure.size() != 1){
+            throw new UndefinedQueryException();
+        }
+
+        ArrayList<Object> lowerObjectList = new ArrayList<>();
+        lowerObjectList.add(lowerBound);
+        Key lowerKey = new Key(lowerObjectList, keyStructure);
+
+        int lowerCompareValue;
+        if(allowEquality){
+            lowerCompareValue = 1;
+        } else {
+            lowerCompareValue = 0;
+        }
+
+        return bPlusTree.rangeQuery(lowerKey, lowerKey, lowerCompareValue, 2);
+    }
+
     public void insert(ArrayList<String> values, Integer pointer) throws IOException, KeyAlreadyInTreeException {
         Key key = TypeConverter.toKey(keyStructure, values);
         bPlusTree.insert(key, pointer);
@@ -72,14 +137,26 @@ public class UniqueIndexManager {
          emptyTree.createEmptyTree();
     }
 
-    public static void createIndex() {
-        // keyStruct = CatalogManager.getIndexStructure(databaseName, tableName, indexName);
-        // String filename = CatalogManager.getIndexFileName(databaseName, tableName, indexName);
+    public static void createIndex(String databaseName, String tableName, String indexName) throws IOException {
+        ArrayList<String> keyStruct = (ArrayList<String>) CatalogManager.getIndexFieldTypes(databaseName, tableName, indexName);
+        ArrayList<String> keyColumnNames = (ArrayList<String>) CatalogManager.getIndexFieldNames(databaseName, tableName, indexName);
 
-        // String filename = Config.getDbRecordsPath() + File.separator + "test.index.bin";
-        // BPlusTree emptyTree = new BPlusTree(keyStruct, filename);
-        // emptyTree.createEmptyTree();
+        String filename = CatalogManager.getTableIndexFilePath(databaseName, tableName, indexName);
 
-        //read lines and insert
+        BPlusTree tree = new BPlusTree(keyStruct, filename);
+        tree.createEmptyTree();
+
+        RecordReader reader = new RecordReader(databaseName, tableName);
+
+        ArrayList<ArrayList<Object>> table = reader.scan(keyColumnNames);
+
+        for(int i = 0; i < table.size(); i++){
+            try{
+                tree.insert(new Key(table.get(i), keyStruct), i);
+            }catch (KeyAlreadyInTreeException ignored){}
+        }
+
+        tree.close();
     }
+
 }

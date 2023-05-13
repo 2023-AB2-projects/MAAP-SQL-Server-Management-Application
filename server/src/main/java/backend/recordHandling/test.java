@@ -1,21 +1,14 @@
 package backend.recordHandling;
 
-import backend.Indexing.BPlusTree;
-import backend.Indexing.Key;
-import backend.Indexing.TreeNode;
-import backend.Indexing.UniqueIndexManager;
+import backend.Indexing.*;
 import backend.config.Config;
-import backend.exceptions.recordHandlingExceptions.InvalidReadException;
-import backend.exceptions.recordHandlingExceptions.KeyAlreadyInTreeException;
-import backend.exceptions.recordHandlingExceptions.KeyNotFoundException;
-import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
+import backend.exceptions.recordHandlingExceptions.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 @Slf4j
@@ -127,52 +120,40 @@ public class test {
 
         manager.close();
     }
-    public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException {
+
+    public static void scanTest() throws IOException, InvalidReadException {
+        RecordReader io = new RecordReader("master", "scan");
+        ArrayList<String> columns = new ArrayList<>();
+        columns.add("id");
+        columns.add("nev");
+        System.out.println(io.scan(columns));
+
+        ArrayList<Integer> pointers = new ArrayList<>();
+        pointers.add(1);
+        pointers.add(2);
+        System.out.println(io.scanLines(pointers));
+    }
+
+    public static void rangeQueryTest() throws UndefinedQueryException, IOException {
+        UniqueIndexManager manager = new UniqueIndexManager("master", "scan2", "id");
+        System.out.println(manager.rangeQuery(1,3, true, true));
+        System.out.println(manager.rangeQuery(1,3, false, true));
+        System.out.println(manager.rangeQuery(1,3, true, false));
+        System.out.println(manager.rangeQuery(-100,300, false, false));
+
+        System.out.println(manager.lesserQuery(3, false));
+        System.out.println(manager.greaterQuery(1, true));
+    }
+    public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
         types = new ArrayList<>();
         types.add("int");
         //TreeNodeTest();
         //BtreeDeleteTest();
-        testUniqueIndexManager();
-//        types.add("bit");
-//
-//        Key key = new Key(bytes, types);
-//        System.out.println(Arrays.toString(key.toBytes()));
-//
-//        Object a = "asg", b = "asd";
-//        byte b1 = 1, b2 = 1;
-//        System.out.println(ByteConverter.compare("bit", b1, b2));
+        //testUniqueIndexManager();
+        //scanTest();
+        rangeQueryTest();
 
-//        byte[] bytes = {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-//
-//        TreeNode node = new TreeNode(bytes, types);
-
-//        System.out.println(node);
-
-//        IndexFileHandler indexFIleHandler = new IndexFileHandler("asd", "asd", "asd");
-//        indexFIleHandler.writeNode(node, 0);
-//        indexFIleHandler.writeNode(node, 1);
-//
-//        TreeNode node1 = indexFIleHandler.readTreeNode(0);
-//        System.out.println(Arrays.toString(node1.toBytes()));
-
-
-
-
-//        tree.close();
-
-
-//        BPlusTree tree = new BPlusTree("asd", "asd", "asd");
-//        tree.CreateEmptyTree();
-//        tree.close();
-//        IndexFileHandler handler = new IndexFileHandler("asd", "asd", "asd");
-//        System.out.println(handler.popEmptyNodePointer());
-//        System.out.println(handler.getDeletedNodePointer());
-////        System.out.println(handler.readTreeNode(0));
-////        System.out.println(handler.readTreeNode(1));
-////        System.out.println(handler.readTreeNode(2));
-//        handler.close();
-
-
+        //System.out.println(TypeConverter.smallestValue("char(10)"));
     }
 }
