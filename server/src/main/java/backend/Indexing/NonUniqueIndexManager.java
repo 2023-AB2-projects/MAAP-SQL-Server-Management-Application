@@ -53,28 +53,82 @@ public class NonUniqueIndexManager {
 //        return null;
 //    }
 
-    public HashMap<Integer, Object> rangeQuery(Object lowerBound, Object upperBound, boolean allowEqualityLower, boolean allowEqualityUpper) throws UndefinedQueryException {
+    public HashMap<Integer, Object> rangeQuery(Object lowerBound, Object upperBound, boolean allowEqualityLower, boolean allowEqualityUpper) throws UndefinedQueryException, IOException {
         HashMap<Integer, Object> result = new HashMap<>();
         if(keyStructure.size() != 2){
             throw new UndefinedQueryException();
         }
-        return result;
+
+        int lowerCompareValue, upperCompareValue, lowerPointerValue, upperPointerValue;
+        if(allowEqualityLower){
+            lowerCompareValue = 1;
+            lowerPointerValue = Integer.MIN_VALUE;
+        } else {
+            lowerCompareValue = 0;
+            lowerPointerValue = Integer.MAX_VALUE;
+        }
+
+        if(allowEqualityUpper){
+            upperCompareValue = 1;
+            upperPointerValue = Integer.MAX_VALUE;
+        } else {
+            upperCompareValue = 0;
+            upperPointerValue = Integer.MIN_VALUE;
+        }
+
+        ArrayList<Object> lowerObjectList = new ArrayList<>(), upperObjectList = new ArrayList<>();
+        lowerObjectList.add(lowerBound);
+        lowerObjectList.add(lowerPointerValue);
+        upperObjectList.add(upperBound);
+        upperObjectList.add(upperPointerValue);
+        Key lowerKey = new Key(lowerObjectList, keyStructure);
+        Key upperKey = new Key(upperObjectList, keyStructure);
+
+        return bPlusTree.rangeQuery(lowerKey, upperKey, lowerCompareValue, upperCompareValue);
     }
 
-    public HashMap<Integer, Object> lesserQuery(Object upperBound, boolean allowEquality) throws UndefinedQueryException {
-        HashMap<Integer, Object> result = new HashMap<>();
+    public HashMap<Integer, Object> lesserQuery(Object upperBound, boolean allowEquality) throws UndefinedQueryException, IOException {
         if(keyStructure.size() != 2){
             throw new UndefinedQueryException();
         }
-        return result;
+
+        int upperCompareValue, upperPointerValue;
+
+        if(allowEquality){
+            upperCompareValue = 1;
+            upperPointerValue = Integer.MAX_VALUE;
+        } else {
+            upperCompareValue = 0;
+            upperPointerValue = Integer.MIN_VALUE;
+        }
+
+        ArrayList<Object> upperObjectList = new ArrayList<>();
+        upperObjectList.add(upperBound);
+        upperObjectList.add(upperPointerValue);
+        Key upperKey = new Key(upperObjectList, keyStructure);
+        return bPlusTree.rangeQuery(TypeConverter.smallestKey(keyStructure), upperKey, 0, upperCompareValue);
     }
 
-    public HashMap<Integer, Object> greaterQuery(Object lowerBound, boolean allowEquality) throws UndefinedQueryException {
-        HashMap<Integer, Object> result = new HashMap<>();
+    public HashMap<Integer, Object> greaterQuery(Object lowerBound, boolean allowEquality) throws UndefinedQueryException, IOException {
         if(keyStructure.size() != 2){
             throw new UndefinedQueryException();
         }
-        return result;
+        int lowerCompareValue, lowerPointerValue;
+        if(allowEquality){
+            lowerCompareValue = 1;
+            lowerPointerValue = Integer.MIN_VALUE;
+        } else {
+            lowerCompareValue = 0;
+            lowerPointerValue = Integer.MAX_VALUE;
+        }
+
+
+        ArrayList<Object> lowerObjectList = new ArrayList<>();
+        lowerObjectList.add(lowerBound);
+        lowerObjectList.add(lowerPointerValue);
+        Key lowerKey = new Key(lowerObjectList, keyStructure);
+
+        return bPlusTree.rangeQuery(lowerKey, lowerKey, lowerCompareValue, 2);
     }
 
     public void insert(ArrayList<String> values, Integer pointer) throws IOException, KeyAlreadyInTreeException {
