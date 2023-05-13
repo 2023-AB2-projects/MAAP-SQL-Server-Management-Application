@@ -75,22 +75,33 @@ public class UniqueIndexManager {
         return bPlusTree.rangeQuery(lowerKey, upperKey, lowerCompareValue, upperCompareValue);
     }
 
-    public HashMap<Integer, Object> lesserQuery(Object upperBound, boolean allowEquality) throws UndefinedQueryException {
-        HashMap<Integer, Object> result = new HashMap<>();
+    public HashMap<Integer, Object> lesserQuery(Object upperBound, boolean allowEquality) throws UndefinedQueryException, IOException {
         if(keyStructure.size() != 1){
             throw new UndefinedQueryException();
         }
 
+        ArrayList<Object> upperObjectList = new ArrayList<>();
+        upperObjectList.add(upperBound);
+        Key upperKey = new Key(upperObjectList, keyStructure);
 
-        return result;
+        int upperCompareValue;
+        if(allowEquality){
+            upperCompareValue = 1;
+        } else {
+            upperCompareValue = 0;
+        }
+
+        return bPlusTree.rangeQuery(TypeConverter.smallestKey(keyStructure), upperKey, 1, upperCompareValue);
     }
 
     public HashMap<Integer, Object> greaterQuery(Object lowerBound, boolean allowEquality) throws UndefinedQueryException {
-        HashMap<Integer, Object> result = new HashMap<>();
         if(keyStructure.size() != 1){
             throw new UndefinedQueryException();
         }
-        return result;
+
+
+
+        return null;
     }
 
     public void insert(ArrayList<String> values, Integer pointer) throws IOException, KeyAlreadyInTreeException {

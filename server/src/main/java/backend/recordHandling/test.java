@@ -140,6 +140,8 @@ public class test {
         System.out.println(manager.rangeQuery(1,3, false, true));
         System.out.println(manager.rangeQuery(1,3, true, false));
         System.out.println(manager.rangeQuery(-100,300, false, false));
+
+        System.out.println(manager.lesserQuery(3, false));
     }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
@@ -150,5 +152,7 @@ public class test {
         //testUniqueIndexManager();
         //scanTest();
         rangeQueryTest();
+
+        //System.out.println(TypeConverter.smallestValue("char(10)"));
     }
 }
