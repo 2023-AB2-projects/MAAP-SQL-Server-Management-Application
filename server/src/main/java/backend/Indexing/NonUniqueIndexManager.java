@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 public class NonUniqueIndexManager {
@@ -47,11 +48,15 @@ public class NonUniqueIndexManager {
         }
     }
 
-//    public ArrayList<Integer> findLocations(ArrayList<String> values) throws IOException, KeyNotFoundException {
-//        values.add("0");
-//        Key key = TypeConverter.toKey(keyStructure, values);
-//        return null;
-//    }
+    public Set<Integer> findLocations(ArrayList<String> values) throws IOException, KeyNotFoundException {
+        ArrayList<String> lower = (ArrayList<String>) values.clone();
+        lower.add(String.valueOf(Integer.MIN_VALUE));
+        ArrayList<String> upper = (ArrayList<String>) values.clone();
+        upper.add(String.valueOf(Integer.MAX_VALUE));
+        Key lowerKey = TypeConverter.toKey(keyStructure, lower), upperKey = TypeConverter.toKey(keyStructure, upper);
+        HashMap<Integer, Object> result = bPlusTree.rangeQuery(lowerKey, upperKey, 1, 1);
+        return result.keySet();
+    }
 
     public HashMap<Integer, Object> rangeQuery(Object lowerBound, Object upperBound, boolean allowEqualityLower, boolean allowEqualityUpper) throws UndefinedQueryException, IOException {
         HashMap<Integer, Object> result = new HashMap<>();
