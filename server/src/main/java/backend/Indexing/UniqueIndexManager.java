@@ -94,14 +94,23 @@ public class UniqueIndexManager {
         return bPlusTree.rangeQuery(TypeConverter.smallestKey(keyStructure), upperKey, 1, upperCompareValue);
     }
 
-    public HashMap<Integer, Object> greaterQuery(Object lowerBound, boolean allowEquality) throws UndefinedQueryException {
+    public HashMap<Integer, Object> greaterQuery(Object lowerBound, boolean allowEquality) throws UndefinedQueryException, IOException {
         if(keyStructure.size() != 1){
             throw new UndefinedQueryException();
         }
 
+        ArrayList<Object> lowerObjectList = new ArrayList<>();
+        lowerObjectList.add(lowerBound);
+        Key lowerKey = new Key(lowerObjectList, keyStructure);
 
+        int lowerCompareValue;
+        if(allowEquality){
+            lowerCompareValue = 1;
+        } else {
+            lowerCompareValue = 0;
+        }
 
-        return null;
+        return bPlusTree.rangeQuery(lowerKey, lowerKey, lowerCompareValue, 2);
     }
 
     public void insert(ArrayList<String> values, Integer pointer) throws IOException, KeyAlreadyInTreeException {

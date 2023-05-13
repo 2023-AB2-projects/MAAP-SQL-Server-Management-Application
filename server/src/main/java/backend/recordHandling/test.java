@@ -142,6 +142,7 @@ public class test {
         System.out.println(manager.rangeQuery(-100,300, false, false));
 
         System.out.println(manager.lesserQuery(3, false));
+        System.out.println(manager.greaterQuery(1, true));
     }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
