@@ -108,6 +108,9 @@ public class SelectMainPanel extends javax.swing.JPanel {
         fieldSelectorTable = new javax.swing.JTable();
         commandOutputScrollPanel = new javax.swing.JScrollPane();
         commandOutputTextPane = new javax.swing.JTextPane();
+        generateCodeButton = new javax.swing.JButton();
+        executeButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         tableSelectorsPanel.setLayout(new java.awt.GridLayout(2, 3));
 
@@ -123,40 +126,136 @@ public class SelectMainPanel extends javax.swing.JPanel {
         fieldSelectorTable.setShowGrid(true);
         fieldSelectorScrollPanel.setViewportView(fieldSelectorTable);
 
+        commandOutputTextPane.setEditable(false);
         commandOutputTextPane.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         commandOutputScrollPanel.setViewportView(commandOutputTextPane);
+
+        generateCodeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        generateCodeButton.setText("Generate Code");
+        generateCodeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                generateCodeButtonMousePressed(evt);
+            }
+        });
+
+        executeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        executeButton.setText("Execute");
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel1.setText("Select the fields from each table that you would like to keep!");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(commandOutputScrollPanel)
-                    .addComponent(tableSelectorsPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(fieldSelectorScrollPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 988, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(commandOutputScrollPanel, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(tableSelectorsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(fieldSelectorScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 988, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(executeButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(generateCodeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tableSelectorsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 410, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(fieldSelectorScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(generateCodeButton)
+                        .addComponent(executeButton))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(commandOutputScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+                .addComponent(tableSelectorsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fieldSelectorScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(commandOutputScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void generateCodeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generateCodeButtonMousePressed
+        // Build up SQL command
+        StringBuilder commandBuilder = new StringBuilder("SELECT ");
+
+        // Parse table and find all field names and aliases
+        for(int row = 0; row < this.fieldSelectorTable.getRowCount(); ++row) {
+            // Get field and table name
+            String fieldName = (String) this.fieldSelectorTable.getValueAt(row, 0);
+            String tableName = (String) this.fieldSelectorTable.getValueAt(row, 1);
+            String aliasName = (String) this.fieldSelectorTable.getValueAt(row, 2);
+
+            // If it has alias ad it
+            String tableFieldName = tableName + '.' + fieldName;
+            if (row == 0) {
+                if (aliasName != null) commandBuilder.append(tableFieldName).append(" AS ").append(aliasName);
+                else commandBuilder.append(tableFieldName);
+            } else {
+                if (aliasName != null) commandBuilder.append(", ").append(tableFieldName).append(" AS ").append(aliasName);
+                else commandBuilder.append(", ").append(tableFieldName);
+            }
+        }
+        commandBuilder.append('\n');
+
+        // JOINS
+        for(int row = 0; row < this.fieldSelectorTable.getRowCount(); ++row) {
+            // Get field and table name
+            String fieldName = (String) this.fieldSelectorTable.getValueAt(row, 0);
+            String tableName = (String) this.fieldSelectorTable.getValueAt(row, 1);
+            String aliasName = (String) this.fieldSelectorTable.getValueAt(row, 2);
+
+            // If first row just append it
+            if (row == 0) {
+                commandBuilder.append("FROM ").append(tableName);
+            } else {
+                commandBuilder.append('\n');
+            }
+        }
+
+
+        // Where conditions
+        boolean hasWhere = false;
+        for(int row = 0; row < this.fieldSelectorTable.getRowCount(); ++row) {
+            // Get field and table name
+            String fieldName = (String) this.fieldSelectorTable.getValueAt(row, 0);
+            String condition = (String) this.fieldSelectorTable.getValueAt(row, 3);
+
+            // If it has condition add where
+            if (condition != null) {
+                if (!hasWhere) commandBuilder.append("WHERE ");
+
+                String conditionWithField = '(' + fieldName + ' ' + condition + ')';
+                if (!hasWhere) {
+                    commandBuilder.append(conditionWithField);
+                } else {
+                    // Else add AND
+                    commandBuilder.append(" AND\n").append("      ").append(conditionWithField);
+                }
+                if (!hasWhere) hasWhere = true;
+            }
+        }
+
+
+        // Set command output
+        this.commandOutputTextPane.setText(commandBuilder.toString());
+    }//GEN-LAST:event_generateCodeButtonMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane commandOutputScrollPanel;
     private javax.swing.JTextPane commandOutputTextPane;
+    private javax.swing.JButton executeButton;
     private javax.swing.JScrollPane fieldSelectorScrollPanel;
     private javax.swing.JTable fieldSelectorTable;
+    private javax.swing.JButton generateCodeButton;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel tableSelectorsPanel;
     // End of variables declaration//GEN-END:variables
 }
