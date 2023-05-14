@@ -6,6 +6,8 @@ import service.CatalogManager;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +49,17 @@ public class SelectTablesPanel extends javax.swing.JPanel {
             checkBox.setHorizontalAlignment(JCheckBox.CENTER);
             checkBox.setBorder(new LineBorder(new Color(102, 102, 102), 3));
             checkBox.setBorderPainted(true);
+
+            // Add listener
+            checkBox.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent event) {
+                    JCheckBox checkBox = (JCheckBox) event.getSource();
+                    if (checkBox.isSelected()) {
+                        selectAllTablesBox.setSelected(false);
+                    }
+                }
+            });
 
             // Add to panel and list
             this.tablesPanel.add(checkBox);
@@ -142,7 +155,10 @@ public class SelectTablesPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void selectAllTablesBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_selectAllTablesBoxItemStateChanged
-        // TODO add your handling code here:
+        // If all is selected -> Check off every other one
+        if (this.selectAllTablesBox.isSelected()) {
+            this.checkBoxes.forEach((checkbox) -> checkbox.setSelected(false));
+        }
     }//GEN-LAST:event_selectAllTablesBoxItemStateChanged
 
     private void doneButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_doneButtonMousePressed
