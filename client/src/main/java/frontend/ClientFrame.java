@@ -60,6 +60,9 @@ public class ClientFrame extends javax.swing.JFrame {
 
     public void setCurrentDatabaseName(String databaseName) { this.objectExplorerPanel1.updateCurrentDatabase(databaseName); }
 
+    public void increaseCenterPanelFont() { this.centerClientPanel1.increaseFont(); }
+    public void decreaseCenterPanelFont() { this.centerClientPanel1.decreaseFont(); }
+
     public void update() {
         this.centerClientPanel1.update();
     }

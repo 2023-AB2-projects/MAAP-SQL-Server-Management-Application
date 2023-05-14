@@ -2,6 +2,8 @@ package frontend.center_panel;
 
 import lombok.Setter;
 
+import java.awt.*;
+
 public class CommandInputOutputPanel extends javax.swing.JPanel {
     @Setter
     private CenterClientPanel centerClientPanel;
@@ -83,9 +85,29 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_inputAreaKeyPressed
 
     /* Setters */
-    public void setInputTextAreaString(String string) { this.inputArea.setText(string); }
+    public void setInputTextAreaString(String string) { this.inputArea.setTextSQL(string); }
 
     public void setOutputAreaString(String string) { this.outputArea.setText(string); }
+
+    public void increaseFont() {
+        Font font = this.inputArea.getFont();
+        Font newFont = new Font("Segoe", Font.PLAIN, font.getSize() + 1);
+
+        // Set size
+        this.inputArea.setFont(newFont);
+        this.outputArea.setFont(newFont);
+    }
+
+    public void decreaseFont() {
+        Font font = this.inputArea.getFont();
+        if (font.getSize() > 0) {
+            Font newFont = new Font("Segoe", Font.PLAIN, font.getSize() - 1);
+
+            // Set size
+            this.inputArea.setFont(newFont);
+            this.outputArea.setFont(newFont);
+        }
+    }
 
     /* Getters */
     public String getInputAreaText() { return this.inputArea.getText(); }

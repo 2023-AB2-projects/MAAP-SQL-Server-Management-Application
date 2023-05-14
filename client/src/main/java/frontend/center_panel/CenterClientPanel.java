@@ -72,6 +72,14 @@ public class CenterClientPanel extends javax.swing.JPanel {
     /* Setters */
     public void setInputTextAreaString(String string) {this.commandInputOutputPanel1.setInputTextAreaString(string);}
 
+    public void increaseFont() {
+        this.commandInputOutputPanel1.increaseFont();;
+    }
+
+    public void decreaseFont() {
+        this.commandInputOutputPanel1.decreaseFont();
+    }
+
     public void setOutputAreaString(String string) {
         this.commandInputOutputPanel1.setOutputAreaString(string);
     }
