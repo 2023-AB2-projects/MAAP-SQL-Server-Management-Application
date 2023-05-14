@@ -37,6 +37,9 @@
           <Dimension value="[900, 900]"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="clientTabbedPaneStateChanged"/>
+      </Events>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
@@ -84,6 +87,15 @@
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Visual Delete Designer">
                 <Property name="tabTitle" type="java.lang.String" value="Visual Delete Designer"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+        </Component>
+        <Component class="frontend.visual_designers.VisualSelectDesigner" name="visualSelectDesignerPanel">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Visual Select Designer">
+                <Property name="tabTitle" type="java.lang.String" value="Visual Select Designer"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>

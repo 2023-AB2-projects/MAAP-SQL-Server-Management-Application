@@ -1,7 +1,8 @@
 package frontend.visual_designers.visual_select;
 
+import frontend.visual_designers.VisualSelectDesigner;
+import lombok.Getter;
 import service.CatalogManager;
-import service.ForeignKeyModel;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SelectTablesPanel extends javax.swing.JPanel {
+    @Getter
     private String databaseName;
     private List<String> tableNames;
     private List<JCheckBox> checkBoxes;
@@ -199,7 +201,7 @@ public class SelectTablesPanel extends javax.swing.JPanel {
             // All the tables can be joined if every table has at least one foreign key pointing to tables
             // or a foreign key that is pointing to it
             if (SelectMainPanel.canTablesBeJoined(this.databaseName, selectedTableNames)) {
-                this.visualSelectDesigner.switchToSelectorPanel(selectedTableNames);
+                this.visualSelectDesigner.switchToSelectorPanel(this.databaseName, selectedTableNames);
             } else {
                 String errorMessage = "Tables can't be joined together!";
                 JOptionPane.showMessageDialog(new JFrame(), errorMessage, "Dialog", JOptionPane.ERROR_MESSAGE);

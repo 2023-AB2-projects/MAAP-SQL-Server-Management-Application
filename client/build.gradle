@@ -5,10 +5,8 @@ plugins {
 }
 
 // apply from: '../lint.gradle'
-
 application {
-//    mainClass = "control.ClientController"
-    mainClass = "frontend.visual_designers.visual_select.VisualSelectDesigner"
+    mainClass = "control.ClientController"
 }
 
 repositories {

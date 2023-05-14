@@ -1,19 +1,25 @@
 package frontend.visual_designers.visual_select;
 
+import frontend.center_panel.CenterClientPanel;
+import lombok.extern.slf4j.Slf4j;
 import service.CatalogManager;
 import service.ForeignKeyModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 public class SelectMainPanel extends javax.swing.JPanel {
     private String databaseName;
-    private List<String> tableNames;
     private List<SelectTableFieldsPanel> tableFieldsPanels;
+
+    // References
+    private CenterClientPanel centerClientPanel;
 
     public SelectMainPanel() {
         initComponents();
@@ -39,7 +45,6 @@ public class SelectMainPanel extends javax.swing.JPanel {
     public void update(String databaseName, List<String> tableNames) {
         // Update database name and tables
         this.databaseName = databaseName;
-        this.tableNames = tableNames;
 
         // Empty current list of panels and create new ones
         this.tableFieldsPanels.clear();
@@ -65,7 +70,22 @@ public class SelectMainPanel extends javax.swing.JPanel {
         this.tableSelectorsPanel.repaint();
     }
 
+    public void clear() {
+        // Clear table
+        DefaultTableModel model = (DefaultTableModel) this.fieldSelectorTable.getModel();
+        model.setRowCount(0);
+
+        // Clear output
+        this.commandOutputTextPane.setText("");
+
+        // Clear panels and lists
+        this.tableFieldsPanels.clear();
+        this.tableSelectorsPanel.removeAll();
+    }
+
     /* Setters */
+    public void setCenterClientPanel(CenterClientPanel clientPanel) { this.centerClientPanel = clientPanel; }
+
     public void fieldIsSelected(String tableName, String fieldName) {
         // Add field into table if it doesn't exist yet
         for(int row = 0; row < this.fieldSelectorTable.getRowCount(); ++row) {
@@ -148,6 +168,11 @@ public class SelectMainPanel extends javax.swing.JPanel {
 
         executeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         executeButton.setText("Execute");
+        executeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                executeButtonMousePressed(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel1.setText("Select the fields from each table that you would like to keep!");
@@ -318,8 +343,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
         return messageBuilder.toString();
     }
 
-    private void generateCodeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generateCodeButtonMousePressed
-        // Build up SQL command
+    private String getSQLSelectCommand() throws SQLException {
         StringBuilder commandBuilder = new StringBuilder("SELECT ");
 
         // Parse table and find all field names and aliases
@@ -350,7 +374,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
             if (!SelectMainPanel.canTablesBeJoined(this.databaseName, selectedTables.stream().toList())) {
                 String errorMessage = "Tables can't be joined together!";
                 JOptionPane.showMessageDialog(new JFrame(), errorMessage, "Dialog", JOptionPane.ERROR_MESSAGE);
-                return;
+                throw new SQLException();
             }
 
             commandBuilder.append(this.tableJoinPart(selectedTables.stream().toList()));
@@ -380,10 +404,34 @@ public class SelectMainPanel extends javax.swing.JPanel {
             }
         }
 
+        return commandBuilder.toString();
+    }
 
-        // Set command output
-        this.commandOutputTextPane.setText(commandBuilder.toString());
+    private void generateCodeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generateCodeButtonMousePressed
+        try {
+            String command = this.getSQLSelectCommand();
+
+            // Set command output
+            this.commandOutputTextPane.setText(command);
+        } catch (SQLException e) {
+            log.info("User gave invalid SQL command!");
+        }
+
     }//GEN-LAST:event_generateCodeButtonMousePressed
+
+    private void executeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_executeButtonMousePressed
+        // Get SQL command
+        try {
+            String command = this.getSQLSelectCommand();
+
+            // Set command in SQL execution area
+            this.centerClientPanel.setInputTextAreaString(command);
+            // Switch to that pane
+            this.centerClientPanel.setCurrentPane(0);
+        } catch (SQLException e) {
+            log.info("User gave invalid SQL command! Can't execute!");
+        }
+    }//GEN-LAST:event_executeButtonMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

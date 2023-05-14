@@ -124,6 +124,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Execute"/>
       </Properties>
+      <Events>
+        <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="executeButtonMousePressed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>

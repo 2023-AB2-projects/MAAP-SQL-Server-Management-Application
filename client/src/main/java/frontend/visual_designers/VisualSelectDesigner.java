@@ -1,20 +1,56 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package frontend.visual_designers;
 
-/**
- *
- * @author lorin
- */
-public class VisualSelectDesigner extends javax.swing.JPanel {
+import frontend.center_panel.CenterClientPanel;
 
-    /**
-     * Creates new form VisualQueryDesigner
-     */
+import java.util.List;
+
+public class VisualSelectDesigner extends javax.swing.JPanel {
+    // References
+    private CenterClientPanel clientPanel;
+
     public VisualSelectDesigner() {
         initComponents();
+
+        // Set references
+        this.selectTablesPanel.setVisualSelectDesigner(this);
+
+        // Disable second panel first
+        this.tabbedPanel.setEnabledAt(1, false);
+
+        // Update information
+        this.selectTablesPanel.updateDatabase("master");
+    }
+
+    public void switchToSelectorPanel(String databaseName, List<String> tableNames) {
+        // Enable query designer
+        this.tabbedPanel.setEnabledAt(1, true);
+
+        // Update
+        this.selectMainPanel.update(databaseName, tableNames);
+
+        // Switch
+        this.tabbedPanel.setSelectedIndex(1);
+    }
+
+    /* Setters */
+    public void setCenterClientPanel(CenterClientPanel clientPanel) {
+        this.clientPanel = clientPanel;
+        this.selectMainPanel.setCenterClientPanel(this.clientPanel);
+    }
+
+    public void update(String databaseName) {
+        // Update select tables panel
+        if (!this.selectTablesPanel.getDatabaseName().equals(databaseName)) {
+            // Update table selection
+            this.selectTablesPanel.updateDatabase(databaseName);
+
+            // Set other panel disabled
+            this.tabbedPanel.setEnabledAt(1, false);
+            this.tabbedPanel.setSelectedIndex(0);
+
+            // Clear selector panel
+            this.selectMainPanel.clear();
+        }
     }
 
     /**
@@ -26,19 +62,29 @@ public class VisualSelectDesigner extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        tabbedPanel = new javax.swing.JTabbedPane();
+        selectTablesPanel = new frontend.visual_designers.visual_select.SelectTablesPanel();
+        selectMainPanel = new frontend.visual_designers.visual_select.SelectMainPanel();
+
+        tabbedPanel.addTab("Select Tables", selectTablesPanel);
+        tabbedPanel.addTab("Visual Select Designer", selectMainPanel);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 822, Short.MAX_VALUE)
+            .addComponent(tabbedPanel)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 632, Short.MAX_VALUE)
+            .addComponent(tabbedPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private frontend.visual_designers.visual_select.SelectMainPanel selectMainPanel;
+    private frontend.visual_designers.visual_select.SelectTablesPanel selectTablesPanel;
+    private javax.swing.JTabbedPane tabbedPanel;
     // End of variables declaration//GEN-END:variables
 }
