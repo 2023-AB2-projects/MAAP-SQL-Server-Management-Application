@@ -13,13 +13,22 @@ public class VisualSelectDesigner extends javax.swing.JFrame {
         // Set references
         this.selectTablesPanel.setVisualSelectDesigner(this);
 
+        // Disable second panel first
+        this.tabbedPanel.setEnabledAt(1, false);
+
         // Update information
         this.selectTablesPanel.updateDatabase("master");
     }
 
     public void switchToSelectorPanel(List<String> tableNames) {
-//        this.tabbedPanel.setSelectedIndex(1);
-        System.out.println(tableNames);
+        // Enable query designer
+        this.tabbedPanel.setEnabledAt(1, true);
+
+        // Update
+        this.selectMainPanel.update("master", tableNames);
+
+        // Switch
+        this.tabbedPanel.setSelectedIndex(1);
     }
 
     /**
@@ -33,11 +42,13 @@ public class VisualSelectDesigner extends javax.swing.JFrame {
 
         tabbedPanel = new javax.swing.JTabbedPane();
         selectTablesPanel = new frontend.visual_designers.visual_select.SelectTablesPanel();
+        selectMainPanel = new frontend.visual_designers.visual_select.SelectMainPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         tabbedPanel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tabbedPanel.addTab("Select Tables", selectTablesPanel);
+        tabbedPanel.addTab("Visual Query Design", selectMainPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -75,6 +86,7 @@ public class VisualSelectDesigner extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private frontend.visual_designers.visual_select.SelectMainPanel selectMainPanel;
     private frontend.visual_designers.visual_select.SelectTablesPanel selectTablesPanel;
     private javax.swing.JTabbedPane tabbedPanel;
     // End of variables declaration//GEN-END:variables
