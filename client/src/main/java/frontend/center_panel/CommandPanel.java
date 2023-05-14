@@ -31,6 +31,8 @@ public class CommandPanel extends javax.swing.JPanel {
         horizontalFiller = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         runCommandButton = new javax.swing.JButton();
         useComboBox = new javax.swing.JComboBox<>();
+        minusButton = new javax.swing.JButton();
+        plusButton = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(1000, 42));
 
@@ -93,13 +95,27 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
+        minusButton.setText("-");
+        minusButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                minusButtonMousePressed(evt);
+            }
+        });
+
+        plusButton.setText("+");
+        plusButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                plusButtonMousePressed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(useComboBox, 0, 82, Short.MAX_VALUE)
+                .addComponent(useComboBox, 0, 86, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(selectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
@@ -108,7 +124,11 @@ public class CommandPanel extends javax.swing.JPanel {
                 .addComponent(dropDeleteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(insertUpdateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(306, 306, 306)
+                .addGap(236, 236, 236)
+                .addComponent(minusButton, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(plusButton, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(horizontalFiller, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addComponent(runCommandButton))
@@ -133,7 +153,10 @@ public class CommandPanel extends javax.swing.JPanel {
                         .addComponent(horizontalFiller, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
-                        .addComponent(runCommandButton)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(runCommandButton)
+                            .addComponent(plusButton)
+                            .addComponent(minusButton))))
                 .addContainerGap(10, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -209,12 +232,22 @@ public class CommandPanel extends javax.swing.JPanel {
         // Ignore this one
     }//GEN-LAST:event_useComboBoxItemStateChanged
 
+    private void plusButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_plusButtonMousePressed
+        this.clientController.increaseCenterPanelFont();
+    }//GEN-LAST:event_plusButtonMousePressed
+
+    private void minusButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minusButtonMousePressed
+        this.clientController.decreaseCenterPanelFont();
+    }//GEN-LAST:event_minusButtonMousePressed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> createAlterComboBox;
     private javax.swing.JComboBox<String> dropDeleteComboBox;
     private javax.swing.Box.Filler horizontalFiller;
     private javax.swing.JComboBox<String> insertUpdateComboBox;
+    private javax.swing.JButton minusButton;
+    private javax.swing.JButton plusButton;
     private javax.swing.JButton runCommandButton;
     private javax.swing.JComboBox<String> selectComboBox;
     private javax.swing.JComboBox<String> useComboBox;

@@ -12,6 +12,7 @@ public class CenterClientPanel extends javax.swing.JPanel {
         this.commandInputOutputPanel1.setCenterClientPanel(this);
         this.visualInsertDesignerPanel.setCenterClientPanel(this);
         this.visualDeleteDesignerPanel.setCenterClientPanel(this);
+        this.visualSelectDesignerPanel.setCenterClientPanel(this);
     }
     
     /**
@@ -29,9 +30,15 @@ public class CenterClientPanel extends javax.swing.JPanel {
         commandInputOutputPanel1 = new frontend.center_panel.CommandInputOutputPanel();
         visualInsertDesignerPanel = new frontend.visual_designers.VisualInsertDesigner();
         visualDeleteDesignerPanel = new frontend.visual_designers.VisualDeleteDesigner();
+        visualSelectDesignerPanel = new frontend.visual_designers.VisualSelectDesigner();
 
         clientTabbedPane.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         clientTabbedPane.setMinimumSize(new java.awt.Dimension(900, 900));
+        clientTabbedPane.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                clientTabbedPaneStateChanged(evt);
+            }
+        });
 
         sqlCommandExecutionPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         sqlCommandExecutionPanel.setTopComponent(commandPanel1);
@@ -40,12 +47,13 @@ public class CenterClientPanel extends javax.swing.JPanel {
         clientTabbedPane.addTab("SQL Command Execution", sqlCommandExecutionPanel);
         clientTabbedPane.addTab("Visual Insert Designer", visualInsertDesignerPanel);
         clientTabbedPane.addTab("Visual Delete Designer", visualDeleteDesignerPanel);
+        clientTabbedPane.addTab("Visual Select Designer", visualSelectDesignerPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(clientTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1004, Short.MAX_VALUE)
+            .addComponent(clientTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1001, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -53,9 +61,24 @@ public class CenterClientPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void clientTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_clientTabbedPaneStateChanged
+        // If we are switching to the 'Select Query tab'
+        if (this.clientTabbedPane.getSelectedIndex() == 3) {
+            this.visualSelectDesignerPanel.update(this.clientController.getCurrentDatabaseName());
+        }
+    }//GEN-LAST:event_clientTabbedPaneStateChanged
+
 
     /* Setters */
     public void setInputTextAreaString(String string) {this.commandInputOutputPanel1.setInputTextAreaString(string);}
+
+    public void increaseFont() {
+        this.commandInputOutputPanel1.increaseFont();;
+    }
+
+    public void decreaseFont() {
+        this.commandInputOutputPanel1.decreaseFont();
+    }
 
     public void setOutputAreaString(String string) {
         this.commandInputOutputPanel1.setOutputAreaString(string);
@@ -94,5 +117,6 @@ public class CenterClientPanel extends javax.swing.JPanel {
     private javax.swing.JSplitPane sqlCommandExecutionPanel;
     private frontend.visual_designers.VisualDeleteDesigner visualDeleteDesignerPanel;
     private frontend.visual_designers.VisualInsertDesigner visualInsertDesignerPanel;
+    private frontend.visual_designers.VisualSelectDesigner visualSelectDesignerPanel;
     // End of variables declaration//GEN-END:variables
 }

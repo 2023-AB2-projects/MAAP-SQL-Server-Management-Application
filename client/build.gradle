@@ -5,7 +5,6 @@ plugins {
 }
 
 // apply from: '../lint.gradle'
-
 application {
     mainClass = "control.ClientController"
 }

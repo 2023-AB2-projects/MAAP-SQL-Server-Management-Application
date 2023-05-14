@@ -163,6 +163,10 @@ public class ClientController {
     
     public void setOutputAreaString(String string) { this.clientFrame.setOutputAreaString(string); }
 
+    public void increaseCenterPanelFont() { this.clientFrame.increaseCenterPanelFont(); }
+
+    public void decreaseCenterPanelFont() { this.clientFrame.decreaseCenterPanelFont();}
+
     /* Getters */
     public String getInputTextAreaString() { return this.clientFrame.getInputTextAreaString(); }
 
