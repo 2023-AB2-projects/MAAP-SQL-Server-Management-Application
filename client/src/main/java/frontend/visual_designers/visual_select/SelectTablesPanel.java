@@ -1,6 +1,5 @@
 package frontend.visual_designers.visual_select;
 
-import lombok.Setter;
 import service.CatalogManager;
 
 import javax.swing.*;
@@ -88,6 +87,7 @@ public class SelectTablesPanel extends javax.swing.JPanel {
         doneButton = new javax.swing.JButton();
         tablesPanel = new javax.swing.JPanel();
         selectAllTablesBox = new javax.swing.JCheckBox();
+        jLabel1 = new javax.swing.JLabel();
 
         setMinimumSize(new java.awt.Dimension(1000, 850));
 
@@ -99,6 +99,7 @@ public class SelectTablesPanel extends javax.swing.JPanel {
 
         doneButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         doneButton.setText("Done");
+        doneButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         doneButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 doneButtonMousePressed(evt);
@@ -111,6 +112,7 @@ public class SelectTablesPanel extends javax.swing.JPanel {
         });
 
         tablesPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        tablesPanel.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         tablesPanel.setLayout(new java.awt.GridLayout(6, 2));
 
         selectAllTablesBox.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -127,6 +129,12 @@ public class SelectTablesPanel extends javax.swing.JPanel {
         });
         tablesPanel.add(selectAllTablesBox);
 
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("List of tables in current database:");
+        jLabel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -134,6 +142,7 @@ public class SelectTablesPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(tablesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(explainerScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 838, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -148,8 +157,10 @@ public class SelectTablesPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(explainerScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 122, Short.MAX_VALUE)
                     .addComponent(doneButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tablesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 710, Short.MAX_VALUE)
+                .addGap(12, 12, 12)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(tablesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 658, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -192,6 +203,7 @@ public class SelectTablesPanel extends javax.swing.JPanel {
     private javax.swing.JButton doneButton;
     private javax.swing.JScrollPane explainerScrollPanel;
     private javax.swing.JTextArea explainerTextArea;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JCheckBox selectAllTablesBox;
     private javax.swing.JPanel tablesPanel;
     // End of variables declaration//GEN-END:variables

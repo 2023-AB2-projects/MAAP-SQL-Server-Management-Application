@@ -19,6 +19,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
     public void update(String databaseName, List<String> tableNames) {
         // Empty current list of panels and create new ones
         this.tableFieldsPanels.clear();
+        this.tableSelectorsPanel.removeAll();
 
         // Create new panels
         int count = 0;

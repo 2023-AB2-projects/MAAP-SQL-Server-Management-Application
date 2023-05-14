@@ -142,9 +142,7 @@ public class SelectTableFieldsPanel extends javax.swing.JPanel {
     private void selectedAllBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_selectedAllBoxItemStateChanged
         // If all is selected then check of every other
         if (this.selectedAllBox.isSelected()) {
-            for (final JCheckBox checkBox : this.fieldCheckBoxes) {
-                checkBox.setSelected(false);
-            }
+            this.fieldCheckBoxes.forEach((checkbox) -> checkbox.setSelected(false));
         }
     }//GEN-LAST:event_selectedAllBoxItemStateChanged
 
