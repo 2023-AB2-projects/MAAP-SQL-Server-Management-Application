@@ -2,12 +2,18 @@ package frontend.visual_designers.visual_select;
 
 import service.CatalogManager;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SelectTableFieldsPanel extends javax.swing.JPanel {
     private final String databaseName, tableName;
     private final List<String> tableFieldsNames;
+    // Checkboxes for each field
+    private List<JCheckBox> fieldCheckBoxes;
 
     public SelectTableFieldsPanel(String databaseName, String tableName) {
         // Table and database names
@@ -19,12 +25,61 @@ public class SelectTableFieldsPanel extends javax.swing.JPanel {
 
         initComponents();
 
+        // Set table label name
+        this.tableNameLabel.setText(tableName);
+
+        // Init variables used
+        this.initVariables();
+
         // Initialize selectors
         this.initSelectors();
     }
 
-    private void initSelectors() {
+    private void initVariables() {
+        this.fieldCheckBoxes = new ArrayList<>();
+    }
 
+    private void initSelectors() {
+        // Add a selector for each field
+        Font font = new Font("Segoe UI", Font.PLAIN,  14);
+        for (final String fieldName : this.tableFieldsNames) {
+            JCheckBox checkBox = new JCheckBox(fieldName);
+            checkBox.setFont(font);
+
+            // Add action listeners to each
+            checkBox.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent event) {
+                    JCheckBox checkbox = (JCheckBox) event.getSource();
+                    if (checkbox.isSelected()) {
+                        selectedAllBox.setSelected(false);
+                    }
+                }
+            });
+
+            // Add to list and panel
+            this.fieldCheckBoxes.add(checkBox);
+            this.selectorPanel.add(checkBox);
+        }
+    }
+
+    /* Getters */
+    public List<String> getSelectedFields() {
+        // Check if all are selected
+        if (this.selectedAllBox.isSelected()) {
+            return this.tableFieldsNames;       // Return full list of field names
+        }
+
+        // Iterate over each check box and see if they are selected
+        List<String> selectedFieldNames = new ArrayList<>();
+        int ind = 0;
+        for (final JCheckBox checkBox : this.fieldCheckBoxes) {
+            // Add to list if is selected
+            if (checkBox.isSelected()) selectedFieldNames.add(this.tableFieldsNames.get(ind));
+            ind++;
+        }
+
+        return selectedFieldNames;
     }
 
     /**
@@ -38,7 +93,7 @@ public class SelectTableFieldsPanel extends javax.swing.JPanel {
 
         tableNameLabel = new javax.swing.JLabel();
         selectorPanel = new javax.swing.JPanel();
-        selectAllBox = new javax.swing.JCheckBox();
+        selectedAllBox = new javax.swing.JCheckBox();
 
         setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -51,9 +106,14 @@ public class SelectTableFieldsPanel extends javax.swing.JPanel {
 
         selectorPanel.setLayout(new java.awt.GridLayout(6, 2));
 
-        selectAllBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        selectAllBox.setText("* (All Fields)");
-        selectorPanel.add(selectAllBox);
+        selectedAllBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        selectedAllBox.setText("* (All Fields)");
+        selectedAllBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                selectedAllBoxItemStateChanged(evt);
+            }
+        });
+        selectorPanel.add(selectedAllBox);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -79,9 +139,18 @@ public class SelectTableFieldsPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void selectedAllBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_selectedAllBoxItemStateChanged
+        // If all is selected then check of every other
+        if (this.selectedAllBox.isSelected()) {
+            for (final JCheckBox checkBox : this.fieldCheckBoxes) {
+                checkBox.setSelected(false);
+            }
+        }
+    }//GEN-LAST:event_selectedAllBoxItemStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox selectAllBox;
+    private javax.swing.JCheckBox selectedAllBox;
     private javax.swing.JPanel selectorPanel;
     private javax.swing.JLabel tableNameLabel;
     // End of variables declaration//GEN-END:variables
