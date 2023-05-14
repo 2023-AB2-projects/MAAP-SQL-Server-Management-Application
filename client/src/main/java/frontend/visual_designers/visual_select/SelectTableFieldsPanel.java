@@ -12,8 +12,12 @@ import java.util.List;
 public class SelectTableFieldsPanel extends javax.swing.JPanel {
     private final String databaseName, tableName;
     private final List<String> tableFieldsNames;
+
     // Checkboxes for each field
     private List<JCheckBox> fieldCheckBoxes;
+
+    // References
+    private SelectMainPanel mainPanel;
 
     public SelectTableFieldsPanel(String databaseName, String tableName) {
         // Table and database names
@@ -41,20 +45,20 @@ public class SelectTableFieldsPanel extends javax.swing.JPanel {
 
     private void initSelectors() {
         // Add a selector for each field
-        Font font = new Font("Segoe UI", Font.PLAIN,  14);
+        Font font = this.selectedAllBox.getFont();
         for (final String fieldName : this.tableFieldsNames) {
             JCheckBox checkBox = new JCheckBox(fieldName);
             checkBox.setFont(font);
 
             // Add action listeners to each
-            checkBox.addItemListener(new ItemListener() {
-                @Override
-                public void itemStateChanged(ItemEvent event) {
-                    JCheckBox checkbox = (JCheckBox) event.getSource();
-                    if (checkbox.isSelected()) {
-                        selectedAllBox.setSelected(false);
-                    }
-                }
+            checkBox.addItemListener(event -> {
+                JCheckBox checkbox = (JCheckBox) event.getSource();
+                // Update selected all box
+                if (checkbox.isSelected()) selectedAllBox.setSelected(false);
+
+                // Try to add to table selection area if it's selected
+                if (checkbox.isSelected()) mainPanel.fieldIsSelected(tableName, checkbox.getText());
+                else mainPanel.fieldIsDeselected(tableName, checkbox.getText());
             });
 
             // Add to list and panel
@@ -62,6 +66,9 @@ public class SelectTableFieldsPanel extends javax.swing.JPanel {
             this.selectorPanel.add(checkBox);
         }
     }
+
+    /* Setters */
+    public void setMainPanel(SelectMainPanel mainPanel) { this.mainPanel = mainPanel; }
 
     /* Getters */
     public List<String> getSelectedFields() {
@@ -143,6 +150,15 @@ public class SelectTableFieldsPanel extends javax.swing.JPanel {
         // If all is selected then check of every other
         if (this.selectedAllBox.isSelected()) {
             this.fieldCheckBoxes.forEach((checkbox) -> checkbox.setSelected(false));
+        }
+
+        // Removed/add data to JTable
+        if (this.selectedAllBox.isSelected()) {
+            // We 'select' each field
+            this.fieldCheckBoxes.forEach((checkbox) -> mainPanel.fieldIsSelected(this.tableName, checkbox.getText()));
+        } else {
+            // We 'deselect' each field
+            this.fieldCheckBoxes.forEach((checkbox) -> mainPanel.fieldIsDeselected(this.tableName, checkbox.getText()));
         }
     }//GEN-LAST:event_selectedAllBoxItemStateChanged
 

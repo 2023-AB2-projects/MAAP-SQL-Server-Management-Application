@@ -1,9 +1,11 @@
 package frontend.visual_designers.visual_select;
 
+import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SelectMainPanel extends javax.swing.JPanel {
+    private String databaseName;
     private List<SelectTableFieldsPanel> tableFieldsPanels;
 
     public SelectMainPanel() {
@@ -14,9 +16,23 @@ public class SelectMainPanel extends javax.swing.JPanel {
 
     private void initVariables() {
         this.tableFieldsPanels = new ArrayList<>();
+
+        // Make first two columns of table not editable
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"Field Name", "Table Name", "Alias", "Condition"}, 0)
+        {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Make first two columns not editable
+                return column != 0 && column != 1;
+            }
+        };
+        this.fieldSelectorTable.setModel(model);
     }
 
     public void update(String databaseName, List<String> tableNames) {
+        // Update database name
+        this.databaseName = databaseName;
+
         // Empty current list of panels and create new ones
         this.tableFieldsPanels.clear();
         this.tableSelectorsPanel.removeAll();
@@ -24,7 +40,9 @@ public class SelectMainPanel extends javax.swing.JPanel {
         // Create new panels
         int count = 0;
         for (final String tableName : tableNames) {
+            // Create panel object and set reference
             SelectTableFieldsPanel panel = new SelectTableFieldsPanel(databaseName, tableName);
+            panel.setMainPanel(this);
 
             // Add to list and panel
             this.tableFieldsPanels.add(panel);
@@ -37,6 +55,43 @@ public class SelectMainPanel extends javax.swing.JPanel {
 
         this.tableSelectorsPanel.revalidate();
         this.tableSelectorsPanel.repaint();
+    }
+
+    /* Setters */
+    public void fieldIsSelected(String tableName, String fieldName) {
+        // Add field into table if it doesn't exist yet
+        for(int row = 0; row < this.fieldSelectorTable.getRowCount(); ++row) {
+            // Get field and table name
+            String currentFieldName = (String) this.fieldSelectorTable.getValueAt(row, 0);
+            String currentTableName = (String) this.fieldSelectorTable.getValueAt(row, 1);
+
+            // Check if it's already in table
+            if (tableName.equals(currentTableName) && fieldName.equals(currentFieldName)) return;
+        }
+
+        // It's not in table yet -> Insert
+        DefaultTableModel tableModel = (DefaultTableModel) this.fieldSelectorTable.getModel();
+        tableModel.addRow(new Object[]{
+                fieldName, tableName
+        });
+    }
+
+    public void fieldIsDeselected(String tableName, String fieldName) {
+        // Get model
+        DefaultTableModel tableModel = (DefaultTableModel) this.fieldSelectorTable.getModel();
+
+        // Remove field in table if it exists
+        for(int row = 0; row < this.fieldSelectorTable.getRowCount(); ++row) {
+            // Get field and table name
+            String currentFieldName = (String) this.fieldSelectorTable.getValueAt(row, 0);
+            String currentTableName = (String) this.fieldSelectorTable.getValueAt(row, 1);
+
+            // Check if its in table
+            if (tableName.equals(currentTableName) && fieldName.equals(currentFieldName)) {
+                tableModel.removeRow(row);
+                return;
+            };
+        }
     }
 
     /**
@@ -59,17 +114,13 @@ public class SelectMainPanel extends javax.swing.JPanel {
         fieldSelectorTable.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         fieldSelectorTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Field Name", "Table", "Alias", "Condition"
             }
         ));
+        fieldSelectorTable.setShowGrid(true);
         fieldSelectorScrollPanel.setViewportView(fieldSelectorTable);
 
         commandOutputTextPane.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
