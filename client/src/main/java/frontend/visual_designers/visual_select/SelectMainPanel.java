@@ -1,11 +1,18 @@
 package frontend.visual_designers.visual_select;
 
+import service.CatalogManager;
+import service.ForeignKeyModel;
+
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SelectMainPanel extends javax.swing.JPanel {
     private String databaseName;
+    private List<String> tableNames;
     private List<SelectTableFieldsPanel> tableFieldsPanels;
 
     public SelectMainPanel() {
@@ -30,8 +37,9 @@ public class SelectMainPanel extends javax.swing.JPanel {
     }
 
     public void update(String databaseName, List<String> tableNames) {
-        // Update database name
+        // Update database name and tables
         this.databaseName = databaseName;
+        this.tableNames = tableNames;
 
         // Empty current list of panels and create new ones
         this.tableFieldsPanels.clear();
@@ -181,16 +189,149 @@ public class SelectMainPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    public static boolean canTablesBeJoined(String databaseName, List<String> tableNames) {
+        // Base case
+        if (tableNames.size() == 1) return true;
+        if (tableNames.size() == 0) return false;
+
+        // Iterate over each table
+        List<String> usedTables = new ArrayList<>();
+        List<String> nonUsedTables = new ArrayList<>(tableNames);
+
+        // Add/remove first item
+        usedTables.add(tableNames.get(0));
+        nonUsedTables.remove(tableNames.get(0));
+
+        for (int i = 1; i < tableNames.size(); ++i) {
+            // Now we need to find a table that we can join with the previous tables
+            // 1. Check if any already used tables referenced non-used tables
+            boolean found = false;
+            for (final String usedTableName : usedTables) {
+                for (final ForeignKeyModel foreignKey : CatalogManager.getForeignKeys(databaseName, usedTableName)) {
+                    String referencedTable = foreignKey.getReferencedTable();
+                    if (nonUsedTables.contains(referencedTable)) {
+                        usedTables.add(referencedTable);
+                        nonUsedTables.remove(referencedTable);
+
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) break;
+            }
+
+            if (found) continue;
+
+            // 2. Check if non-used tables are referencing used tables
+            for (final String tableName : nonUsedTables) {
+                // Now check if we can join it with any other previous table
+                for (final ForeignKeyModel foreignKey : CatalogManager.getForeignKeys(databaseName, tableName)) {
+                    String referencedTable = foreignKey.getReferencedTable();
+                    if (usedTables.contains(referencedTable)) {
+                        usedTables.add(tableName);
+                        nonUsedTables.remove(tableName);
+
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) break;
+            }
+
+            if (found) continue;
+
+            // If we couldn't find a way to join them -> They can't be joined
+            return false;
+        }
+
+        return true;
+    }
+
+    private String tableJoinPart(List<String> tableNames) {
+        // Check if we need to join
+        if (tableNames.size() == 1) return "FROM " + tableNames.get(0);
+
+        // Iterate over each table
+        StringBuilder messageBuilder = new StringBuilder();
+        List<String> usedTables = new ArrayList<>();
+        List<String> nonUsedTables = new ArrayList<>(tableNames);
+        for (String name : tableNames) {
+            // First table will be added directly
+            if (messageBuilder.isEmpty()) {
+                messageBuilder.append("FROM ").append(name);
+
+                // Add to used, remove from unused
+                usedTables.add(name);
+                nonUsedTables.remove(name);
+            } else {
+                // Now we need to find a table that we can join with the previous tables
+                // 1. Check if any already used tables referenced non-used tables
+                boolean found = false;
+                for (final String usedTableName : usedTables) {
+                    for (final ForeignKeyModel foreignKey : CatalogManager.getForeignKeys(this.databaseName, usedTableName)) {
+                        String referencedTable = foreignKey.getReferencedTable();
+                        String referencingField = foreignKey.getReferencingFields().get(0);
+                        String referencedField = foreignKey.getReferencedFields().get(0);
+                        if (nonUsedTables.contains(referencedTable)) {
+                            messageBuilder.append("\n      ").append("INNER JOIN ").append(referencedTable).append(" ON ")
+                                    .append(usedTableName).append('.').append(referencingField).append(" = ")
+                                    .append(referencedTable).append('.').append(referencedField);
+
+                            usedTables.add(referencedTable);
+                            nonUsedTables.remove(referencedTable);
+
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found) break;
+                }
+
+                if (found) continue;
+
+                // 2. Check if non-used tables are referencing used tables
+                for (final String tableName : nonUsedTables) {
+                    // Now check if we can join it with any other previous table
+                    for (final ForeignKeyModel foreignKey : CatalogManager.getForeignKeys(this.databaseName, tableName)) {
+                        String referencedTable = foreignKey.getReferencedTable();
+                        String referencingField = foreignKey.getReferencingFields().get(0);
+                        String referencedField = foreignKey.getReferencedFields().get(0);
+                        if (usedTables.contains(referencedTable)) {
+                            messageBuilder.append("\n      ").append("INNER JOIN ").append(tableName).append(" ON ")
+                                    .append(tableName).append('.').append(referencingField).append(" = ")
+                                    .append(referencedTable).append('.').append(referencedField);
+
+                            usedTables.add(tableName);
+                            nonUsedTables.remove(tableName);
+
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found) break;
+                }
+            }
+        }
+
+        return messageBuilder.toString();
+    }
+
     private void generateCodeButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generateCodeButtonMousePressed
         // Build up SQL command
         StringBuilder commandBuilder = new StringBuilder("SELECT ");
 
         // Parse table and find all field names and aliases
+        Set<String> selectedTables = new HashSet<>();
         for(int row = 0; row < this.fieldSelectorTable.getRowCount(); ++row) {
             // Get field and table name
             String fieldName = (String) this.fieldSelectorTable.getValueAt(row, 0);
             String tableName = (String) this.fieldSelectorTable.getValueAt(row, 1);
             String aliasName = (String) this.fieldSelectorTable.getValueAt(row, 2);
+
+            // Cache selected tables
+            selectedTables.add(tableName);
 
             // If it has alias ad it
             String tableFieldName = tableName + '.' + fieldName;
@@ -205,18 +346,15 @@ public class SelectMainPanel extends javax.swing.JPanel {
         commandBuilder.append('\n');
 
         // JOINS
-        for(int row = 0; row < this.fieldSelectorTable.getRowCount(); ++row) {
-            // Get field and table name
-            String fieldName = (String) this.fieldSelectorTable.getValueAt(row, 0);
-            String tableName = (String) this.fieldSelectorTable.getValueAt(row, 1);
-            String aliasName = (String) this.fieldSelectorTable.getValueAt(row, 2);
-
-            // If first row just append it
-            if (row == 0) {
-                commandBuilder.append("FROM ").append(tableName);
-            } else {
-                commandBuilder.append('\n');
+        if (selectedTables.size() > 0) {
+            if (!SelectMainPanel.canTablesBeJoined(this.databaseName, selectedTables.stream().toList())) {
+                String errorMessage = "Tables can't be joined together!";
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage, "Dialog", JOptionPane.ERROR_MESSAGE);
+                return;
             }
+
+            commandBuilder.append(this.tableJoinPart(selectedTables.stream().toList()));
+            commandBuilder.append('\n');
         }
 
 

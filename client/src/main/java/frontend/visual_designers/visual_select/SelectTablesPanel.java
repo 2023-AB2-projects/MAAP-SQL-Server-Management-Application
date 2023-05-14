@@ -198,37 +198,12 @@ public class SelectTablesPanel extends javax.swing.JPanel {
             // Check if all of them can be joined
             // All the tables can be joined if every table has at least one foreign key pointing to tables
             // or a foreign key that is pointing to it
-            List<Boolean> okTables = new ArrayList<>();
-            selectedTableNames.forEach((table) -> okTables.add(false));
-            int currentIndex = 0;
-            for (final String tableName : selectedTableNames) {
-                for (final ForeignKeyModel foreignKey : CatalogManager.getForeignKeys(this.databaseName, tableName)) {
-                    String referencedTableName = foreignKey.getReferencedTable();
-
-                    // If it contains referenced table name -> These two tables are ok
-                    if (selectedTableNames.contains(referencedTableName)) {
-                        // Find index of other table
-                        int referencedIndex = selectedTableNames.indexOf(referencedTableName);
-
-                        // Set these two ask 'OK'
-                        okTables.set(currentIndex, true);
-                        okTables.set(referencedIndex, true);
-                    }
-                }
-
-                currentIndex++;         // Update index
+            if (SelectMainPanel.canTablesBeJoined(this.databaseName, selectedTableNames)) {
+                this.visualSelectDesigner.switchToSelectorPanel(selectedTableNames);
+            } else {
+                String errorMessage = "Tables can't be joined together!";
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage, "Dialog", JOptionPane.ERROR_MESSAGE);
             }
-
-            for (int i = 0; i < okTables.size(); ++i) {
-                if (!okTables.get(i)) {
-                    // One table is not 'OK'
-                    String errorMessage = "Tables can't be joined together, because table '" + selectedTableNames.get(i) + "' doesn't reference tables in list, or is not referenced by other tables!";
-                    JOptionPane.showMessageDialog(new JFrame(), errorMessage, "Dialog", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-
-            this.visualSelectDesigner.switchToSelectorPanel(selectedTableNames);
         }
     }//GEN-LAST:event_doneButtonMousePressed
 
