@@ -22,16 +22,18 @@ public class SQLTextPane extends JTextPane {
             "select", "from", "where", "group", "order", "by",
             "update", "set",
             "insert", "into", "values",
-            "delete", "from",
-            "(", ")", ",",
+            "delete", "from", "on",
+            "inner", "join",
+            "(", ")",
             "!=", "=", ">=", "<=", ">", "<",
             "foreign", "primary", "key", "unique", "references",
             "CREATE", "DROP", "DATABASE", "TABLE",
             "SELECT", "FROM", "WHERE", "GROUP", "ORDER", "BY",
             "UPDATE", "SET",
             "INSERT", "INTO", "VALUES",
-            "DELETE", "FROM",
-            "FOREIGN", "PRIMARY", "KEY", "UNIQUE", "REFERENCES"
+            "DELETE", "FROM", "ON",
+            "FOREIGN", "PRIMARY", "KEY", "UNIQUE", "REFERENCES",
+            "INNER", "JOIN",
     };
     private final String[] ATTRIBUTE_TYPES = {
             "int", "float", "bit", "date", "datetime", "char",
@@ -54,13 +56,31 @@ public class SQLTextPane extends JTextPane {
     public void setTextSQL(String text) {
         StringTokenizer tokenizer = new StringTokenizer(text, " ");
 
-        while (tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken();
+        String[] tokensPrimitive = text.split("((?<=[ \n])|(?=[ \n]))");
 
-            if (this.keywords.contains(token) || this.types.contains(token)) {
-                StyleConstants.setForeground(style, Color.RED);
-            } else {
-                StyleConstants.setForeground(style, Color.WHITE);
+        for (String token : tokensPrimitive) {
+            boolean colored = false;
+            for (final String keyword : this.keywords) {
+                if(token.contains(keyword)) {
+                    StyleConstants.setForeground(this.style, new Color(79, 162, 255));
+                    colored = true;
+                    break;
+                }
+            }
+
+            if (!colored) {
+                for (final String type : this.types) {
+                    if (token.contains(type)) {
+                        StyleConstants.setForeground(this.style, new Color(79, 162, 255));
+                        colored = true;
+                        break;
+                    }
+                }
+            }
+
+            // If we colored it
+            if (!colored) {
+                StyleConstants.setForeground(this.style, new Color(221,221, 221));
             }
 
             try {
@@ -70,5 +90,47 @@ public class SQLTextPane extends JTextPane {
                 return;
             }
         }
+
+//        boolean firstToken = true;
+//        while (tokenizer.hasMoreTokens()) {
+//            String token = tokenizer.nextToken();
+//
+//            boolean colored = false;
+//            for (final String keyword : this.keywords) {
+//                if(token.contains(keyword)) {
+//                    StyleConstants.setForeground(this.style, new Color(79, 162, 255));
+//                    colored = true;
+//                    break;
+//                }
+//            }
+//
+//            if (!colored) {
+//                for (final String type : this.types) {
+//                    if (token.contains(type)) {
+//                        StyleConstants.setForeground(this.style, new Color(79, 162, 255));
+//                        colored = true;
+//                        break;
+//                    }
+//                }
+//            }
+//
+//            if (firstToken) {
+//                firstToken = false;
+//            } else {
+//                token = ' ' + token;
+//            }
+//
+//            // If we colored it
+//            if (!colored) {
+//                StyleConstants.setForeground(this.style, new Color(221,221, 221));
+//            }
+//
+//            try {
+//                styledDocument.insertString(this.styledDocument.getLength(), token, this.style);
+//            } catch (BadLocationException e) {
+//                log.error("Bad location at SQL text!");
+//                return;
+//            }
+//        }
     }
 }

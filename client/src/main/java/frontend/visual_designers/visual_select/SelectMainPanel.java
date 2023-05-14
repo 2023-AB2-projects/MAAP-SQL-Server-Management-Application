@@ -139,6 +139,8 @@ public class SelectMainPanel extends javax.swing.JPanel {
         generateCodeButton = new javax.swing.JButton();
         executeButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        sQLTextPane1 = new frontend.visual_designers.visual_elements.SQLTextPane();
 
         tableSelectorsPanel.setLayout(new java.awt.GridLayout(2, 3));
 
@@ -165,6 +167,11 @@ public class SelectMainPanel extends javax.swing.JPanel {
                 generateCodeButtonMousePressed(evt);
             }
         });
+        generateCodeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generateCodeButtonActionPerformed(evt);
+            }
+        });
 
         executeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         executeButton.setText("Execute");
@@ -177,6 +184,10 @@ public class SelectMainPanel extends javax.swing.JPanel {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel1.setText("Select the fields from each table that you would like to keep!");
 
+        sQLTextPane1.setEditable(false);
+        sQLTextPane1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jScrollPane1.setViewportView(sQLTextPane1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -184,7 +195,10 @@ public class SelectMainPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(commandOutputScrollPanel, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jScrollPane1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(commandOutputScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 495, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(tableSelectorsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(fieldSelectorScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 988, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -209,7 +223,9 @@ public class SelectMainPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fieldSelectorScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(commandOutputScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(commandOutputScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -413,6 +429,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
 
             // Set command output
             this.commandOutputTextPane.setText(command);
+            this.sQLTextPane1.setTextSQL(command);
         } catch (SQLException e) {
             log.info("User gave invalid SQL command!");
         }
@@ -433,6 +450,10 @@ public class SelectMainPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_executeButtonMousePressed
 
+    private void generateCodeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateCodeButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_generateCodeButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane commandOutputScrollPanel;
@@ -442,6 +463,8 @@ public class SelectMainPanel extends javax.swing.JPanel {
     private javax.swing.JTable fieldSelectorTable;
     private javax.swing.JButton generateCodeButton;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private frontend.visual_designers.visual_elements.SQLTextPane sQLTextPane1;
     private javax.swing.JPanel tableSelectorsPanel;
     // End of variables declaration//GEN-END:variables
 }
