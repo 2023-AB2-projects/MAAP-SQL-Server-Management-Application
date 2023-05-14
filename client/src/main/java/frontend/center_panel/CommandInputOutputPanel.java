@@ -21,7 +21,7 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
 
         commandSplitPane = new javax.swing.JSplitPane();
         inputScrollPanel = new javax.swing.JScrollPane();
-        inputArea = new javax.swing.JTextArea();
+        inputArea = new frontend.visual_designers.visual_elements.SQLTextPane();
         outputScrollPanel = new javax.swing.JScrollPane();
         outputArea = new javax.swing.JTextArea();
 
@@ -32,9 +32,18 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
         commandSplitPane.setDividerSize(3);
         commandSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
-        inputArea.setColumns(20);
-        inputArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        inputArea.setRows(5);
+        inputArea.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        inputArea.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                inputAreaKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                inputAreaKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                inputAreaKeyTyped(evt);
+            }
+        });
         inputScrollPanel.setViewportView(inputArea);
 
         commandSplitPane.setTopComponent(inputScrollPanel);
@@ -60,6 +69,19 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void inputAreaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_inputAreaKeyTyped
+    }//GEN-LAST:event_inputAreaKeyTyped
+
+    private void inputAreaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_inputAreaKeyReleased
+        // TODO add your handling code here:
+        String text = this.inputArea.getText();
+        this.inputArea.setTextSQL(text);
+    }//GEN-LAST:event_inputAreaKeyReleased
+
+    private void inputAreaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_inputAreaKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_inputAreaKeyPressed
+
     /* Setters */
     public void setInputTextAreaString(String string) { this.inputArea.setText(string); }
 
@@ -71,7 +93,7 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSplitPane commandSplitPane;
-    private javax.swing.JTextArea inputArea;
+    private frontend.visual_designers.visual_elements.SQLTextPane inputArea;
     private javax.swing.JScrollPane inputScrollPanel;
     private javax.swing.JTextArea outputArea;
     private javax.swing.JScrollPane outputScrollPanel;

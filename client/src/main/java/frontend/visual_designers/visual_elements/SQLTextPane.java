@@ -54,33 +54,21 @@ public class SQLTextPane extends JTextPane {
     }
 
     public void setTextSQL(String text) {
-        StringTokenizer tokenizer = new StringTokenizer(text, " ");
-
-        String[] tokensPrimitive = text.split("((?<=[ \n])|(?=[ \n]))");
+        this.setText("");
+        String[] tokensPrimitive = text.split("((?<=[ \n()])|(?=[ \n()]))");
 
         for (String token : tokensPrimitive) {
             boolean colored = false;
-            for (final String keyword : this.keywords) {
-                if(token.contains(keyword)) {
-                    StyleConstants.setForeground(this.style, new Color(79, 162, 255));
-                    colored = true;
-                    break;
-                }
-            }
-
-            if (!colored) {
-                for (final String type : this.types) {
-                    if (token.contains(type)) {
-                        StyleConstants.setForeground(this.style, new Color(79, 162, 255));
-                        colored = true;
-                        break;
-                    }
-                }
+            if (this.keywords.contains(token) || this.types.contains(token)) {
+                StyleConstants.setForeground(this.style, new Color(79, 162, 255));
+                StyleConstants.setItalic(this.style, true);
+                colored = true;
             }
 
             // If we colored it
             if (!colored) {
                 StyleConstants.setForeground(this.style, new Color(221,221, 221));
+                StyleConstants.setItalic(this.style, false);
             }
 
             try {
@@ -90,47 +78,5 @@ public class SQLTextPane extends JTextPane {
                 return;
             }
         }
-
-//        boolean firstToken = true;
-//        while (tokenizer.hasMoreTokens()) {
-//            String token = tokenizer.nextToken();
-//
-//            boolean colored = false;
-//            for (final String keyword : this.keywords) {
-//                if(token.contains(keyword)) {
-//                    StyleConstants.setForeground(this.style, new Color(79, 162, 255));
-//                    colored = true;
-//                    break;
-//                }
-//            }
-//
-//            if (!colored) {
-//                for (final String type : this.types) {
-//                    if (token.contains(type)) {
-//                        StyleConstants.setForeground(this.style, new Color(79, 162, 255));
-//                        colored = true;
-//                        break;
-//                    }
-//                }
-//            }
-//
-//            if (firstToken) {
-//                firstToken = false;
-//            } else {
-//                token = ' ' + token;
-//            }
-//
-//            // If we colored it
-//            if (!colored) {
-//                StyleConstants.setForeground(this.style, new Color(221,221, 221));
-//            }
-//
-//            try {
-//                styledDocument.insertString(this.styledDocument.getLength(), token, this.style);
-//            } catch (BadLocationException e) {
-//                log.error("Bad location at SQL text!");
-//                return;
-//            }
-//        }
     }
 }
