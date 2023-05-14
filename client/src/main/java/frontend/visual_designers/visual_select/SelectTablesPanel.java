@@ -4,6 +4,7 @@ import lombok.Setter;
 import service.CatalogManager;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,9 @@ public class SelectTablesPanel extends javax.swing.JPanel {
         for (final String tableName : this.tableNames) {
             JCheckBox checkBox = new JCheckBox(tableName);
             checkBox.setFont(font);
+            checkBox.setHorizontalAlignment(JCheckBox.CENTER);
+            checkBox.setBorder(new LineBorder(new Color(102, 102, 102), 3));
+            checkBox.setBorderPainted(true);
 
             // Add to panel and list
             this.tablesPanel.add(checkBox);
@@ -96,11 +100,11 @@ public class SelectTablesPanel extends javax.swing.JPanel {
         tablesPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         tablesPanel.setLayout(new java.awt.GridLayout(6, 2));
 
-        selectAllTablesBox.setBackground(new java.awt.Color(51, 51, 51));
         selectAllTablesBox.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         selectAllTablesBox.setSelected(true);
         selectAllTablesBox.setText("* (Every table)");
-        selectAllTablesBox.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        selectAllTablesBox.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(102, 102, 102), 3, true));
+        selectAllTablesBox.setBorderPainted(true);
         selectAllTablesBox.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         selectAllTablesBox.setOpaque(true);
         selectAllTablesBox.addItemListener(new java.awt.event.ItemListener() {
