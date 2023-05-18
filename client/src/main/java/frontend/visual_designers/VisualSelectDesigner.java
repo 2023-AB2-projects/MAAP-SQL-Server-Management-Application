@@ -66,6 +66,7 @@ public class VisualSelectDesigner extends javax.swing.JPanel {
         selectTablesPanel = new frontend.visual_designers.visual_select.SelectTablesPanel();
         selectMainPanel = new frontend.visual_designers.visual_select.SelectMainPanel();
 
+        tabbedPanel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tabbedPanel.addTab("Select Tables", selectTablesPanel);
         tabbedPanel.addTab("Visual Select Designer", selectMainPanel);
 

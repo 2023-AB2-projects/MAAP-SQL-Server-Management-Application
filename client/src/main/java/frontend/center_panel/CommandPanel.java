@@ -36,6 +36,7 @@ public class CommandPanel extends javax.swing.JPanel {
 
         setPreferredSize(new java.awt.Dimension(1000, 42));
 
+        selectComboBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         selectComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SELECT", "DEFAULT SELECT", "FULL SELECT" }));
         selectComboBox.setToolTipText("");
         selectComboBox.addActionListener(new java.awt.event.ActionListener() {
@@ -44,6 +45,7 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
+        createAlterComboBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         createAlterComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "CREATE/ALTER", "CREATE DATABASE", "CREATE TABLE", "ALTER TABLE" }));
         createAlterComboBox.setToolTipText("");
         createAlterComboBox.addActionListener(new java.awt.event.ActionListener() {
@@ -52,6 +54,7 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
+        dropDeleteComboBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         dropDeleteComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "DROP/DELETE", "DROP DATABASE", "DROP TABLE", "DELETE FROM" }));
         dropDeleteComboBox.setToolTipText("");
         dropDeleteComboBox.addActionListener(new java.awt.event.ActionListener() {
@@ -60,6 +63,7 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
+        insertUpdateComboBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         insertUpdateComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "INSERT/UPDATE", "INSERT INTO TABLE", "UPDATE TABLE" }));
         insertUpdateComboBox.setToolTipText("");
         insertUpdateComboBox.addActionListener(new java.awt.event.ActionListener() {
@@ -68,6 +72,7 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
+        runCommandButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         runCommandButton.setText("RUN COMMAND");
         runCommandButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         runCommandButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -82,6 +87,7 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
+        useComboBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         useComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "USE", "USE DATABASE" }));
         useComboBox.setToolTipText("");
         useComboBox.addItemListener(new java.awt.event.ItemListener() {
@@ -95,6 +101,7 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
+        minusButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         minusButton.setText("-");
         minusButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -102,6 +109,7 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
+        plusButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         plusButton.setText("+");
         plusButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -115,22 +123,22 @@ public class CommandPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(useComboBox, 0, 86, Short.MAX_VALUE)
+                .addComponent(useComboBox, 0, 89, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(selectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addComponent(dropDeleteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(selectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(insertUpdateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(236, 236, 236)
+                .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(dropDeleteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(insertUpdateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(170, 170, 170)
                 .addComponent(minusButton, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(plusButton, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(horizontalFiller, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
+                .addGap(0, 0, 0)
                 .addComponent(runCommandButton))
         );
         layout.setVerticalGroup(
@@ -141,11 +149,11 @@ public class CommandPanel extends javax.swing.JPanel {
                         .addGap(5, 5, 5)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(selectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(useComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(useComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(dropDeleteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(insertUpdateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
@@ -157,7 +165,7 @@ public class CommandPanel extends javax.swing.JPanel {
                             .addComponent(runCommandButton)
                             .addComponent(plusButton)
                             .addComponent(minusButton))))
-                .addContainerGap(10, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

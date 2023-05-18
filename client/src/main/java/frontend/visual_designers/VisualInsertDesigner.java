@@ -138,7 +138,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
             }
         });
 
-        tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tabelNameLabel.setText("Table Name:");
         tabelNameLabel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
