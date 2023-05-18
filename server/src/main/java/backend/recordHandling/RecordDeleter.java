@@ -31,14 +31,26 @@ public class RecordDeleter {
         return recordHandler.readLine(line);
     }
 
+    public void deleteRecords(ArrayList<Integer> pointers) {
+        CatalogManager.deletedRecordLinesEnqueueN(databaseName, tableName, pointers);
+        for(var pointer : pointers){
+            try{
+                ArrayList<String> record = recordHandler.readLine(pointer);
+
+                recordHandler.deleteLine(pointer);
+                multipleIndexUpdater.delete(record, pointer);
+            }catch (Exception ignored){}
+        }
+    }
+
     public void deleteByPrimaryKey(ArrayList<String> keyValues){
         try{
-            int line = primaryKeyIndexManager.findLocation(keyValues);
-            ArrayList<String> row = recordHandler.readLine(line);
+            int pointer = primaryKeyIndexManager.findLocation(keyValues);
+            ArrayList<String> record = recordHandler.readLine(pointer);
 
-            CatalogManager.deletedRecordLinesEnqueue(databaseName, tableName, line);
-            recordHandler.deleteLine(line);
-            multipleIndexUpdater.delete(row, line);
+            CatalogManager.deletedRecordLinesEnqueue(databaseName, tableName, pointer);
+            recordHandler.deleteLine(pointer);
+            multipleIndexUpdater.delete(record, pointer);
         }catch (Exception ignored){}
     }
 
