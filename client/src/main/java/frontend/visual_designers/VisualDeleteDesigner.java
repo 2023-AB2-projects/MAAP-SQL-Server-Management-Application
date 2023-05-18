@@ -2,6 +2,7 @@ package frontend.visual_designers;
 
 import control.ClientController;
 import frontend.center_panel.CenterClientPanel;
+import frontend.visual_designers.visual_elements.SQLDocument;
 import lombok.Setter;
 import service.CatalogManager;
 
@@ -56,9 +57,9 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         tableSelectComboBox = new javax.swing.JComboBox<>();
         generateCodeButton = new javax.swing.JButton();
         splitPanel = new javax.swing.JSplitPane();
-        generatedCodeScrollPanel = new javax.swing.JScrollPane();
-        generatedCodeTextArea = new javax.swing.JTextArea();
         selectionPanel = new frontend.visual_designers.visual_elements.FieldSelectionPanelDelete();
+        generatedCodeScrollPanel = new javax.swing.JScrollPane();
+        generatedCodeTextArea = new javax.swing.JTextPane();
         executeButton = new javax.swing.JButton();
 
         tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -89,15 +90,13 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         splitPanel.setDividerLocation(408);
         splitPanel.setDividerSize(3);
         splitPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        splitPanel.setLeftComponent(selectionPanel);
 
-        generatedCodeTextArea.setEditable(false);
-        generatedCodeTextArea.setColumns(20);
         generatedCodeTextArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        generatedCodeTextArea.setRows(5);
+        generatedCodeTextArea.setStyledDocument(new SQLDocument());
         generatedCodeScrollPanel.setViewportView(generatedCodeTextArea);
 
         splitPanel.setRightComponent(generatedCodeScrollPanel);
-        splitPanel.setLeftComponent(selectionPanel);
 
         executeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         executeButton.setText("Execute");
@@ -190,7 +189,7 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
     private javax.swing.JButton executeButton;
     private javax.swing.JButton generateCodeButton;
     private javax.swing.JScrollPane generatedCodeScrollPanel;
-    private javax.swing.JTextArea generatedCodeTextArea;
+    private javax.swing.JTextPane generatedCodeTextArea;
     private frontend.visual_designers.visual_elements.FieldSelectionPanelDelete selectionPanel;
     private javax.swing.JSplitPane splitPanel;
     private javax.swing.JLabel tabelNameLabel;

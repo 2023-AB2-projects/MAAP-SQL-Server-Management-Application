@@ -3,11 +3,8 @@ package frontend.visual_designers.visual_elements;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import java.awt.*;
 import java.util.HashMap;
 
 @Slf4j
@@ -47,6 +44,7 @@ public class SQLTextPane extends JTextPane {
     public SQLTextPane() {
         super();
 
+        this.setStyledDocument(new SQLDocument());
         this.styledDocument = this.getStyledDocument();
         this.style = this.addStyle("Styleee", null);
 
@@ -62,62 +60,12 @@ public class SQLTextPane extends JTextPane {
         for (final String operator : this.OPERATORS) {
             operatorsMap.put(operator, true);
         }
+
+        JEditorPane pane = new JEditorPane();
+
     }
 
     public void setTextSQL(String text) {
-        this.setText("");
-        System.out.println(text);
-        String[] tokensPrimitive = text.split("((?<=[ \n\r()])|(?=[ \n\r()]))");
 
-        for (final String token : tokensPrimitive) {
-            if (this.keywordsMap.containsKey(token)) {
-                StyleConstants.setForeground(this.style, new Color(79, 162, 255));
-                StyleConstants.setItalic(this.style, true);
-
-                try {
-                    styledDocument.insertString(this.styledDocument.getLength(), token, this.style);
-                } catch (BadLocationException e) {
-                    log.error("Bad location at SQL text!");
-                    return;
-                }
-                continue;
-            }
-
-            if (this.typesMap.containsKey(token)) {
-                StyleConstants.setForeground(this.style, new Color(11, 180, 204));
-                StyleConstants.setItalic(this.style, true);
-
-                try {
-                    styledDocument.insertString(this.styledDocument.getLength(), token, this.style);
-                } catch (BadLocationException e) {
-                    log.error("Bad location at SQL text!");
-                    return;
-                }
-                continue;
-            }
-
-            if (this.operatorsMap.containsKey(token)) {
-                StyleConstants.setForeground(this.style, new Color(252, 85, 165));
-                StyleConstants.setItalic(this.style, true);
-
-                try {
-                    styledDocument.insertString(this.styledDocument.getLength(), token, this.style);
-                } catch (BadLocationException e) {
-                    log.error("Bad location at SQL text!");
-                    return;
-                }
-                continue;
-            }
-
-            StyleConstants.setForeground(this.style, new Color(221,221, 221));
-            StyleConstants.setItalic(this.style, false);
-
-            try {
-                styledDocument.insertString(this.styledDocument.getLength(), token, this.style);
-            } catch (BadLocationException e) {
-                log.error("Bad location at SQL text!");
-                return;
-            }
-        }
     }
 }
