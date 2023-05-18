@@ -8,8 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 @Slf4j
 public class test {
@@ -152,7 +151,7 @@ public class test {
         //BtreeDeleteTest();
         //testUniqueIndexManager();
         //scanTest();
-        rangeQueryTest();
+        //rangeQueryTest();
 
         //System.out.println(TypeConverter.smallestValue("char(10)"));
     }

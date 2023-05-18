@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.*;
 
 @Slf4j
-public class UniqueIndexManager {
+public class UniqueIndexManager implements Queryable{
     private final ArrayList<String> keyStructure;
     private final BPlusTree bPlusTree;
 
@@ -47,6 +47,10 @@ public class UniqueIndexManager {
     public Integer findLocation(ArrayList<String> values) throws IOException, KeyNotFoundException {
         Key key = TypeConverter.toKey(keyStructure, values);
         return bPlusTree.find(key);
+    }
+
+    public HashMap<Integer, Object> equalityQuery(Object key) throws UndefinedQueryException, IOException {
+        return rangeQuery(key, key, true, true);
     }
 
     public HashMap<Integer, Object> rangeQuery(Object lowerBound, Object upperBound, boolean allowEqualityLower, boolean allowEqualityUpper) throws UndefinedQueryException, IOException {
