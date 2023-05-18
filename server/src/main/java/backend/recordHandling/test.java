@@ -143,6 +143,10 @@ public class test {
         System.out.println(manager.lesserQuery(3, false));
         System.out.println(manager.greaterQuery(1, true));
     }
+
+    public static void tableTest() {
+
+    }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
         types = new ArrayList<>();
@@ -152,7 +156,6 @@ public class test {
         //testUniqueIndexManager();
         //scanTest();
         //rangeQueryTest();
-
-        //System.out.println(TypeConverter.smallestValue("char(10)"));
+        tableTest();
     }
 }
