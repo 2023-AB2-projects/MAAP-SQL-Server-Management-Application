@@ -71,7 +71,7 @@ public class SQLDocument extends DefaultStyledDocument {
 
         // Quotes
         quote = new SimpleAttributeSet();
-        Color red = new Color(255, 157, 5);
+        Color red = new Color(236, 141, 2);
         StyleConstants.setForeground(quote, red);
 
         // Hashmaps
@@ -467,10 +467,10 @@ public class SQLDocument extends DefaultStyledDocument {
     }
 
     /*
-     * Overide bracket matching for other languages
+     * Override bracket matching for other languages
      */
     protected String addMatchingBrace(int offset) throws BadLocationException {
-        StringBuffer whiteSpace = new StringBuffer();
+        StringBuilder whiteSpace = new StringBuilder();
         int line = rootElement.getElementIndex(offset);
         int i = rootElement.getElement(line).getStartOffset();
         while (true) {
