@@ -65,8 +65,10 @@ public class ConnectionFrame extends javax.swing.JFrame {
             }
         });
 
+        ipLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         ipLabel.setText("IP Address:");
 
+        portLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         portLabel.setText("Port:");
 
         connectButton.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -116,7 +118,7 @@ public class ConnectionFrame extends javax.swing.JFrame {
                     .addComponent(portLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(33, 33, 33)
                 .addComponent(connectButton)
-                .addContainerGap(39, Short.MAX_VALUE))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
 
         pack();

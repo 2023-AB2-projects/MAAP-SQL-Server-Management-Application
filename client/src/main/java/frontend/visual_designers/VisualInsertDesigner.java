@@ -2,6 +2,7 @@ package frontend.visual_designers;
 
 import control.ClientController;
 import frontend.center_panel.CenterClientPanel;
+import frontend.visual_designers.visual_elements.SQLDocument;
 import lombok.Setter;
 import service.CatalogManager;
 
@@ -124,7 +125,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
         tableScrollPanel = new javax.swing.JScrollPane();
         insertTable = new javax.swing.JTable();
         generatedCodeScrollPanel = new javax.swing.JScrollPane();
-        generatedCodeTextArea = new javax.swing.JTextArea();
+        generatedCodeTextArea = new javax.swing.JTextPane();
         tableSelectComboBox = new javax.swing.JComboBox<>();
         minusRowButton = new javax.swing.JButton();
         plusRowButton = new javax.swing.JButton();
@@ -167,9 +168,8 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
         splitInsertPanel.setTopComponent(tableScrollPanel);
 
         generatedCodeTextArea.setEditable(false);
-        generatedCodeTextArea.setColumns(20);
         generatedCodeTextArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        generatedCodeTextArea.setRows(5);
+        generatedCodeTextArea.setStyledDocument(new SQLDocument());
         generatedCodeScrollPanel.setViewportView(generatedCodeTextArea);
 
         splitInsertPanel.setRightComponent(generatedCodeScrollPanel);
@@ -292,7 +292,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
     private javax.swing.JButton executeButton;
     private javax.swing.JButton generateCodeButton;
     private javax.swing.JScrollPane generatedCodeScrollPanel;
-    private javax.swing.JTextArea generatedCodeTextArea;
+    private javax.swing.JTextPane generatedCodeTextArea;
     private javax.swing.JTable insertTable;
     private javax.swing.JButton minusRowButton;
     private javax.swing.JButton plusRowButton;

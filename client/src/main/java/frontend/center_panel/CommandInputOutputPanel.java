@@ -1,5 +1,6 @@
 package frontend.center_panel;
 
+import frontend.visual_designers.visual_elements.SQLDocument;
 import lombok.Setter;
 
 import java.awt.*;
@@ -22,10 +23,10 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         commandSplitPane = new javax.swing.JSplitPane();
-        inputScrollPanel = new javax.swing.JScrollPane();
-        inputArea = new frontend.visual_designers.visual_elements.SQLTextPane();
         outputScrollPanel = new javax.swing.JScrollPane();
         outputArea = new javax.swing.JTextArea();
+        input = new javax.swing.JScrollPane();
+        inputArea = new javax.swing.JTextPane();
 
         setMinimumSize(new java.awt.Dimension(900, 1000));
         setPreferredSize(new java.awt.Dimension(900, 900));
@@ -33,22 +34,6 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
         commandSplitPane.setDividerLocation(450);
         commandSplitPane.setDividerSize(3);
         commandSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-
-        inputArea.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        inputArea.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                inputAreaKeyPressed(evt);
-            }
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                inputAreaKeyReleased(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                inputAreaKeyTyped(evt);
-            }
-        });
-        inputScrollPanel.setViewportView(inputArea);
-
-        commandSplitPane.setTopComponent(inputScrollPanel);
 
         outputArea.setEditable(false);
         outputArea.setColumns(20);
@@ -58,6 +43,12 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
         outputScrollPanel.setViewportView(outputArea);
 
         commandSplitPane.setRightComponent(outputScrollPanel);
+
+        inputArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        inputArea.setStyledDocument(new SQLDocument());
+        input.setViewportView(inputArea);
+
+        commandSplitPane.setLeftComponent(input);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -71,23 +62,10 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void inputAreaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_inputAreaKeyTyped
-    }//GEN-LAST:event_inputAreaKeyTyped
-
-    private void inputAreaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_inputAreaKeyReleased
-        // TODO add your handling code here:
-        String text = this.inputArea.getText();
-        this.inputArea.setTextSQL(text);
-    }//GEN-LAST:event_inputAreaKeyReleased
-
-    private void inputAreaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_inputAreaKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_inputAreaKeyPressed
-
     /* Setters */
     public void setInputAreaFont(Font font) { this.inputArea.setFont(font); }
 
-    public void setInputTextAreaString(String string) { this.inputArea.setTextSQL(string); }
+    public void setInputTextAreaString(String string) { this.inputArea.setText(string); }
 
     public void setOutputAreaString(String string) { this.outputArea.setText(string); }
 
@@ -117,8 +95,8 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSplitPane commandSplitPane;
-    private frontend.visual_designers.visual_elements.SQLTextPane inputArea;
-    private javax.swing.JScrollPane inputScrollPanel;
+    private javax.swing.JScrollPane input;
+    private javax.swing.JTextPane inputArea;
     private javax.swing.JTextArea outputArea;
     private javax.swing.JScrollPane outputScrollPanel;
     // End of variables declaration//GEN-END:variables
