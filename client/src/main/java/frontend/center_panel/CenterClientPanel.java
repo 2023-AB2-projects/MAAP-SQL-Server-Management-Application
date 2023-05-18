@@ -2,6 +2,8 @@ package frontend.center_panel;
 
 import control.ClientController;
 
+import java.awt.*;
+
 public class CenterClientPanel extends javax.swing.JPanel {
     private ClientController clientController;
 
@@ -13,6 +15,13 @@ public class CenterClientPanel extends javax.swing.JPanel {
         this.visualInsertDesignerPanel.setCenterClientPanel(this);
         this.visualDeleteDesignerPanel.setCenterClientPanel(this);
         this.visualSelectDesignerPanel.setCenterClientPanel(this);
+
+        // Font size
+        Font font14 = new Font("Segoe UI", Font.PLAIN, 14);
+        Font font18 = new Font("Segoe UI", Font.PLAIN, 18);
+        this.clientTabbedPane.setFont(font14);
+        this.commandInputOutputPanel1.setInputAreaFont(font18);
+        this.sqlCommandExecutionPanel.setFont(font18);
     }
     
     /**
@@ -73,7 +82,7 @@ public class CenterClientPanel extends javax.swing.JPanel {
     public void setInputTextAreaString(String string) {this.commandInputOutputPanel1.setInputTextAreaString(string);}
 
     public void increaseFont() {
-        this.commandInputOutputPanel1.increaseFont();;
+        this.commandInputOutputPanel1.increaseFont();
     }
 
     public void decreaseFont() {

@@ -85,6 +85,8 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_inputAreaKeyPressed
 
     /* Setters */
+    public void setInputAreaFont(Font font) { this.inputArea.setFont(font); }
+
     public void setInputTextAreaString(String string) { this.inputArea.setTextSQL(string); }
 
     public void setOutputAreaString(String string) { this.outputArea.setText(string); }
