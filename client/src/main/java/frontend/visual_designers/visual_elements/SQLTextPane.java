@@ -8,8 +8,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 
 @Slf4j
 public class SQLTextPane extends JTextPane {
@@ -35,7 +34,7 @@ public class SQLTextPane extends JTextPane {
 
     private final String[] OPERATORS = {
             "(", ")", "*",
-            "!=", "=", ">=", "<=", ">", "<",
+            "==", "!=", "=", ">=", "<=", ">", "<",
     };
 
     private final String[] ATTRIBUTE_TYPES = {
@@ -43,7 +42,7 @@ public class SQLTextPane extends JTextPane {
             "INT", "FLOAT", "BIT", "DATE", "DATETIME", "CHAR"
     };
 
-    private final ArrayList<String> keywords, types, operators;
+    private final HashMap<String, Boolean> keywordsMap, typesMap, operatorsMap;
 
     public SQLTextPane() {
         super();
@@ -51,10 +50,18 @@ public class SQLTextPane extends JTextPane {
         this.styledDocument = this.getStyledDocument();
         this.style = this.addStyle("Styleee", null);
 
-        // Convert primitive to normal
-        this.keywords = new ArrayList<>(Arrays.asList(this.RESERVED_KEYWORDS));
-        this.types = new ArrayList<>(Arrays.asList(ATTRIBUTE_TYPES));
-        this.operators = new ArrayList<>(Arrays.asList(OPERATORS));
+        this.keywordsMap = new HashMap<>();
+        for (final String keyword : this.RESERVED_KEYWORDS) {
+            keywordsMap.put(keyword, true);
+        }
+        this.typesMap = new HashMap<>();
+        for (final String types : this.ATTRIBUTE_TYPES) {
+            typesMap.put(types, true);
+        }
+        this.operatorsMap = new HashMap<>();
+        for (final String operator : this.OPERATORS) {
+            operatorsMap.put(operator, true);
+        }
     }
 
     public void setTextSQL(String text) {
@@ -62,8 +69,8 @@ public class SQLTextPane extends JTextPane {
         System.out.println(text);
         String[] tokensPrimitive = text.split("((?<=[ \n\r()])|(?=[ \n\r()]))");
 
-        for (String token : tokensPrimitive) {
-            if (this.keywords.contains(token)) {
+        for (final String token : tokensPrimitive) {
+            if (this.keywordsMap.containsKey(token)) {
                 StyleConstants.setForeground(this.style, new Color(79, 162, 255));
                 StyleConstants.setItalic(this.style, true);
 
@@ -76,7 +83,7 @@ public class SQLTextPane extends JTextPane {
                 continue;
             }
 
-            if (this.types.contains(token)) {
+            if (this.typesMap.containsKey(token)) {
                 StyleConstants.setForeground(this.style, new Color(11, 180, 204));
                 StyleConstants.setItalic(this.style, true);
 
@@ -89,7 +96,7 @@ public class SQLTextPane extends JTextPane {
                 continue;
             }
 
-            if (this.operators.contains(token)) {
+            if (this.operatorsMap.containsKey(token)) {
                 StyleConstants.setForeground(this.style, new Color(252, 85, 165));
                 StyleConstants.setItalic(this.style, true);
 
