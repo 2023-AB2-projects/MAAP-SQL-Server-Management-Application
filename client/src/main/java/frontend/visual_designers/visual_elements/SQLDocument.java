@@ -36,6 +36,7 @@ public class SQLDocument extends DefaultStyledDocument {
     };
 
     private final String[] OPERATORS = {
+            "OR", "or", "AND", "and",
             "(", ")", "*",
             "==", "!=", "=", ">=", "<=", ">", "<",
     };
@@ -407,7 +408,7 @@ public class SQLDocument extends DefaultStyledDocument {
      * Override for other languages
      */
     protected boolean isDelimiter(String character) {
-        String operands = "^~, ";
+        String operands = "^~, ()";
         return Character.isWhitespace(character.charAt(0))
                 || operands.contains(character);
     }
