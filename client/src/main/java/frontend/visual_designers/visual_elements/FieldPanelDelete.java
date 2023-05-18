@@ -79,7 +79,7 @@ public class FieldPanelDelete extends javax.swing.JPanel {
         divider3.setOpaque(true);
 
         tableField.setEditable(false);
-        tableField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        tableField.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         tableField.setText("table_name");
         tableField.setFocusable(false);
         tableField.addActionListener(new java.awt.event.ActionListener() {
@@ -89,7 +89,7 @@ public class FieldPanelDelete extends javax.swing.JPanel {
         });
 
         columnField.setEditable(false);
-        columnField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        columnField.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         columnField.setText("column_name");
         columnField.setFocusable(false);
         columnField.addActionListener(new java.awt.event.ActionListener() {
@@ -98,10 +98,10 @@ public class FieldPanelDelete extends javax.swing.JPanel {
             }
         });
 
-        conditionField1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        conditionField1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         conditionField1.setEnabled(false);
 
-        conditionField3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        conditionField3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         conditionField3.setEnabled(false);
         conditionField3.setMinimumSize(new java.awt.Dimension(68, 38));
         conditionField3.addActionListener(new java.awt.event.ActionListener() {
@@ -110,7 +110,7 @@ public class FieldPanelDelete extends javax.swing.JPanel {
             }
         });
 
-        conditionField2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        conditionField2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         conditionField2.setEnabled(false);
         conditionField2.setMinimumSize(new java.awt.Dimension(68, 38));
         conditionField2.addActionListener(new java.awt.event.ActionListener() {

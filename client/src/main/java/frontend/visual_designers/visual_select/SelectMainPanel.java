@@ -142,7 +142,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
 
         tableSelectorsPanel.setLayout(new java.awt.GridLayout(2, 3));
 
-        fieldSelectorTable.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        fieldSelectorTable.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         fieldSelectorTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -175,11 +175,11 @@ public class SelectMainPanel extends javax.swing.JPanel {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel1.setText("Select the fields from each table that you would like to keep!");
 
         commandOutputTextPane.setEditable(false);
-        commandOutputTextPane.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        commandOutputTextPane.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         outputScrollPanel.setViewportView(commandOutputTextPane);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

@@ -138,7 +138,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
             }
         });
 
-        tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         tabelNameLabel.setText("Table Name:");
         tabelNameLabel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
@@ -146,7 +146,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
         splitInsertPanel.setDividerSize(3);
         splitInsertPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
-        insertTable.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        insertTable.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         insertTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -168,7 +168,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
 
         generatedCodeTextArea.setEditable(false);
         generatedCodeTextArea.setColumns(20);
-        generatedCodeTextArea.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        generatedCodeTextArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         generatedCodeTextArea.setRows(5);
         generatedCodeScrollPanel.setViewportView(generatedCodeTextArea);
 
@@ -212,7 +212,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(tabelNameLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)

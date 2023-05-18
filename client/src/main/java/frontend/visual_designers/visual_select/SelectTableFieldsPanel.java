@@ -103,7 +103,7 @@ public class SelectTableFieldsPanel extends javax.swing.JPanel {
         setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         tableNameLabel.setBackground(new java.awt.Color(51, 51, 51));
-        tableNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        tableNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         tableNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         tableNameLabel.setText("table_name");
         tableNameLabel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
@@ -111,7 +111,7 @@ public class SelectTableFieldsPanel extends javax.swing.JPanel {
 
         selectorPanel.setLayout(new java.awt.GridLayout(6, 2));
 
-        selectedAllBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        selectedAllBox.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         selectedAllBox.setText("* (All Fields)");
         selectedAllBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {

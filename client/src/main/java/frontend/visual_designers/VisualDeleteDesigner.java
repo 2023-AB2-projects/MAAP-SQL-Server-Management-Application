@@ -92,7 +92,7 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
 
         generatedCodeTextArea.setEditable(false);
         generatedCodeTextArea.setColumns(20);
-        generatedCodeTextArea.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        generatedCodeTextArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         generatedCodeTextArea.setRows(5);
         generatedCodeScrollPanel.setViewportView(generatedCodeTextArea);
 
