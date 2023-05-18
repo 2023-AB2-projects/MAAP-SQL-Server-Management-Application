@@ -94,13 +94,15 @@ public class SelectTablesPanel extends javax.swing.JPanel {
 
         setMinimumSize(new java.awt.Dimension(1000, 850));
 
+        explainerTextArea.setEditable(false);
         explainerTextArea.setColumns(20);
-        explainerTextArea.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        explainerTextArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         explainerTextArea.setRows(5);
-        explainerTextArea.setText("Welcome to the Visual Select Designer, where we help you design your queries in a simple fasion!\n\nPlease select atleast one table before pressing the 'Done' button.\nAfter pressing the done button you will be presented with another panel, where you can choose what fields your SELECT will have\nfrom which tables, you can rename fields, add conditions to them and much more!");
+        explainerTextArea.setText("Welcome to the Visual Select Designer, where we help you design your queries in a simple fasion!\n\nPlease select atleast one table before pressing the 'Done' button.\nAfter pressing the done button you will be presented with another panel, where you can choose what\nfields your SELECT will have from which tables, you can rename fields, add conditions to them and much more!");
+        explainerTextArea.setFocusable(false);
         explainerScrollPanel.setViewportView(explainerTextArea);
 
-        doneButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        doneButton.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         doneButton.setText("Done");
         doneButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         doneButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -147,23 +149,24 @@ public class SelectTablesPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(tablesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(explainerScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 838, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(doneButton, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)))
+                    .addComponent(explainerScrollPanel))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(437, 437, 437)
+                .addComponent(doneButton, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(444, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(explainerScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 122, Short.MAX_VALUE)
-                    .addComponent(doneButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(12, 12, 12)
+                .addComponent(explainerScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(tablesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 658, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(tablesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 591, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(doneButton)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
