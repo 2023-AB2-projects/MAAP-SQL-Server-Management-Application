@@ -14,7 +14,6 @@ import java.util.ArrayList;
 @Slf4j
 public class RecordDeleter {
     private RecordHandler recordHandler;
-    private RecordFinder recordFinder;
     private final String databaseName, tableName;
     private final MultipleIndexUpdater multipleIndexUpdater;
 
