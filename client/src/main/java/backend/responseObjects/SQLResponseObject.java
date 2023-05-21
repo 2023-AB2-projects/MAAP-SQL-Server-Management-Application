@@ -25,4 +25,6 @@ public class SQLResponseObject implements Serializable {
         this.tableData = tableData;
         this.isTextResponse = false;
     }
+
+    public boolean getIsTextResponse() { return this.isTextResponse; }
 }

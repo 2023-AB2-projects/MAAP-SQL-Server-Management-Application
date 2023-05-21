@@ -2,6 +2,7 @@ package control;
 
 import backend.MessageModes;
 import backend.responseObjects.SQLResponseObject;
+import backend.responseObjects.SQLTextResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import frontend.ClientFrame;
@@ -13,6 +14,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import javax.swing.LookAndFeel;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -152,53 +154,27 @@ public class ClientController {
         }
     }
 
-    private SQLResponseObject receiveSQLResponseObject() {
+    private SQLResponseObject receiveSQLResponseObject() throws IOException {
         // Wait for client connection
-        Socket socket;
-        try {
-            socket = this.serverSocket.accept();
-        } catch (IOException e) {
-            log.error("Could not accept client connection!");
-            throw new RuntimeException(e);
-        }
+        Socket socket =  this.serverSocket.accept();
 
         // Get input stream
-        InputStream inputStream;
-        try {
-            inputStream = socket.getInputStream();
-        } catch (IOException e) {
-            log.error("Could not get input stream!");
-            throw new RuntimeException(e);
-        }
-
-        ObjectInputStream objectInputStream;
-        try {
-            objectInputStream = new ObjectInputStream(inputStream);
-        } catch (IOException e) {
-            log.error("Could not create object input stream!");
-            throw new RuntimeException(e);
-        }
+        InputStream inputStream = socket.getInputStream();
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 
         // Receive the object
         SQLResponseObject receivedObject;
         try {
             receivedObject = (SQLResponseObject) objectInputStream.readObject();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             log.error("Could not find SQL object class!");
             throw new RuntimeException(e);
         }
 
         // Close the streams and socket
-        try {
-            objectInputStream.close();
-            inputStream.close();
-            socket.close();
-        } catch (IOException e) {
-            log.error("Could not close streams and socket!");
-            throw new RuntimeException(e);
-        }
+        objectInputStream.close();
+        inputStream.close();
+        socket.close();
 
         return receivedObject;
     }
@@ -208,28 +184,45 @@ public class ClientController {
     public void receiveMessageAndPerformAction(int mode) {
         switch(mode) {
             case MessageModes.setTextArea -> {
-                SQLResponseObject responseObject = this.receiveSQLResponseObject();
-                System.out.println(responseObject);
+                SQLResponseObject responseObject;
+                try {
+                    responseObject = this.receiveSQLResponseObject();
+                } catch (IOException e) {
+                    log.error(e.getMessage());
+                    log.error("Failed to receive SQL response object!");
+                    throw new RuntimeException(e);
+                }
 
-//                String response = null;
-//                try {
-//                    response = this.receiveMessage();
-//                } catch (IOException e) {
-//                    log.error("Could not receive message from server!");
-//                    System.exit(1);
-//                }
+                // Check response contents
+                // If it's text content -> Can be output or error
+                boolean isTextResponse = responseObject.getIsTextResponse();
+                if (isTextResponse) {
+                    SQLTextResponse textResponse = responseObject.getTextResponse();
 
-                String response = "temp";
+                    // Check if it's error message
+                    if (textResponse.isError()) {
+                        String errorMessage = textResponse.getText();
 
-                log.info("Updated output textArea!");
-                this.setOutputAreaString(response);
+                        // Set output error string
+                        this.clientFrame.setErrorOutputAreaString(errorMessage);
 
-                // Check if we need to update current database
-                if(response.contains("Now using ")) {
-                    String currentDatabaseName = response.split("Now using ")[1];
-                    log.info("Current database name: " + currentDatabaseName);
-                    this.currentDatabaseName = currentDatabaseName;
-                    this.clientFrame.setCurrentDatabaseName(this.currentDatabaseName);
+                    } else {
+                        String commandOutput = textResponse.getText();
+                        this.setOutputAreaString(commandOutput);
+
+                        // Check if we need to update current database
+                        if(commandOutput.contains("Now using ")) {
+                            String currentDatabaseName = commandOutput.split("Now using ")[1];
+                            log.info("Current database name: " + currentDatabaseName);
+                            this.currentDatabaseName = currentDatabaseName;
+                            this.clientFrame.setCurrentDatabaseName(this.currentDatabaseName);
+                        }
+                        log.info("Updated output textArea (Non-error)!");
+                    }
+                } else {
+                    // We received table data
+                    this.setOutputTableData(responseObject.getTableData());
+                    log.info("Updated output table data!");
                 }
             }
             case MessageModes.refreshJSONCatalog -> {
@@ -258,6 +251,8 @@ public class ClientController {
     public void setInputTextAreaString(String inputTextAreaString) { this.clientFrame.setInputTextAreaString(inputTextAreaString);}
     
     public void setOutputAreaString(String string) { this.clientFrame.setOutputAreaString(string); }
+
+    public void setOutputTableData(ArrayList<ArrayList<String>> data) { this.clientFrame.setOutputTableData(data); }
 
     public void increaseCenterPanelFont() { this.clientFrame.increaseCenterPanelFont(); }
 

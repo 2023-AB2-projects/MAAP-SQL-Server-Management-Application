@@ -2,9 +2,11 @@ package frontend.center_panel;
 
 import frontend.other_elements.SQLDocument;
 import frontend.other_elements.TabConfig;
+import service.Utility;
 
-import javax.swing.text.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class CommandInputOutputPanel extends javax.swing.JPanel {
     public CommandInputOutputPanel() {
@@ -111,7 +113,45 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
 
     public void setInputTextAreaString(String string) { this.inputArea.setText(string); }
 
-    public void setOutputAreaString(String string) { this.outputArea.setText(string); }
+    public void setOutputAreaString(String string) {
+        // Change JTextPane color to white
+        Utility.setJTextPaneFontColor(this.outputArea, Color.WHITE);
+
+        this.outputArea.setText(string);
+
+        // Switch to first panel
+        this.outputTabbedPane.setSelectedIndex(0);
+    }
+
+    public void setErrorOutputAreaString(String error) {
+        // Change JTextPane color to red
+        Utility.setJTextPaneFontColor(this.outputArea, new Color(252, 9, 9));
+
+        this.outputArea.setText(error);
+
+        // Switch to first panel
+        this.outputTabbedPane.setSelectedIndex(0);
+    }
+
+    public void setOutputTableData(ArrayList<ArrayList<String>> data) {
+        // Replace current table data with given data
+        DefaultTableModel model = (DefaultTableModel) this.outputTable.getModel();
+
+        // Remove all existing rows from the table model
+        model.setRowCount(0);
+
+        // Iterate over the data ArrayList
+        for (final ArrayList<String> rowData : data) {
+            // Create an array of Objects for each inner ArrayList<String>
+            Object[] row = rowData.toArray();
+
+            // Add the array of Objects as a row to the table model
+            model.addRow(row);
+        }
+
+        // Switch to second panel
+        this.outputTabbedPane.setSelectedIndex(1);
+    }
 
     public void increaseFont() {
         Font font = this.inputArea.getFont();

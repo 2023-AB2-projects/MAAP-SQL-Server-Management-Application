@@ -6,7 +6,6 @@ import backend.databaseActions.DatabaseAction;
 import backend.databaseActions.createActions.CreateDatabaseAction;
 import backend.databaseModels.DatabaseModel;
 import backend.exceptions.databaseActionsExceptions.*;
-import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.responseObjects.SQLResponseObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +25,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,7 +196,7 @@ public class ServerController {
         }
     }
 
-    private void sendSQLResponseObject() throws IOException {
+    private void sendSQLResponseObjectToClient() throws IOException {
         // Establish socket connection
         Socket socket = new Socket("localhost", 4445);
 
@@ -250,7 +248,7 @@ public class ServerController {
                 serverConnection.send(jsonText);
 
                 // 2. Send message
-                this.sendSQLResponseObject();
+                this.sendSQLResponseObjectToClient();
 
             } catch (NullPointerException e){
                 serverConnection.stop();

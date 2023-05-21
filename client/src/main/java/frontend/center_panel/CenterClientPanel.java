@@ -3,6 +3,7 @@ package frontend.center_panel;
 import control.ClientController;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class CenterClientPanel extends javax.swing.JPanel {
     private ClientController clientController;
@@ -85,6 +86,10 @@ public class CenterClientPanel extends javax.swing.JPanel {
     public void setOutputAreaString(String string) {
         this.commandInputOutputPanel1.setOutputAreaString(string);
     }
+
+    public void setErrorOutputAreaString(String error) { this.commandInputOutputPanel1.setErrorOutputAreaString(error); }
+
+    public void setOutputTableData(ArrayList<ArrayList<String>> data) { this.commandInputOutputPanel1.setOutputTableData(data); }
 
     public void setClientController(ClientController clientController) {
         this.clientController = clientController;
