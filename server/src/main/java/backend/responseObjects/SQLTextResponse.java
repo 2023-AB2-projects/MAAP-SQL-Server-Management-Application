@@ -1,4 +1,4 @@
-package backend.response_objects;
+package backend.responseObjects;
 
 import lombok.Data;
 

@@ -7,6 +7,7 @@ import backend.databaseActions.createActions.CreateDatabaseAction;
 import backend.databaseModels.DatabaseModel;
 import backend.exceptions.databaseActionsExceptions.*;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
+import backend.responseObjects.SQLResponseObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -52,7 +53,11 @@ public class ServerController {
     @Getter
     private final int port = 4444;
 
+    // SQL response
     private CommandHandler commandHandler;
+    @Setter
+    private SQLResponseObject sqlResponseObject;
+
 
     /* Utility */
     private JsonNode findDatabaseNodeFromRoot(String databaseName, JsonNode rootNode) {
@@ -93,7 +98,7 @@ public class ServerController {
         // Check if database exists
         this.databaseNode = this.findDatabaseNodeFromRoot(ServerController.currentDatabaseName, this.rootNode);
         if(databaseNode == null) {
-            log.error("CreateTableAction -> Database doesn't exits: " + this.currentDatabaseName + "!");
+            log.error("CreateTableAction -> Database doesn't exits: " + currentDatabaseName + "!");
             throw new RuntimeException();
         }
 
@@ -160,21 +165,7 @@ public class ServerController {
     }
 
     private void initCatalog(File catalog) throws IOException {
-
         /* Build up basic catalog structure */
-        // Master node (it will be created using CreateDatabaseAction
-
-        /*
-        ObjectNode masterNode = JsonNodeFactory.instance.objectNode();
-        ObjectNode masterNodeValue = JsonNodeFactory.instance.objectNode();
-        masterNodeValue.put("databaseName", this.currentDatabaseName);
-        masterNodeValue.set("tables", JsonNodeFactory.instance.arrayNode());
-        masterNode.set("database", masterNodeValue);
-
-        // Databases node
-        ArrayNode databasesNode = JsonNodeFactory.instance.arrayNode();
-        databasesNode.add(masterNode);*/
-
         // Root node
         ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
         rootNode.set("databases", new ArrayNode(null));     // Base node with []
@@ -202,16 +193,6 @@ public class ServerController {
             log.error("Could not create 'records' folder -> IO exception!");
             throw new RuntimeException(e);
         }
-    }
-
-    private String databaseNamesSimple() {
-        StringBuilder simple = new StringBuilder();
-        for(int i = 0; i < this.databaseNames.size(); ++i) {
-            // Add database names with ',' separation
-            simple.append(this.databaseNames.get(i));
-            if(i != this.databaseNames.size() - 1) simple.append(",");
-        }
-        return simple.toString();
     }
 
     public void start(int port) throws IOException {
@@ -276,22 +257,4 @@ public class ServerController {
         serverConnection.fullStop();
     }
     /* /Server startup */
-
-    /* Process SQL string given by client,
-       Parser -> CommandProcessor -> Response to client
-     */
-    private void runCommand() {
-        // Parser -> DatabaseAction
-        // Process
-
-        // Send output to client
-
-
-        // Send updated databases list to client
-        this.updateRootNodeAndNamesList();
-        // Send to client database names list
-    }
-
-    private void invokeParser() {
-    }
 }
