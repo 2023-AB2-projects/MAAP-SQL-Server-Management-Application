@@ -1,7 +1,6 @@
 package frontend.center_panel;
 
-import frontend.visual_designers.visual_elements.SQLDocument;
-import lombok.Setter;
+import frontend.other_elements.SQLDocument;
 
 import javax.swing.text.*;
 import java.awt.*;

@@ -46,7 +46,7 @@ public class CommandPanel extends javax.swing.JPanel {
         });
 
         createAlterComboBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        createAlterComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "CREATE/ALTER", "CREATE DATABASE", "CREATE TABLE", "ALTER TABLE" }));
+        createAlterComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "CREATE/ALTER", "CREATE DATABASE", "CREATE TABLE", "CREATE INDEX", "CREATE UNIQUE INDEX", "ALTER TABLE" }));
         createAlterComboBox.setToolTipText("");
         createAlterComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -207,7 +207,9 @@ public class CommandPanel extends javax.swing.JPanel {
         switch (this.createAlterComboBox.getSelectedIndex()) {
             case 1 -> this.clientController.setInputTextAreaString(new CreateDatabaseTemplate().toString());
             case 2 -> this.clientController.setInputTextAreaString(new CreateTableTemplate().toString());
-            case 3 -> this.clientController.setInputTextAreaString(new AlterTableTemplate().toString());
+            case 3 -> this.clientController.setInputTextAreaString(new CreateNonUniqueIndexTemplate().toString());
+            case 4 -> this.clientController.setInputTextAreaString(new CreateUniqueIndexTemplate().toString());
+            case 5 -> this.clientController.setInputTextAreaString(new AlterTableTemplate().toString());
         }
 
         // Reset to basic index
