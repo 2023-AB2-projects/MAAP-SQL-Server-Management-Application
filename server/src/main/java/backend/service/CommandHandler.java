@@ -54,11 +54,9 @@ public class CommandHandler {
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Database dropped successfully!\nSwitched back to database 'master'!"));
         }
         if (databaseAction instanceof CreateTableAction) {
-            //serverController.updateRootNodeAndNamesList();
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Table created successfully!"));
         }
         if (databaseAction instanceof DropTableAction) {
-            //serverController.updateRootNodeAndNamesList();
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Table dropped successfully"));
         }
         if (databaseAction instanceof UseDatabaseAction) {

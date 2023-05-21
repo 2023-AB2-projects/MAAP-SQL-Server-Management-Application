@@ -26,11 +26,11 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
 
         // Create the red style with red font color
         redStyle = this.outputArea.addStyle("RedColorStyle", null);
-        StyleConstants.setForeground(redStyle, new Color(241, 68, 68));
+        StyleConstants.setForeground(redStyle, new Color(255, 111, 111));
 
         // Create the green style with green font color
         greenStyle = this.outputArea.addStyle("GreenColorStyle", null);
-        StyleConstants.setForeground(greenStyle, new Color(98, 253, 98));
+        StyleConstants.setForeground(greenStyle, new Color(160, 252, 160));
 
         doc.setParagraphAttributes(0, doc.getLength(), greenStyle, false);
     }

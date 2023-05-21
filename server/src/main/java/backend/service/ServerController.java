@@ -248,6 +248,26 @@ public class ServerController {
                 serverConnection.send(jsonText);
 
                 // 2. Send message
+                // For testing table sending
+//                if (new Random().nextInt(3) == 0) {
+//                    ArrayList<ArrayList<String>> rows = new ArrayList<>();
+//                    ArrayList<String> row1 = new ArrayList<>();
+//                    row1.add("a");
+//                    row1.add("a");
+//                    row1.add("a");
+//                    row1.add("a");
+//
+//                    ArrayList<String> row2 = new ArrayList<>();
+//                    row2.add("b");
+//                    row2.add("b");
+//                    row2.add("b");
+//                    row2.add("b");
+//                    rows.add(row1);
+//                    rows.add(row2);
+//
+//                    this.sqlResponseObject = new SQLResponseObject(rows);
+//                }
+
                 this.sendSQLResponseObjectToClient();
 
             } catch (NullPointerException e){
