@@ -7,9 +7,6 @@ import javax.swing.text.*;
 import java.awt.*;
 
 public class CommandInputOutputPanel extends javax.swing.JPanel {
-    @Setter
-    private CenterClientPanel centerClientPanel;
-
     public CommandInputOutputPanel() {
         initComponents();
 
