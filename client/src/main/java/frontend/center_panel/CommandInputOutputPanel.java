@@ -5,15 +5,34 @@ import frontend.other_elements.TabConfig;
 import service.Utility;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.util.ArrayList;
 
 public class CommandInputOutputPanel extends javax.swing.JPanel {
+    private static Style redStyle;
+    private static Style greenStyle;
+
     public CommandInputOutputPanel() {
         initComponents();
 
         // Setting the number of tabs and their length
         this.inputArea.setParagraphAttributes(TabConfig.getTabAttributeSet(), false);
+
+        // Get the text pane's document
+        StyledDocument doc = this.outputArea.getStyledDocument();
+
+        // Create the red style with red font color
+        redStyle = this.outputArea.addStyle("RedColorStyle", null);
+        StyleConstants.setForeground(redStyle, new Color(241, 68, 68));
+
+        // Create the green style with green font color
+        greenStyle = this.outputArea.addStyle("GreenColorStyle", null);
+        StyleConstants.setForeground(greenStyle, new Color(98, 253, 98));
+
+        doc.setParagraphAttributes(0, doc.getLength(), greenStyle, false);
     }
 
     /**
@@ -114,20 +133,22 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
     public void setInputTextAreaString(String string) { this.inputArea.setText(string); }
 
     public void setOutputAreaString(String string) {
-        // Change JTextPane color to white
-        Utility.setJTextPaneFontColor(this.outputArea, Color.WHITE);
-
         this.outputArea.setText(string);
+
+        // Change JTextPane color to white
+        StyledDocument doc = this.outputArea.getStyledDocument();
+        doc.setParagraphAttributes(0, doc.getLength(), greenStyle, false);
 
         // Switch to first panel
         this.outputTabbedPane.setSelectedIndex(0);
     }
 
     public void setErrorOutputAreaString(String error) {
-        // Change JTextPane color to red
-        Utility.setJTextPaneFontColor(this.outputArea, new Color(252, 9, 9));
-
         this.outputArea.setText(error);
+
+        // Change JTextPane color to red
+        StyledDocument doc = this.outputArea.getStyledDocument();
+        doc.setParagraphAttributes(0, doc.getLength(), redStyle, false);
 
         // Switch to first panel
         this.outputTabbedPane.setSelectedIndex(0);

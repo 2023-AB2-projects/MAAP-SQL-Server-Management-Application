@@ -72,10 +72,15 @@ public class CommandHandler {
         if (databaseAction instanceof DeleteFromAction) {
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Row(s) deleted successfully"));
         }
-
         if (databaseAction instanceof CreateIndexAction) {
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Index created successfully"));
         }
+        /* TODO: Complete when SELECT IS DONE
+        if (databaseAction instanceof SelectAction) {
+            ArrayList<ArrayList<String>> rows = (ArrayList<ArrayList<String>>) returnValue;
+            serverController.setSqlResponseObject(new SQLResponseObject(rows));
+        }
+        */
     }
 
     private void updateControllerNodes(Exception e) {
