@@ -3,6 +3,7 @@ package frontend.center_panel;
 import frontend.visual_designers.visual_elements.SQLDocument;
 import lombok.Setter;
 
+import javax.swing.text.*;
 import java.awt.*;
 
 public class CommandInputOutputPanel extends javax.swing.JPanel {
@@ -11,6 +12,18 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
 
     public CommandInputOutputPanel() {
         initComponents();
+
+        // Setting the number of tabs and their length
+        TabStop[] tabs = new TabStop[100];
+        for (int j = 0; j < tabs.length; j++) {
+            tabs[j] = new TabStop((j + 1) * 25);
+        }
+
+        TabSet tabSet = new TabSet(tabs);
+
+        SimpleAttributeSet attributes = new SimpleAttributeSet();
+        StyleConstants.setTabSet(attributes, tabSet);
+        this.inputArea.setParagraphAttributes(attributes, false);
     }
 
     /**

@@ -18,10 +18,7 @@ public class CenterClientPanel extends javax.swing.JPanel {
 
         // Font size
         Font font14 = new Font("Segoe UI", Font.PLAIN, 14);
-        Font font18 = new Font("Segoe UI", Font.PLAIN, 18);
         this.clientTabbedPane.setFont(font14);
-        this.commandInputOutputPanel1.setInputAreaFont(font18);
-        this.sqlCommandExecutionPanel.setFont(font18);
     }
     
     /**
