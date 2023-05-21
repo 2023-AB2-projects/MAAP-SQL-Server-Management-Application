@@ -1,6 +1,8 @@
 package control;
 
 import backend.MessageModes;
+import backend.responseObjects.SQLResponseObject;
+import backend.responseObjects.SQLTextResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import frontend.ClientFrame;
@@ -8,6 +10,11 @@ import frontend.ConnectionFrame;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
 import javax.swing.LookAndFeel;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -32,12 +39,23 @@ public class ClientController {
     @Getter
     private String currentDatabaseName;
 
+    // Connection logic
+    private final ServerSocket serverSocket;
+
     public ClientController() {
         // Init Client side components
         this.initComponents();
         
         // Init controller variables
         this.initVariables();
+
+        // Init server socket
+        try {
+            this.serverSocket = new ServerSocket(4445);
+        } catch (IOException e) {
+            log.error("Could not create server socket!");
+            throw new RuntimeException(e);
+        }
     }
 
     /* Utility */
@@ -86,6 +104,9 @@ public class ClientController {
                 this.currentDatabaseName = "master";
                 this.clientFrame.setCurrentDatabaseName(this.currentDatabaseName);
             }
+
+            // Update object explorer
+            this.clientFrame.updateObjectExplorer();
         }
     }
     /* / Utility */
@@ -110,49 +131,117 @@ public class ClientController {
     public String receiveMessage() throws IOException {
         return messageHandler.receiveMessage();
     }
+
+    private void stopClientSideIfNeeded(String response) {
+        if (response.equals("SERVER DISCONNECTED")) {
+            try {
+                this.stopConnection();
+            } catch (IOException e) {
+                log.info("Server is no longer running");
+                System.exit(0);
+            }
+
+            // Before stopping
+            try {
+                this.serverSocket.close();
+            } catch (IOException e) {
+                log.error("Could not close server socket!");
+                throw new RuntimeException(e);
+            }
+
+            log.info("Server was shut down");
+            System.exit(0);
+        }
+    }
+
+    private SQLResponseObject receiveSQLResponseObject() throws IOException {
+        // Wait for client connection
+        Socket socket =  this.serverSocket.accept();
+
+        // Get input stream
+        InputStream inputStream = socket.getInputStream();
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+
+        // Receive the object
+        SQLResponseObject receivedObject;
+        try {
+            receivedObject = (SQLResponseObject) objectInputStream.readObject();
+        } catch (ClassNotFoundException e) {
+            log.error("Could not find SQL object class!");
+            throw new RuntimeException(e);
+        }
+
+        // Close the streams and socket
+        objectInputStream.close();
+        inputStream.close();
+        socket.close();
+
+        return receivedObject;
+    }
     
     /* Message logic */
     // method receives message from server and performs action determined by mode param
     public void receiveMessageAndPerformAction(int mode) {
-        try {
-            String response = this.receiveMessage();
+        switch(mode) {
+            case MessageModes.setTextArea -> {
+                SQLResponseObject responseObject;
+                try {
+                    responseObject = this.receiveSQLResponseObject();
+                } catch (IOException e) {
+                    log.error(e.getMessage());
+                    log.error("Failed to receive SQL response object!");
+                    throw new RuntimeException(e);
+                }
 
-            if (response.equals("SERVER DISCONNECTED")) {
-                this.stopConnection();
-                log.info("Server was shut down");
-                System.exit(0);
-            }
+                // Check response contents
+                // If it's text content -> Can be output or error
+                boolean isTextResponse = responseObject.getIsTextResponse();
+                if (isTextResponse) {
+                    SQLTextResponse textResponse = responseObject.getTextResponse();
 
-            switch(mode) {
-                case MessageModes.setTextArea -> {
-                    log.info("Updated output textArea!");
-                    this.setOutputAreaString(response);
+                    // Check if it's error message
+                    if (textResponse.isError()) {
+                        String errorMessage = textResponse.getText();
 
-                    // Check if we need to update current database
-                    if(response.contains("Now using ")) {
-                        String currentDatabaseName = response.split("Now using ")[1];
-                        log.info("Current database name: " + currentDatabaseName);
-                        this.currentDatabaseName = currentDatabaseName;
-                        this.clientFrame.setCurrentDatabaseName(this.currentDatabaseName);
+                        // Set output error string
+                        this.clientFrame.setErrorOutputAreaString(errorMessage);
+
+                    } else {
+                        String commandOutput = textResponse.getText();
+                        this.setOutputAreaString(commandOutput);
+
+                        // Check if we need to update current database
+                        if(commandOutput.contains("Now using ")) {
+                            String currentDatabaseName = commandOutput.split("Now using ")[1];
+                            log.info("Current database name: " + currentDatabaseName);
+                            this.currentDatabaseName = currentDatabaseName;
+                            this.clientFrame.setCurrentDatabaseName(this.currentDatabaseName);
+                        }
+                        log.info("Updated output textArea (Non-error)!");
                     }
+                } else {
+                    // We received table data
+                    this.setOutputTableData(responseObject.getTableData());
+                    log.info("Updated output table data!");
                 }
-                case MessageModes.refreshJSONCatalog -> {
-                    log.info("RefreshCatalog mode!");
-
-                    this.updateJSON(response);
-
-                    // Update object explorer
-                    this.clientFrame.updateObjectExplorer();
-
-                    // Update tables combo boxes etc.
-                    this.clientFrame.update();
-                }
-
             }
-            
-        } catch (IOException e) {
-            log.info("Server is no longer running");
-            System.exit(0);
+            case MessageModes.refreshJSONCatalog -> {
+                String response = null;
+                try {
+                    response = this.receiveMessage();
+                } catch (IOException e) {
+                    log.error("Could not receive message from server!");
+                    System.exit(1);
+                }
+
+                // Check if server was shut down
+                this.stopClientSideIfNeeded(response);
+                this.updateJSON(response);
+
+                // Update tables combo boxes etc.
+                this.clientFrame.update();
+            }
+
         }
     }
 
@@ -162,6 +251,8 @@ public class ClientController {
     public void setInputTextAreaString(String inputTextAreaString) { this.clientFrame.setInputTextAreaString(inputTextAreaString);}
     
     public void setOutputAreaString(String string) { this.clientFrame.setOutputAreaString(string); }
+
+    public void setOutputTableData(ArrayList<ArrayList<String>> data) { this.clientFrame.setOutputTableData(data); }
 
     public void increaseCenterPanelFont() { this.clientFrame.increaseCenterPanelFont(); }
 

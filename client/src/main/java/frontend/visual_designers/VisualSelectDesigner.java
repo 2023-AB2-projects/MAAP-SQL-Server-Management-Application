@@ -16,9 +16,6 @@ public class VisualSelectDesigner extends javax.swing.JPanel {
 
         // Disable second panel first
         this.tabbedPanel.setEnabledAt(1, false);
-
-        // Update information
-        this.selectTablesPanel.updateDatabase("master");
     }
 
     public void switchToSelectorPanel(String databaseName, List<String> tableNames) {
@@ -39,6 +36,11 @@ public class VisualSelectDesigner extends javax.swing.JPanel {
     }
 
     public void update(String databaseName) {
+        // If no database name is set -> Set it
+        if (this.selectTablesPanel.getDatabaseName() == null) {
+            this.selectTablesPanel.updateDatabase(databaseName);
+        }
+
         // Update select tables panel
         if (!this.selectTablesPanel.getDatabaseName().equals(databaseName)) {
             // Update table selection

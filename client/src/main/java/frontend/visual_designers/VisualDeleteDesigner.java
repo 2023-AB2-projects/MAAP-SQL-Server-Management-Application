@@ -2,7 +2,7 @@ package frontend.visual_designers;
 
 import control.ClientController;
 import frontend.center_panel.CenterClientPanel;
-import frontend.visual_designers.visual_elements.SQLDocument;
+import frontend.other_elements.SQLDocument;
 import lombok.Setter;
 import service.CatalogManager;
 

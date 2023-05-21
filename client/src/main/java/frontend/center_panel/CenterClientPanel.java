@@ -3,6 +3,7 @@ package frontend.center_panel;
 import control.ClientController;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class CenterClientPanel extends javax.swing.JPanel {
     private ClientController clientController;
@@ -11,17 +12,9 @@ public class CenterClientPanel extends javax.swing.JPanel {
         initComponents();
 
         // Set references
-        this.commandInputOutputPanel1.setCenterClientPanel(this);
         this.visualInsertDesignerPanel.setCenterClientPanel(this);
         this.visualDeleteDesignerPanel.setCenterClientPanel(this);
         this.visualSelectDesignerPanel.setCenterClientPanel(this);
-
-        // Font size
-        Font font14 = new Font("Segoe UI", Font.PLAIN, 14);
-        Font font18 = new Font("Segoe UI", Font.PLAIN, 18);
-        this.clientTabbedPane.setFont(font14);
-        this.commandInputOutputPanel1.setInputAreaFont(font18);
-        this.sqlCommandExecutionPanel.setFont(font18);
     }
     
     /**
@@ -42,6 +35,7 @@ public class CenterClientPanel extends javax.swing.JPanel {
         visualSelectDesignerPanel = new frontend.visual_designers.VisualSelectDesigner();
 
         clientTabbedPane.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        clientTabbedPane.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         clientTabbedPane.setMinimumSize(new java.awt.Dimension(900, 900));
         clientTabbedPane.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -92,6 +86,10 @@ public class CenterClientPanel extends javax.swing.JPanel {
     public void setOutputAreaString(String string) {
         this.commandInputOutputPanel1.setOutputAreaString(string);
     }
+
+    public void setErrorOutputAreaString(String error) { this.commandInputOutputPanel1.setErrorOutputAreaString(error); }
+
+    public void setOutputTableData(ArrayList<ArrayList<String>> data) { this.commandInputOutputPanel1.setOutputTableData(data); }
 
     public void setClientController(ClientController clientController) {
         this.clientController = clientController;

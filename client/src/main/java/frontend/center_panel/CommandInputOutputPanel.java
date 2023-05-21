@@ -1,16 +1,38 @@
 package frontend.center_panel;
 
-import frontend.visual_designers.visual_elements.SQLDocument;
-import lombok.Setter;
+import frontend.other_elements.SQLDocument;
+import frontend.other_elements.TabConfig;
+import service.Utility;
 
+import javax.swing.table.DefaultTableModel;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class CommandInputOutputPanel extends javax.swing.JPanel {
-    @Setter
-    private CenterClientPanel centerClientPanel;
+    private static Style redStyle;
+    private static Style greenStyle;
 
     public CommandInputOutputPanel() {
         initComponents();
+
+        // Setting the number of tabs and their length
+        this.inputArea.setParagraphAttributes(TabConfig.getTabAttributeSet(), false);
+
+        // Get the text pane's document
+        StyledDocument doc = this.outputArea.getStyledDocument();
+
+        // Create the red style with red font color
+        redStyle = this.outputArea.addStyle("RedColorStyle", null);
+        StyleConstants.setForeground(redStyle, new Color(255, 111, 111));
+
+        // Create the green style with green font color
+        greenStyle = this.outputArea.addStyle("GreenColorStyle", null);
+        StyleConstants.setForeground(greenStyle, new Color(160, 252, 160));
+
+        doc.setParagraphAttributes(0, doc.getLength(), greenStyle, false);
     }
 
     /**
@@ -23,32 +45,75 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         commandSplitPane = new javax.swing.JSplitPane();
-        outputScrollPanel = new javax.swing.JScrollPane();
-        outputArea = new javax.swing.JTextArea();
         input = new javax.swing.JScrollPane();
         inputArea = new javax.swing.JTextPane();
+        outputTabbedPane = new javax.swing.JTabbedPane();
+        outputAreaScrollPanel = new javax.swing.JScrollPane();
+        outputArea = new javax.swing.JTextPane();
+        outputTableScrollPanel = new javax.swing.JScrollPane();
+        outputTable = new javax.swing.JTable();
 
         setMinimumSize(new java.awt.Dimension(900, 1000));
         setPreferredSize(new java.awt.Dimension(900, 900));
 
-        commandSplitPane.setDividerLocation(450);
+        commandSplitPane.setDividerLocation(500);
         commandSplitPane.setDividerSize(3);
         commandSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-
-        outputArea.setEditable(false);
-        outputArea.setColumns(20);
-        outputArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        outputArea.setRows(5);
-        outputArea.setText("COMMAND OUTPUT");
-        outputScrollPanel.setViewportView(outputArea);
-
-        commandSplitPane.setRightComponent(outputScrollPanel);
 
         inputArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         inputArea.setStyledDocument(new SQLDocument());
         input.setViewportView(inputArea);
 
         commandSplitPane.setLeftComponent(input);
+
+        outputTabbedPane.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        outputArea.setEditable(false);
+        outputArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        outputAreaScrollPanel.setViewportView(outputArea);
+
+        outputTabbedPane.addTab("Command Output", outputAreaScrollPanel);
+
+        outputTable.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        outputTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        outputTable.setGridColor(new java.awt.Color(102, 102, 102));
+        outputTable.setRowHeight(25);
+        outputTable.setShowGrid(true);
+        outputTable.getTableHeader().setReorderingAllowed(false);
+        outputTableScrollPanel.setViewportView(outputTable);
+
+        outputTabbedPane.addTab("Table Output", outputTableScrollPanel);
+
+        commandSplitPane.setRightComponent(outputTabbedPane);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -67,7 +132,47 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
 
     public void setInputTextAreaString(String string) { this.inputArea.setText(string); }
 
-    public void setOutputAreaString(String string) { this.outputArea.setText(string); }
+    public void setOutputAreaString(String string) {
+        this.outputArea.setText(string);
+
+        // Change JTextPane color to white
+        StyledDocument doc = this.outputArea.getStyledDocument();
+        doc.setParagraphAttributes(0, doc.getLength(), greenStyle, false);
+
+        // Switch to first panel
+        this.outputTabbedPane.setSelectedIndex(0);
+    }
+
+    public void setErrorOutputAreaString(String error) {
+        this.outputArea.setText(error);
+
+        // Change JTextPane color to red
+        StyledDocument doc = this.outputArea.getStyledDocument();
+        doc.setParagraphAttributes(0, doc.getLength(), redStyle, false);
+
+        // Switch to first panel
+        this.outputTabbedPane.setSelectedIndex(0);
+    }
+
+    public void setOutputTableData(ArrayList<ArrayList<String>> data) {
+        // Replace current table data with given data
+        DefaultTableModel model = (DefaultTableModel) this.outputTable.getModel();
+
+        // Remove all existing rows from the table model
+        model.setRowCount(0);
+
+        // Iterate over the data ArrayList
+        for (final ArrayList<String> rowData : data) {
+            // Create an array of Objects for each inner ArrayList<String>
+            Object[] row = rowData.toArray();
+
+            // Add the array of Objects as a row to the table model
+            model.addRow(row);
+        }
+
+        // Switch to second panel
+        this.outputTabbedPane.setSelectedIndex(1);
+    }
 
     public void increaseFont() {
         Font font = this.inputArea.getFont();
@@ -97,7 +202,10 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
     private javax.swing.JSplitPane commandSplitPane;
     private javax.swing.JScrollPane input;
     private javax.swing.JTextPane inputArea;
-    private javax.swing.JTextArea outputArea;
-    private javax.swing.JScrollPane outputScrollPanel;
+    private javax.swing.JTextPane outputArea;
+    private javax.swing.JScrollPane outputAreaScrollPanel;
+    private javax.swing.JTabbedPane outputTabbedPane;
+    private javax.swing.JTable outputTable;
+    private javax.swing.JScrollPane outputTableScrollPanel;
     // End of variables declaration//GEN-END:variables
 }

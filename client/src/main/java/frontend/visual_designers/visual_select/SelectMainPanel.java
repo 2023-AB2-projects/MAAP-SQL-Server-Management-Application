@@ -1,7 +1,7 @@
 package frontend.visual_designers.visual_select;
 
 import frontend.center_panel.CenterClientPanel;
-import frontend.visual_designers.visual_elements.SQLDocument;
+import frontend.other_elements.SQLDocument;
 import lombok.extern.slf4j.Slf4j;
 import service.CatalogManager;
 import service.ForeignKeyModel;

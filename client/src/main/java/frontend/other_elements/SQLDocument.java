@@ -1,4 +1,4 @@
-package frontend.visual_designers.visual_elements;
+package frontend.other_elements;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.*;
@@ -16,14 +16,14 @@ public class SQLDocument extends DefaultStyledDocument {
     private final String[] RESERVED_KEYWORDS = {
             "create", "drop", "database", "table",
             "select", "from", "where", "group", "order", "by",
-            "update", "set",
+            "update", "set", "index",
             "insert", "into", "values",
             "delete", "from", "on", "use", "as",
             "inner", "join", "alter", "add", "having", "constraint",
             "foreign", "primary", "key", "unique", "references",
             "CREATE", "DROP", "DATABASE", "TABLE",
             "SELECT", "FROM", "WHERE", "GROUP", "ORDER", "BY",
-            "UPDATE", "SET",
+            "UPDATE", "SET", "INDEX",
             "INSERT", "INTO", "VALUES", "AS",
             "DELETE", "FROM", "ON", "USE", "HAVING", "CONSTRAINT",
             "FOREIGN", "PRIMARY", "KEY", "UNIQUE", "REFERENCES",
