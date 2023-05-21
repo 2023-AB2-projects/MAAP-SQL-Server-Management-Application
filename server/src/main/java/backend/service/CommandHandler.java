@@ -44,7 +44,6 @@ public class CommandHandler {
     private void updateControllerNodes(DatabaseAction databaseAction, Object returnValue) {
         if (databaseAction instanceof CreateDatabaseAction) {
             serverController.updateRootNodeAndNamesList();
-            serverController.setResponse("Database created successfully!");
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Database created successfully!"));
         }
         if (databaseAction instanceof DropDatabaseAction) {
@@ -52,43 +51,34 @@ public class CommandHandler {
             ServerController.setCurrentDatabaseName("master");
 
             serverController.updateRootNodeAndNamesList();
-            serverController.setResponse("Database dropped successfully!\nSwitched back to database 'master'!");
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Database dropped successfully!\nSwitched back to database 'master'!"));
         }
         if (databaseAction instanceof CreateTableAction) {
             //serverController.updateRootNodeAndNamesList();
-            serverController.setResponse("Table created successfully!");
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Table created successfully!"));
         }
         if (databaseAction instanceof DropTableAction) {
             //serverController.updateRootNodeAndNamesList();
-            serverController.setResponse("Table dropped successfully");
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Table dropped successfully"));
         }
         if (databaseAction instanceof UseDatabaseAction) {
             ServerController.setCurrentDatabaseName((String) returnValue);
-            serverController.setResponse("Now using " + returnValue);
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Now using " + returnValue));
         }
         if (databaseAction instanceof InsertIntoAction) {
             int rowCount = (int) returnValue;
-            serverController.setResponse("Inserted " + rowCount + " rows into table succesfully!");
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Inserted " + rowCount + " rows into table succesfully!"));
         }
         if (databaseAction instanceof DeleteFromAction) {
-            serverController.setResponse("Row(s) deleted successfully");
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Row(s) deleted successfully"));
         }
 
         if (databaseAction instanceof CreateIndexAction) {
-            serverController.setResponse("Index created successfully");
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Index created successfully"));
         }
     }
 
     private void updateControllerNodes(Exception e) {
-        serverController.setResponse(e.getMessage());
-
         // Create SQL response object to send to client
         serverController.setSqlResponseObject(new SQLResponseObject(true, e.getMessage()));
     }
