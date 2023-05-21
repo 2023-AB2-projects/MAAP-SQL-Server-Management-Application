@@ -2,8 +2,10 @@ package backend.responseObjects;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class SQLTextResponse {
+public class SQLTextResponse implements Serializable {
     private boolean isError;
     private String text;
 

@@ -20,6 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -195,6 +198,23 @@ public class ServerController {
         }
     }
 
+    private void sendSQLResponseObject() throws IOException {
+        // Establish socket connection
+        Socket socket = new Socket("localhost", 4445);
+
+        // Get output stream
+        OutputStream outputStream = socket.getOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+
+        // Write object to stream (send object to client)
+        objectOutputStream.writeObject(this.sqlResponseObject);
+
+        // Close the streams and socket
+        objectOutputStream.close();
+        outputStream.close();
+        socket.close();
+    }
+
     public void start(int port) throws IOException {
 
         ServerConnection serverConnection = new ServerConnection(port);
@@ -222,6 +242,7 @@ public class ServerController {
                 // pass message to parser and receive the answer
                 setSqlCommand(msg);         // if the client message is a sql command, then execute it
 
+                // Process command and save response into local object
                 commandHandler.processCommand();
 
                 // 1. Send JSON Catalog
@@ -229,7 +250,7 @@ public class ServerController {
                 serverConnection.send(jsonText);
 
                 // 2. Send message
-                serverConnection.send(getResponse());
+                this.sendSQLResponseObject();
 
             } catch (NullPointerException e){
                 serverConnection.stop();

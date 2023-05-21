@@ -2,10 +2,11 @@ package backend.responseObjects;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 @Data
-public class SQLResponseObject {
+public class SQLResponseObject implements Serializable {
     // SQL response can contain a text message that is error or not
     private SQLTextResponse textResponse;
 

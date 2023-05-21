@@ -1,14 +1,18 @@
 package control;
 
 import backend.MessageModes;
+import backend.responseObjects.SQLResponseObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.util.StringUtils;
 import frontend.ClientFrame;
 import frontend.ConnectionFrame;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import javax.swing.LookAndFeel;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -33,12 +37,23 @@ public class ClientController {
     @Getter
     private String currentDatabaseName;
 
+    // Connection logic
+    private final ServerSocket serverSocket;
+
     public ClientController() {
         // Init Client side components
         this.initComponents();
         
         // Init controller variables
         this.initVariables();
+
+        // Init server socket
+        try {
+            this.serverSocket = new ServerSocket(4445);
+        } catch (IOException e) {
+            log.error("Could not create server socket!");
+            throw new RuntimeException(e);
+        }
     }
 
     /* Utility */
@@ -114,46 +129,126 @@ public class ClientController {
     public String receiveMessage() throws IOException {
         return messageHandler.receiveMessage();
     }
+
+    private void stopClientSideIfNeeded(String response) {
+        if (response.equals("SERVER DISCONNECTED")) {
+            try {
+                this.stopConnection();
+            } catch (IOException e) {
+                log.info("Server is no longer running");
+                System.exit(0);
+            }
+
+            // Before stopping
+            try {
+                this.serverSocket.close();
+            } catch (IOException e) {
+                log.error("Could not close server socket!");
+                throw new RuntimeException(e);
+            }
+
+            log.info("Server was shut down");
+            System.exit(0);
+        }
+    }
+
+    private SQLResponseObject receiveSQLResponseObject() {
+        // Wait for client connection
+        Socket socket;
+        try {
+            socket = this.serverSocket.accept();
+        } catch (IOException e) {
+            log.error("Could not accept client connection!");
+            throw new RuntimeException(e);
+        }
+
+        // Get input stream
+        InputStream inputStream;
+        try {
+            inputStream = socket.getInputStream();
+        } catch (IOException e) {
+            log.error("Could not get input stream!");
+            throw new RuntimeException(e);
+        }
+
+        ObjectInputStream objectInputStream;
+        try {
+            objectInputStream = new ObjectInputStream(inputStream);
+        } catch (IOException e) {
+            log.error("Could not create object input stream!");
+            throw new RuntimeException(e);
+        }
+
+        // Receive the object
+        SQLResponseObject receivedObject;
+        try {
+            receivedObject = (SQLResponseObject) objectInputStream.readObject();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            log.error("Could not find SQL object class!");
+            throw new RuntimeException(e);
+        }
+
+        // Close the streams and socket
+        try {
+            objectInputStream.close();
+            inputStream.close();
+            socket.close();
+        } catch (IOException e) {
+            log.error("Could not close streams and socket!");
+            throw new RuntimeException(e);
+        }
+
+        return receivedObject;
+    }
     
     /* Message logic */
     // method receives message from server and performs action determined by mode param
     public void receiveMessageAndPerformAction(int mode) {
-        try {
-            String response = this.receiveMessage();
+        switch(mode) {
+            case MessageModes.setTextArea -> {
+                SQLResponseObject responseObject = this.receiveSQLResponseObject();
+                System.out.println(responseObject);
 
-            if (response.equals("SERVER DISCONNECTED")) {
-                this.stopConnection();
-                log.info("Server was shut down");
-                System.exit(0);
+//                String response = null;
+//                try {
+//                    response = this.receiveMessage();
+//                } catch (IOException e) {
+//                    log.error("Could not receive message from server!");
+//                    System.exit(1);
+//                }
+
+                String response = "temp";
+
+                log.info("Updated output textArea!");
+                this.setOutputAreaString(response);
+
+                // Check if we need to update current database
+                if(response.contains("Now using ")) {
+                    String currentDatabaseName = response.split("Now using ")[1];
+                    log.info("Current database name: " + currentDatabaseName);
+                    this.currentDatabaseName = currentDatabaseName;
+                    this.clientFrame.setCurrentDatabaseName(this.currentDatabaseName);
+                }
+            }
+            case MessageModes.refreshJSONCatalog -> {
+                String response = null;
+                try {
+                    response = this.receiveMessage();
+                } catch (IOException e) {
+                    log.error("Could not receive message from server!");
+                    System.exit(1);
+                }
+
+                // Check if server was shut down
+                this.stopClientSideIfNeeded(response);
+                this.updateJSON(response);
+
+                // Update tables combo boxes etc.
+                this.clientFrame.update();
             }
 
-            switch(mode) {
-                case MessageModes.setTextArea -> {
-                    log.info("Updated output textArea!");
-                    this.setOutputAreaString(response);
-
-                    // Check if we need to update current database
-                    if(response.contains("Now using ")) {
-                        String currentDatabaseName = response.split("Now using ")[1];
-                        log.info("Current database name: " + currentDatabaseName);
-                        this.currentDatabaseName = currentDatabaseName;
-                        this.clientFrame.setCurrentDatabaseName(this.currentDatabaseName);
-                    }
-                }
-                case MessageModes.refreshJSONCatalog -> {
-                    log.info("RefreshCatalog mode!");
-
-                    this.updateJSON(response);
-
-                    // Update tables combo boxes etc.
-                    this.clientFrame.update();
-                }
-
-            }
-            
-        } catch (IOException e) {
-            log.info("Server is no longer running");
-            System.exit(0);
         }
     }
 
