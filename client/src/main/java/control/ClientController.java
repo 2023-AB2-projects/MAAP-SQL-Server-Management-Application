@@ -3,6 +3,7 @@ package control;
 import backend.MessageModes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.util.StringUtils;
 import frontend.ClientFrame;
 import frontend.ConnectionFrame;
 
@@ -86,6 +87,9 @@ public class ClientController {
                 this.currentDatabaseName = "master";
                 this.clientFrame.setCurrentDatabaseName(this.currentDatabaseName);
             }
+
+            // Update object explorer
+            this.clientFrame.updateObjectExplorer();
         }
     }
     /* / Utility */
@@ -140,9 +144,6 @@ public class ClientController {
                     log.info("RefreshCatalog mode!");
 
                     this.updateJSON(response);
-
-                    // Update object explorer
-                    this.clientFrame.updateObjectExplorer();
 
                     // Update tables combo boxes etc.
                     this.clientFrame.update();
