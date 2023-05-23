@@ -35,4 +35,23 @@ public class FunctionCall implements Condition {
             throw new IllegalArgumentException("FunctionCall constructor parameters `args` does not match the number of arguments for the function " + function + " (expected " + Function.getNumArgs(function) + ", got " + numArgsGotten + ")");
         }
     }
+
+    @Override
+    public String toString() {
+        String s = "";
+
+        if (fieldTable != null) s += fieldTable + ".";
+        s += fieldName + " " + function + "(";
+
+        if (args != null) {
+            for (int i = 0; i < args.size(); i++) {
+                s += args.get(i);
+                if (i != args.size() - 1) s += ", ";
+            }
+        }
+
+        s += ")";
+
+        return s;
+    }
 }

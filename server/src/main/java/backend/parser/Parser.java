@@ -25,8 +25,9 @@ public class Parser {
         "insert", "into", "values",
         "delete", "from",
         "(", ")", ",",
-        "!=", "=", ">=", "<=", ">", "<",
-        "foreign", "primary", "key", "unique", "references"
+        "!=", "=", ">=", "<=", ">", "<", "between",
+        "foreign", "primary", "key", "unique", "references",
+        "and"
     };
     private static String[] ATTRIBUTE_TYPES = {
         "int", "float", "bit", "date", "datetime", "char"
@@ -143,8 +144,8 @@ public class Parser {
     private DatabaseAction parseSelect(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
         ArrayList<String> columnsTables = new ArrayList<>();
         ArrayList<String> columns = new ArrayList<>();
-
-        String fromTable;
+        String fromTable = null;
+        ArrayList<Condition> conditions = new ArrayList<>();
 
         SELECT_STATE state = SELECT_STATE.SELECT;
 
@@ -226,16 +227,67 @@ public class Parser {
                     break;
                 }
                 case WHERE: {
-                    String field1 = it.next();
+                    String field1TableName = null, field1ColumnName;
+                    String field2TableName = null, field2ColumnName;
 
+                    // where condition always starts with at least a field
+                    String field1 = it.next();
+                    String[] split = field1.split("[.]", 2);
+                    if (split.length == 2) {
+                        field1TableName = split[0];
+                        field1ColumnName = split[1];
+
+                        checkName(field1TableName, NAME_TYPE.TABLE);
+                        // TODO: maybe check column name too?
+                    } else {
+                        field1ColumnName = field1;
+                    }
+
+                    // next we get a function or operator (between, <, >, =, etc)
                     String opOrFunc = it.next();
 
+                    // case for operator
                     if (Operator.isValidOperator(opOrFunc)) {
-                        String field2 = it.next();
-                    } else if (Function.isValidFunction(opOrFunc)) {
+                        Operator op = Operator.getOperator(opOrFunc);
 
-                    } else {
+                        String field2 = it.next();
+                        split = field2.split("[.]", 2);
+                        if (split.length == 2) {
+                            field2TableName = split[0];
+                            field2ColumnName = split[1];
+
+                            checkName(field1TableName, NAME_TYPE.TABLE);
+                            // TODO: maybe check column name too?
+                        } else {
+                            field2ColumnName = field2;
+                        }
+
+                        Equation c = new Equation(field1TableName, field1ColumnName, op, field2TableName, field2ColumnName);
+                        conditions.add(c);
+                    } // case for function
+                    else if (Function.isValidFunction(opOrFunc)) {
+                        Function func = Function.getFunction(opOrFunc);
+
+                        int numArgs = Function.getNumArgs(func);
+
+                        ArrayList<String> args = new ArrayList<>();
+                        for (int i=0; i<numArgs; i++) {
+                            String arg = it.next();
+                            args.add(arg);
+                        }
+
+                        FunctionCall fc = new FunctionCall(field1TableName, field1ColumnName, func, args);
+                        conditions.add(fc);
+                    }
+                    else {
                         throw (new SQLParseException("Expected operator or function after field name in WHERE clause"));
+                    }
+
+                    if (it.hasNext()) {
+                        String nextToken = it.next();
+                        if (nextToken.equals("and")) {
+                            continue;
+                        }
                     }
 
                     if (!it.hasNext()) {
@@ -244,6 +296,11 @@ public class Parser {
                 }
             }
         }
+
+        System.out.println(fromTable);
+        System.out.println(columnsTables);
+        System.out.println(columns);
+        System.out.println(conditions);
 
         // return new SelectAction(databaseName, columnsTables, columns, fromTable, whereClause);
         return null;
