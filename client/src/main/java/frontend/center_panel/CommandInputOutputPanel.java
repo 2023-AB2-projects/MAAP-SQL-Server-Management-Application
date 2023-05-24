@@ -2,7 +2,6 @@ package frontend.center_panel;
 
 import frontend.other_elements.SQLDocument;
 import frontend.other_elements.TabConfig;
-import service.Utility;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.Style;
@@ -33,6 +32,10 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
         StyleConstants.setForeground(greenStyle, new Color(160, 252, 160));
 
         doc.setParagraphAttributes(0, doc.getLength(), greenStyle, false);
+
+        // By default, the output is a text area
+        this.outputTabbedPane.setSelectedIndex(0);
+        this.outputTabbedPane.setEnabledAt(1, false);   // Disable table panel
     }
 
     /**
@@ -155,6 +158,9 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
     }
 
     public void setOutputTableData(ArrayList<String> fieldNames, ArrayList<ArrayList<String>> data) {
+        // Enable table panel
+        this.outputTabbedPane.setEnabledAt(1, true);
+
         // Replace current table data with given data
         DefaultTableModel model = new DefaultTableModel(fieldNames.toArray(), 0);
 
