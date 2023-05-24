@@ -2,6 +2,7 @@ package backend.service;
 
 import backend.config.Config;
 import backend.databaseModels.ForeignKeyModel;
+import backend.databaseModels.IndexFileModel;
 import backend.exceptions.recordHandlingExceptions.DeletedRecordLinesEmpty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -497,6 +498,58 @@ public class CatalogManager {
     /* ---------------- / Field types ---------------- */
 
     /* ------------------- Indexes ------------------- */
+    public static List<IndexFileModel> getUniqueIndexes(String databaseName, String tableName) {
+        List<IndexFileModel> indexFiles = new ArrayList<>();
+
+        // Find table JSON node
+        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+            throw new RuntimeException();
+        }
+
+        // Iterate over index files
+        for(final JsonNode indexFileNode : tableNode.get("indexFiles")) {
+            try {
+                IndexFileModel indexFile = Utility.getObjectMapper().readValue(indexFileNode.get("indexFile").toString(), new TypeReference<>() {});
+
+                // Only add unique index files
+                if (indexFile.isUnique()) indexFiles.add(indexFile);
+            } catch (JsonProcessingException e) {
+                log.error("Could not read foreignKeys JSON to objects!");
+                throw new RuntimeException(e);
+            }
+        }
+
+        return indexFiles;
+    }
+
+    public static List<IndexFileModel> getNonUniqueIndexes(String databaseName, String tableName) {
+        List<IndexFileModel> indexFiles = new ArrayList<>();
+
+        // Find table JSON node
+        JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
+        if(tableNode == null) {
+            log.error("In database=" + databaseName + ", table=" + tableName + " JSON node not found!");
+            throw new RuntimeException();
+        }
+
+        // Iterate over index files
+        for(final JsonNode indexFileNode : tableNode.get("indexFiles")) {
+            try {
+                IndexFileModel indexFile = Utility.getObjectMapper().readValue(indexFileNode.get("indexFile").toString(), new TypeReference<>() {});
+
+                // Only add non-unique indexes
+                if (!indexFile.isUnique()) indexFiles.add(indexFile);
+            } catch (JsonProcessingException e) {
+                log.error("Could not read foreignKeys JSON to objects!");
+                throw new RuntimeException(e);
+            }
+        }
+
+        return indexFiles;
+    }
+
     public static List<String> getIndexFileNames(String databaseName, String tableName) {
         ArrayList<String> fileNames = new ArrayList<>();
 
