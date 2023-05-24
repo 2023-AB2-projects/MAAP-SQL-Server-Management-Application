@@ -9,6 +9,8 @@ import backend.databaseActions.miscActions.*;
 import backend.databaseModels.*;
 import backend.exceptions.InvalidSQLCommand;
 import backend.exceptions.SQLParseException;
+import backend.databaseModels.conditions.*;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.iterators.PeekingIterator;
 
@@ -23,8 +25,9 @@ public class Parser {
         "insert", "into", "values",
         "delete", "from",
         "(", ")", ",",
-        "!=", "=", ">=", "<=", ">", "<",
-        "foreign", "primary", "key", "unique", "references"
+        "!=", "=", ">=", "<=", ">", "<", "between",
+        "foreign", "primary", "key", "unique", "references",
+        "and"
     };
     private static String[] ATTRIBUTE_TYPES = {
         "int", "float", "bit", "date", "datetime", "char"
@@ -92,8 +95,11 @@ public class Parser {
         try {
             String firstWord = it.next();
 
-            if (firstWord.equals(("use"))) {
+            if (firstWord.equals("use")) {
                 return parseUseDatabase(tokens, it);
+            }
+            else if (firstWord.equals("select")) {
+                return parseSelect(tokens, databaseName, it);
             }
             else {
                 String secondWord = it.next();
@@ -130,6 +136,174 @@ public class Parser {
         }
 
         throw (new SQLParseException("Invalid SQL command"));
+    }
+
+    private enum SELECT_STATE {
+        SELECT, FROM, JOIN, WHERE, END
+    }
+    private DatabaseAction parseSelect(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
+        ArrayList<String> columnsTables = new ArrayList<>();
+        ArrayList<String> columns = new ArrayList<>();
+        String fromTable = null;
+        ArrayList<Condition> conditions = new ArrayList<>();
+
+        SELECT_STATE state = SELECT_STATE.SELECT;
+
+        while (state != SELECT_STATE.END) {
+            switch (state) {
+                case SELECT: {
+                    while (true) {
+                        if (!it.hasNext()) {
+                            throw (new SQLParseException("Unexpected end of input in SELECT clause"));
+                        }
+
+                        String nextToken = it.next();
+                        if (nextToken.equals("from")) {
+                            if (columns.size() == 0) {
+                                throw (new SQLParseException("Missing column name(s) between `select` and `from`"));
+                            }
+                            state = SELECT_STATE.FROM;
+                            break;
+                        } else if (nextToken.equals(",")) {
+                            if (columns.size() == 0) {
+                                throw (new SQLParseException("Missing column name(s) between `select` and `,`"));
+                            }
+                            // continue
+                        } else if (nextToken.equals("*")) {
+                            columnsTables.add(null);
+                            columns.add(nextToken);
+                            // continue
+                        } else {
+                            String field = nextToken;
+
+                            if (field.contains(".")) {
+                                String[] split = field.split("[.]", 2);
+
+                                String tableName = split[0];
+                                String columnName = split[1];
+
+                                checkName(tableName, NAME_TYPE.TABLE);
+                                checkName(columnName, NAME_TYPE.COLUMN);
+
+                                columnsTables.add(tableName);
+                                columns.add(columnName);
+                            } else {
+                                checkName(field, NAME_TYPE.COLUMN);
+
+                                columnsTables.add(null);
+                                columns.add(field);
+                            }
+                        }
+                    }
+
+                    break;
+                }
+                case FROM: {
+                    if (!it.hasNext()) {
+                        throw (new SQLParseException("Expected table name after `from`"));
+                    }
+                    String tableName = it.next();
+                    checkName(tableName, NAME_TYPE.TABLE);
+
+                    fromTable = tableName;
+
+                    // Select that ends on FROM clause is valid, check for end of input
+                    if (!it.hasNext()) {
+                        state = SELECT_STATE.END;
+                        break;
+                    }
+
+                    // Else go onto next clause: join or where
+                    // TODO after adding GROUP BY, add it here
+                    String nextToken = it.next();
+                    if (nextToken.equals("join")) {
+                        // TODO: Implement JOIN clause into switch statement
+                        state = SELECT_STATE.JOIN;
+                        throw new RuntimeException("Implement this you lazy bastard");
+                    } else if (nextToken.equals("where")) {
+                        state = SELECT_STATE.WHERE;
+                    }
+
+                    break;
+                }
+                case WHERE: {
+                    String field1TableName = null, field1ColumnName;
+                    String field2TableName = null, field2ColumnName;
+
+                    // where condition always starts with at least a field
+                    String field1 = it.next();
+                    String[] split = field1.split("[.]", 2);
+                    if (split.length == 2) {
+                        field1TableName = split[0];
+                        field1ColumnName = split[1];
+
+                        checkName(field1TableName, NAME_TYPE.TABLE);
+                        // TODO: maybe check column name too?
+                    } else {
+                        field1ColumnName = field1;
+                    }
+
+                    // next we get a function or operator (between, <, >, =, etc)
+                    String opOrFunc = it.next();
+
+                    // case for operator
+                    if (Operator.isValidOperator(opOrFunc)) {
+                        Operator op = Operator.getOperator(opOrFunc);
+
+                        String field2 = it.next();
+                        split = field2.split("[.]", 2);
+                        if (split.length == 2) {
+                            field2TableName = split[0];
+                            field2ColumnName = split[1];
+
+                            checkName(field1TableName, NAME_TYPE.TABLE);
+                            // TODO: maybe check column name too?
+                        } else {
+                            field2ColumnName = field2;
+                        }
+
+                        Equation c = new Equation(field1TableName, field1ColumnName, op, field2TableName, field2ColumnName);
+                        conditions.add(c);
+                    } // case for function
+                    else if (Function.isValidFunction(opOrFunc)) {
+                        Function func = Function.getFunction(opOrFunc);
+
+                        int numArgs = Function.getNumArgs(func);
+
+                        ArrayList<String> args = new ArrayList<>();
+                        for (int i=0; i<numArgs; i++) {
+                            String arg = it.next();
+                            args.add(arg);
+                        }
+
+                        FunctionCall fc = new FunctionCall(field1TableName, field1ColumnName, func, args);
+                        conditions.add(fc);
+                    }
+                    else {
+                        throw (new SQLParseException("Expected operator or function after field name in WHERE clause"));
+                    }
+
+                    if (it.hasNext()) {
+                        String nextToken = it.next();
+                        if (nextToken.equals("and")) {
+                            continue;
+                        }
+                    }
+
+                    if (!it.hasNext()) {
+                        state = SELECT_STATE.END;
+                    }
+                }
+            }
+        }
+
+        System.out.println(fromTable);
+        System.out.println(columnsTables);
+        System.out.println(columns);
+        System.out.println(conditions);
+
+        // return new SelectAction(databaseName, columnsTables, columns, fromTable, whereClause);
+        return null;
     }
 
     /**
