@@ -1,15 +1,11 @@
 package test.backend;
 
-import backend.databaseActions.DatabaseAction;
-import backend.databaseActions.createActions.CreateIndexAction;
 import backend.databaseActions.createActions.CreateTableAction;
 import backend.databaseModels.*;
 import backend.exceptions.databaseActionsExceptions.*;
-import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 public class TestDatabaseActions {
@@ -58,6 +54,8 @@ public class TestDatabaseActions {
             System.out.println("Attributes are not unique!");
         } catch (ForeignKeyFieldNotFound e) {
             log.error("Foreign key referencing fields are not in this table!");
+        } catch (FieldsNotCompatible e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -93,6 +91,8 @@ public class TestDatabaseActions {
             System.out.println("Attributes are not unique!");
         } catch (ForeignKeyFieldNotFound e) {
             log.error("Foreign key referencing fields are not in this table!");
+        } catch (FieldsNotCompatible e) {
+            log.error(e.getMessage());
         }
     }
 

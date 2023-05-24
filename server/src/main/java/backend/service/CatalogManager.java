@@ -495,6 +495,50 @@ public class CatalogManager {
 
         return fieldNode.get("type").asText();
     }
+
+    public static Boolean isUniqueIndexed(String databaseName, String tableName, String field) {
+        List<IndexFileModel> uniqueIndexes = getUniqueIndexes(databaseName, tableName);
+
+        // if the column is present in any of the indexes, it is indexed
+        for (IndexFileModel model : uniqueIndexes) {
+            if (model.getIndexFields().contains(field)) {
+                return true;
+            }
+        }
+
+        // else we may create an index for it
+        return false;
+    }
+
+    public static Boolean isNonUniqueIndexed(String databaseName, String tableName, String field) {
+        List<IndexFileModel> nonUniqueIndexes = getNonUniqueIndexes(databaseName, tableName);
+
+        // if the column is present in any of the indexes, it is indexed
+        for (IndexFileModel model : nonUniqueIndexes) {
+            if (model.getIndexFields().contains(field)) {
+                return true;
+            }
+        }
+
+        // else we may create an index for it
+        return false;
+    }
+
+    public static Boolean isIndexed(String databaseName, String tableName, String field) {
+        boolean unique = isUniqueIndexed(databaseName, tableName, field);
+        boolean nonUnique = isNonUniqueIndexed(databaseName, tableName, field);
+        return unique || nonUnique;
+    }
+
+    public static Boolean isIndexed(String databaseName, String tableName, List<String> fields) {
+        for (String field : fields) {
+            if (isIndexed(databaseName, tableName, field)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /* ---------------- / Field types ---------------- */
 
     /* ------------------- Indexes ------------------- */

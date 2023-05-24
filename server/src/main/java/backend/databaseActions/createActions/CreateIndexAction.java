@@ -107,16 +107,20 @@ public class CreateIndexAction implements DatabaseAction {
         }
 
         // Check if unique index is for unique columns and viceversa
-        boolean requestedFieldsAreUnique = CatalogManager.areUnique(databaseName, tableName, indexFile.getIndexFields());
-        if( this.indexFile.isUnique() && !requestedFieldsAreUnique ) {
-            log.error("Requested fields are not compatible: No unique field for unique index!");
-            throw new FieldsNotCompatible(requestedFieldsAreUnique, indexFile.getIndexFields());
-        } else if( !this.indexFile.isUnique() && requestedFieldsAreUnique ) {
-            log.error("Requested fields are not compatible: Unique field found for unique index!");
-            throw new FieldsNotCompatible(requestedFieldsAreUnique, indexFile.getIndexFields());
-        }
+//        boolean requestedFieldsAreUnique = CatalogManager.areUnique(databaseName, tableName, indexFile.getIndexFields());
+//        if( this.indexFile.isUnique() && !requestedFieldsAreUnique ) {
+//            log.error("Requested fields are not compatible: No unique field for unique index!");
+//            throw new FieldsNotCompatible(requestedFieldsAreUnique, indexFile.getIndexFields());
+//        } else if( !this.indexFile.isUnique() && requestedFieldsAreUnique ) {
+//            log.error("Requested fields are not compatible: Unique field found for unique index!");
+//            throw new FieldsNotCompatible(requestedFieldsAreUnique, indexFile.getIndexFields());
+//        }
 
-        // check if
+        // check if fields are already indexed
+        if(CatalogManager.isIndexed(databaseName, tableName, indexFile.getIndexFields())) {
+            log.error("Some fields are already indexed!");
+            throw new IndexAlreadyExists(indexFile.getIndexName(), tableName);
+        }
 
         // Add index to table
         JsonNode newIndex = JsonNodeFactory.instance.objectNode().putPOJO("indexFile", this.indexFile);
