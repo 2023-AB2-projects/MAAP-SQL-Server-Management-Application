@@ -648,6 +648,14 @@ public class CatalogManager {
         return false;
     }
 
+    public static Boolean isUnique(String databaseName, String tableName, String field) {
+        List<String> uniqueColumns = CatalogManager.getUniqueFieldNames(databaseName, tableName);
+        return uniqueColumns.contains(field);
+    }
+
+    public static Boolean isNonUnique(String databaseName, String tableName, String field) {
+        return !isUnique(databaseName, tableName, field);
+    }
 
     public static String getIndexFileName(String tableName, String indexName) {
         return tableName + ".index." + indexName + ".bin";
