@@ -12,6 +12,7 @@ public class SQLResponseObject implements Serializable {
 
     // It can also contain table data -> ArrayList<ArrayList<String>>
     private ArrayList<ArrayList<String>> tableData;
+    private ArrayList<String> fieldNames;
 
     // Logic so we can tell which we sent
     private boolean isTextResponse;
@@ -21,7 +22,8 @@ public class SQLResponseObject implements Serializable {
         this.isTextResponse = true;
     }
 
-    public SQLResponseObject(ArrayList<ArrayList<String>> tableData) {
+    public SQLResponseObject(ArrayList<String> fieldNames, ArrayList<ArrayList<String>> tableData) {
+        this.fieldNames = fieldNames;
         this.tableData = tableData;
         this.isTextResponse = false;
     }

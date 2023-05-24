@@ -249,24 +249,29 @@ public class ServerController {
 
                 // 2. Send message
                 // For testing table sending
-//                if (new Random().nextInt(3) == 0) {
-//                    ArrayList<ArrayList<String>> rows = new ArrayList<>();
-//                    ArrayList<String> row1 = new ArrayList<>();
-//                    row1.add("a");
-//                    row1.add("a");
-//                    row1.add("a");
-//                    row1.add("a");
-//
-//                    ArrayList<String> row2 = new ArrayList<>();
-//                    row2.add("b");
-//                    row2.add("b");
-//                    row2.add("b");
-//                    row2.add("b");
-//                    rows.add(row1);
-//                    rows.add(row2);
-//
-//                    this.sqlResponseObject = new SQLResponseObject(rows);
-//                }
+                ArrayList<String> fieldNames = new ArrayList<>();
+                fieldNames.add("name1");
+                fieldNames.add("name2");
+                fieldNames.add("name3");
+                fieldNames.add("name4");
+                if (new Random().nextInt(3) == 0) {
+                    ArrayList<ArrayList<String>> rows = new ArrayList<>();
+                    ArrayList<String> row1 = new ArrayList<>();
+                    row1.add("a");
+                    row1.add("a");
+                    row1.add("a");
+                    row1.add("a");
+
+                    ArrayList<String> row2 = new ArrayList<>();
+                    row2.add("b");
+                    row2.add("b");
+                    row2.add("b");
+                    row2.add("b");
+                    rows.add(row1);
+                    rows.add(row2);
+
+                    this.sqlResponseObject = new SQLResponseObject(fieldNames, rows);
+                }
 
                 this.sendSQLResponseObjectToClient();
 

@@ -221,7 +221,7 @@ public class ClientController {
                     }
                 } else {
                     // We received table data
-                    this.setOutputTableData(responseObject.getTableData());
+                    this.setOutputTableData(responseObject.getFieldNames(), responseObject.getTableData());
                     log.info("Updated output table data!");
                 }
             }
@@ -252,7 +252,7 @@ public class ClientController {
     
     public void setOutputAreaString(String string) { this.clientFrame.setOutputAreaString(string); }
 
-    public void setOutputTableData(ArrayList<ArrayList<String>> data) { this.clientFrame.setOutputTableData(data); }
+    public void setOutputTableData(ArrayList<String> fieldNames, ArrayList<ArrayList<String>> data) { this.clientFrame.setOutputTableData(fieldNames, data); }
 
     public void increaseCenterPanelFont() { this.clientFrame.increaseCenterPanelFont(); }
 

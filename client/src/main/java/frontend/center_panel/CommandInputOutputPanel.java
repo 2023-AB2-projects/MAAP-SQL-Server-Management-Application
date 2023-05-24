@@ -154,12 +154,9 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
         this.outputTabbedPane.setSelectedIndex(0);
     }
 
-    public void setOutputTableData(ArrayList<ArrayList<String>> data) {
+    public void setOutputTableData(ArrayList<String> fieldNames, ArrayList<ArrayList<String>> data) {
         // Replace current table data with given data
-        DefaultTableModel model = (DefaultTableModel) this.outputTable.getModel();
-
-        // Remove all existing rows from the table model
-        model.setRowCount(0);
+        DefaultTableModel model = new DefaultTableModel(fieldNames.toArray(), 0);
 
         // Iterate over the data ArrayList
         for (final ArrayList<String> rowData : data) {
@@ -169,6 +166,9 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
             // Add the array of Objects as a row to the table model
             model.addRow(row);
         }
+
+        // Set model to actual table
+        this.outputTable.setModel(model);
 
         // Switch to second panel
         this.outputTabbedPane.setSelectedIndex(1);
