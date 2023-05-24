@@ -8,6 +8,7 @@ import backend.databaseModels.IndexFileModel;
 import backend.exceptions.databaseActionsExceptions.DatabaseDoesntExist;
 import backend.exceptions.databaseActionsExceptions.IndexAlreadyExists;
 import backend.exceptions.databaseActionsExceptions.TableDoesntExist;
+import backend.service.CatalogManager;
 import backend.service.Utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -102,6 +103,14 @@ public class CreateIndexAction implements DatabaseAction {
                         " already exists in table=" + this.tableName);
                 throw new IndexAlreadyExists(this.indexFile.getIndexName(), this.tableName);
             }
+        }
+
+        // Check if unique index is for unique columns and viceversa
+        boolean requestedFieldsAreUnique = CatalogManager.areUnique(databaseName, tableName, indexFile.getIndexFields());
+        if( this.indexFile.isUnique() && !requestedFieldsAreUnique ) {
+            log.error("Requested fields are not compatible: No unique field for unique index!");
+        } else {
+            log.error("Requested fields are not compatible: Unique field found for unique index!");
         }
 
         // Add index to table
