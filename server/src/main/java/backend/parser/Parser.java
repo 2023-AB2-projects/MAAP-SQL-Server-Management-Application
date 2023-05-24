@@ -631,9 +631,8 @@ public class Parser {
             ifm.setIndexFields(columns);
             ifm.setIndexFileName(tableName + ".index." + indexName + ".bin");
 
-            CreateIndexAction cia = new CreateIndexAction(tableName, databaseName, ifm);
-            return cia;
-        } 
+            return new CreateIndexAction(databaseName, tableName, ifm);
+        }
         catch (NoSuchElementException e) {
             throw new SQLParseException("Unexpected end of command");
         }
