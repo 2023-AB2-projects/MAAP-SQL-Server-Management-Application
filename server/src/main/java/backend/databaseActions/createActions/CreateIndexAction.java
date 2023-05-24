@@ -1,5 +1,6 @@
 package backend.databaseActions.createActions;
 
+import backend.Indexing.NonUniqueIndexManager;
 import backend.Indexing.UniqueIndexManager;
 import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
@@ -115,12 +116,20 @@ public class CreateIndexAction implements DatabaseAction {
             throw new RuntimeException(e);
         }
 
-        //TODO: Handle non-unique !!!!!!!!!!!!!!
-        try {
-            UniqueIndexManager.createEmptyIndex(this.databaseName, this.tableName, this.indexFile.getIndexName());
-        } catch (IOException e) {
-            log.error("Can't create index file -> IO exception!");
-            throw new RuntimeException(e);
+        if(this.indexFile.isUnique()){
+            try {
+                UniqueIndexManager.createIndex(this.databaseName, this.tableName, this.indexFile.getIndexName());
+            } catch (IOException e) {
+                log.error("Can't create index file -> IO exception!");
+                throw new RuntimeException(e);
+            }
+        } else {
+            try {
+                NonUniqueIndexManager.createIndex(this.databaseName, this.tableName, this.indexFile.getIndexName());
+            } catch (IOException e) {
+                log.error("Can't create index file ->" + e.getMessage());
+                throw new RuntimeException(e);
+            }
         }
 
         return null;
