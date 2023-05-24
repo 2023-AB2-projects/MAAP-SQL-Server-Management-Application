@@ -32,11 +32,11 @@ After installing gradle, in the root project folder, you can build everything wi
 ### Data definition language (DDL)
 
 <pre>
-<span class="sql">CREATE DATBASE</span> database_name
+<span class="sql">CREATE DATABASE</span> database_name
 </pre>
 
 <pre>
-<span class="sql">DROP DATBASE</span> database_name
+<span class="sql">DROP DATABASE</span> database_name
 </pre>
 
 <pre>
@@ -82,5 +82,5 @@ primary_key_field_value [, ... n]
 [table_name.]field FUNC func_args
 
 <b>Supported OP's:</b> <i>=, !=, <, >, <=, >=</i>
-<b>Supported FUNC:</b> <span style="color: #ffc936">BETWEEN</span> <i>lower_bound upper_bound</i>
+<b>Supported FUNC:</b> <span class="sql">BETWEEN</span> <i>lower_bound upper_bound</i>
 </pre>

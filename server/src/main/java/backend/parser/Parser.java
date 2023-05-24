@@ -817,25 +817,75 @@ public class Parser {
      * @param input SQL string
      * @return List of tokens
      */
-    private List<String> tokenize(String input) {
-        String inputLwr = input.toLowerCase(); 
-        
-        // tokens with some empty lines and extra whitespaces
-        String[] tokensDirty = inputLwr.split("\\s*(?=[(),])|(?<=[(),])|\\s");
+    private static final String[] controlChars = {"(", ")", ","};
+    private List<String> tokenize(String input) throws SQLParseException {
+        List<String> tokens = new ArrayList<>();
 
-        List<String> tokens = new ArrayList<>(List.of(tokensDirty));
+        StringBuilder currentToken = new StringBuilder();
+        boolean insideQuotes = false;
 
-        // remove empty strings and delete whitespaces from words (maybe update regex?)
-        for (int i=0; i< tokens.size(); i++) {
-            if (tokens.get(i).isBlank()) {
-                tokens.remove(i);
-                i--;
+        for (char c : input.toCharArray()) {
+            if (insideQuotes) {
+                // if we are inside quotes, we only care about closing quotes
+                if (c == '"') {
+                    currentToken.append(c);
+                    insideQuotes = false;
+                }
+                // add every other character to the current token
+                else {
+                    currentToken.append(c);
+                }
             }
             else {
-                tokens.set(i, tokens.get(i).trim());
+                if (Character.isWhitespace(c)) {
+                    // when not inside quotes, whitespace is delimiter
+                    // we add the current token to the list and reset it
+                    if (currentToken.length() > 0) {
+                        tokens.add(currentToken.toString());
+                        currentToken.setLength(0);
+                    }
+                }
+                // on encounter with quotes, we start a new token (string)
+                else if (c == '"') {
+                    currentToken.append(c);
+                    insideQuotes = true;
+                }
+                // else on control characters, we add BOTH the current token AND the delimiter to the list and reset it
+                else if (Arrays.asList(controlChars).contains(String.valueOf(c))) {
+                    if (currentToken.length() > 0) {
+                        tokens.add(currentToken.toString());
+                        currentToken.setLength(0);
+                    }
+                    tokens.add(String.valueOf(c));
+                }
+                // else we just add the character to the current token
+                else {
+                    currentToken.append(c);
+                }
+            }
+        }
+
+        if (insideQuotes) {
+            throw new SQLParseException("Missing closing quotes");
+        }
+
+        // add the last token to the list if it is not empty
+        if (currentToken.length() > 0) {
+            tokens.add(currentToken.toString());
+        }
+
+        for (int i=0; i<tokens.size(); i++) {
+            // lowercase every token that doesn't start and end with "
+            if (!tokens.get(i).startsWith("\"") && !tokens.get(i).endsWith("\"")) {
+                tokens.set(i, tokens.get(i).toLowerCase());
+            }
+            // else remove the " at beginning and end
+            else {
+                tokens.set(i, tokens.get(i).substring(1, tokens.get(i).length()-1));
             }
         }
 
         return tokens;
     }
+
 }
