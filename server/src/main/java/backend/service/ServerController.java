@@ -249,6 +249,11 @@ public class ServerController {
 
                 // 2. Send message
                 // For testing table sending
+//                ArrayList<String> fieldNames = new ArrayList<>();
+//                fieldNames.add("name1");
+//                fieldNames.add("name2");
+//                fieldNames.add("name3");
+//                fieldNames.add("name4");
 //                if (new Random().nextInt(3) == 0) {
 //                    ArrayList<ArrayList<String>> rows = new ArrayList<>();
 //                    ArrayList<String> row1 = new ArrayList<>();
@@ -265,7 +270,7 @@ public class ServerController {
 //                    rows.add(row1);
 //                    rows.add(row2);
 //
-//                    this.sqlResponseObject = new SQLResponseObject(rows);
+//                    this.sqlResponseObject = new SQLResponseObject(fieldNames, rows);
 //                }
 
                 this.sendSQLResponseObjectToClient();

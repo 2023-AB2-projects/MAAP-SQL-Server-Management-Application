@@ -62,7 +62,7 @@ public class ClientFrame extends javax.swing.JFrame {
 
     public void setErrorOutputAreaString(String error) { this.centerClientPanel1.setErrorOutputAreaString(error); }
 
-    public void setOutputTableData(ArrayList<ArrayList<String>> data) { this.centerClientPanel1.setOutputTableData(data); }
+    public void setOutputTableData(ArrayList<String> fieldNames, ArrayList<ArrayList<String>> data) { this.centerClientPanel1.setOutputTableData(fieldNames, data); }
 
     public void setCurrentDatabaseName(String databaseName) { this.objectExplorerPanel1.updateCurrentDatabase(databaseName); }
 

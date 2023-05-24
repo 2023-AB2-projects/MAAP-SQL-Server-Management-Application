@@ -89,7 +89,7 @@ public class CenterClientPanel extends javax.swing.JPanel {
 
     public void setErrorOutputAreaString(String error) { this.commandInputOutputPanel1.setErrorOutputAreaString(error); }
 
-    public void setOutputTableData(ArrayList<ArrayList<String>> data) { this.commandInputOutputPanel1.setOutputTableData(data); }
+    public void setOutputTableData(ArrayList<String> fieldNames, ArrayList<ArrayList<String>> data) { this.commandInputOutputPanel1.setOutputTableData(fieldNames, data); }
 
     public void setClientController(ClientController clientController) {
         this.clientController = clientController;
