@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 @Slf4j
-public class NonUniqueIndexManager {
+public class NonUniqueIndexManager implements Queryable{
     private final ArrayList<String> keyStructure;
     private final BPlusTree bPlusTree;
 
@@ -48,14 +48,8 @@ public class NonUniqueIndexManager {
         }
     }
 
-    public Set<Integer> findLocations(ArrayList<String> values) throws IOException, KeyNotFoundException {
-        ArrayList<String> lower = (ArrayList<String>) values.clone();
-        lower.add(String.valueOf(Integer.MIN_VALUE));
-        ArrayList<String> upper = (ArrayList<String>) values.clone();
-        upper.add(String.valueOf(Integer.MAX_VALUE));
-        Key lowerKey = TypeConverter.toKey(keyStructure, lower), upperKey = TypeConverter.toKey(keyStructure, upper);
-        HashMap<Integer, Object> result = bPlusTree.rangeQuery(lowerKey, upperKey, 1, 1);
-        return result.keySet();
+    public HashMap<Integer, Object> equalityQuery(Object key) throws IOException, UndefinedQueryException {
+        return rangeQuery(key, key, true, true);
     }
 
     public HashMap<Integer, Object> rangeQuery(Object lowerBound, Object upperBound, boolean allowEqualityLower, boolean allowEqualityUpper) throws UndefinedQueryException, IOException {
