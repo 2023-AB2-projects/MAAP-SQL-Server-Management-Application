@@ -106,8 +106,12 @@ public class CreateIndexAction implements DatabaseAction {
             }
         }
 
-        // Check if unique index is for unique columns and viceversa
+        //Ez egy Szar Minek van meghivva create table utan ha nincs pk vagy unique???
+//      Check if unique index is for unique columns and viceversa
 //        boolean requestedFieldsAreUnique = CatalogManager.areUnique(databaseName, tableName, indexFile.getIndexFields());
+//        log.info(indexFile.getIndexFields().toString());
+//        log.info(CatalogManager.getTableAsJSON(databaseName, tableName));
+//
 //        if( this.indexFile.isUnique() && !requestedFieldsAreUnique ) {
 //            log.error("Requested fields are not compatible: No unique field for unique index!");
 //            throw new FieldsNotCompatible(requestedFieldsAreUnique, indexFile.getIndexFields());

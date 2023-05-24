@@ -786,5 +786,10 @@ public class CatalogManager {
         }
         return databaseNames;
     }
+
+    public static String getTableAsJSON(String databaseName, String tableName) {
+        JsonNode tableNode = findTableNode(databaseName, tableName);
+        return tableNode.toPrettyString();
+    }
     /* ----------------------------------------------- / Getters ---------------------------------------------------- */
 }
