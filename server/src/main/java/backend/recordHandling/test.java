@@ -1,14 +1,15 @@
 package backend.recordHandling;
 
 import backend.Indexing.*;
-import backend.Utilities.Table;
+import backend.Utilities.BaseTable;
 import backend.config.Config;
+import backend.databaseModels.aggregations.Aggregator;
+import backend.databaseModels.aggregations.AggregatorSymbol;
 import backend.databaseModels.conditions.*;
 import backend.exceptions.recordHandlingExceptions.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -155,12 +156,17 @@ public class test {
         args.add("50");
         //conds.add(new FunctionCall("people", "age", Function.BETWEEN, args));
         //conds.add(new Equation("name", Operator.EQUALS, "daniel"));
-        Table people = new Table("master", "people");
+        BaseTable people = new BaseTable("master", "people");
         ArrayList<String> columns = new ArrayList<>();
         columns.add("name");
         columns.add("age");
+        columns.add("height");
         people.projection(columns);
 
+        ArrayList<Aggregator> aggregators = new ArrayList<>();
+        aggregators.add(new Aggregator("height", AggregatorSymbol.AVG));
+
+        people.aggregation(aggregators);
 
         people.printState();
     }

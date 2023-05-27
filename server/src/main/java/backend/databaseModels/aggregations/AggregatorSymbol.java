@@ -13,4 +13,14 @@ public enum AggregatorSymbol {
             default -> throw new IllegalArgumentException("Unknown aggregator:" + aggr);
         };
     }
+
+    public static String toString(AggregatorSymbol aggr){
+        return switch (aggr) {
+            case SUM -> "SUM";
+            case MAX -> "MAX";
+            case AVG -> "AVG";
+            case MIN -> "MIN";
+            case COUNT -> "COUNT";
+        };
+    }
 }
