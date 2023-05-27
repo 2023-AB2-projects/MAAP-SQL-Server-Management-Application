@@ -624,6 +624,39 @@ public class CatalogManager {
         return fieldTypes;
     }
 
+    public static Boolean areUnique(String databaseName, String tableName, ArrayList<String> fields) {
+        List<String> uniqueColumns = CatalogManager.getUniqueFieldNames(databaseName, tableName);
+
+        // check if one given field is unique
+        for(String field : fields){
+            if( uniqueColumns.contains(field)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Boolean areNonUnique(String databaseName, String tableName, ArrayList<String> fields) {
+        List<String> uniqueColumns = CatalogManager.getUniqueFieldNames(databaseName, tableName);
+
+        // check if one given field is unique
+        for(String field : fields){
+            if( uniqueColumns.contains(field)) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public static Boolean isUnique(String databaseName, String tableName, String field) {
+        List<String> uniqueColumns = CatalogManager.getUniqueFieldNames(databaseName, tableName);
+        return uniqueColumns.contains(field);
+    }
+
+    public static Boolean isNonUnique(String databaseName, String tableName, String field) {
+        return !isUnique(databaseName, tableName, field);
+    }
+
     public static String getIndexFileName(String tableName, String indexName) {
         return tableName + ".index." + indexName + ".bin";
     }

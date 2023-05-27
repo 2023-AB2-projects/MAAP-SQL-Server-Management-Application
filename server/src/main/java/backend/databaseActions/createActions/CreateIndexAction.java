@@ -1,12 +1,15 @@
 package backend.databaseActions.createActions;
 
+import backend.Indexing.NonUniqueIndexManager;
 import backend.Indexing.UniqueIndexManager;
 import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.IndexFileModel;
 import backend.exceptions.databaseActionsExceptions.DatabaseDoesntExist;
+import backend.exceptions.databaseActionsExceptions.FieldsNotCompatible;
 import backend.exceptions.databaseActionsExceptions.IndexAlreadyExists;
 import backend.exceptions.databaseActionsExceptions.TableDoesntExist;
+import backend.service.CatalogManager;
 import backend.service.Utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -65,7 +68,7 @@ public class CreateIndexAction implements DatabaseAction {
     }
 
     @Override
-    public Object actionPerform() throws DatabaseDoesntExist, TableDoesntExist, IndexAlreadyExists {
+    public Object actionPerform() throws DatabaseDoesntExist, TableDoesntExist, IndexAlreadyExists, FieldsNotCompatible {
         // Object mapper with indented output
         ObjectMapper mapper = Utility.getObjectMapper();
 
@@ -103,6 +106,18 @@ public class CreateIndexAction implements DatabaseAction {
             }
         }
 
+        // Check if unique index is for unique columns and viceversa
+        boolean requestedFieldsAreUnique = CatalogManager.areUnique(databaseName, tableName, indexFile.getIndexFields());
+        if( this.indexFile.isUnique() && !requestedFieldsAreUnique ) {
+            log.error("Requested fields are not compatible: No unique field for unique index!");
+            throw new FieldsNotCompatible(requestedFieldsAreUnique, indexFile.getIndexFields());
+        } else if( !this.indexFile.isUnique() && requestedFieldsAreUnique ) {
+            log.error("Requested fields are not compatible: Unique field found for unique index!");
+            throw new FieldsNotCompatible(requestedFieldsAreUnique, indexFile.getIndexFields());
+        }
+
+        // check if
+
         // Add index to table
         JsonNode newIndex = JsonNodeFactory.instance.objectNode().putPOJO("indexFile", this.indexFile);
         indexFilesNode.add(newIndex);
@@ -115,12 +130,20 @@ public class CreateIndexAction implements DatabaseAction {
             throw new RuntimeException(e);
         }
 
-        //TODO: Handle non-unique !!!!!!!!!!!!!!
-        try {
-            UniqueIndexManager.createEmptyIndex(this.databaseName, this.tableName, this.indexFile.getIndexName());
-        } catch (IOException e) {
-            log.error("Can't create index file -> IO exception!");
-            throw new RuntimeException(e);
+        if(this.indexFile.isUnique()){
+            try {
+                UniqueIndexManager.createIndex(this.databaseName, this.tableName, this.indexFile.getIndexName());
+            } catch (IOException e) {
+                log.error("Can't create index file -> IO exception!");
+                throw new RuntimeException(e);
+            }
+        } else {
+            try {
+                NonUniqueIndexManager.createIndex(this.databaseName, this.tableName, this.indexFile.getIndexName());
+            } catch (IOException e) {
+                log.error("Can't create index file ->" + e.getMessage());
+                throw new RuntimeException(e);
+            }
         }
 
         return null;
