@@ -278,6 +278,8 @@ public class CreateTableAction implements DatabaseAction {
         } catch (IndexAlreadyExists e) {
             log.error("CreateIndex for PK -> Index already exists!");
             throw new RuntimeException(e);
+        } catch (FieldsNotCompatible e) {
+            throw new RuntimeException(e);
         }
 
         // For each unique key create another index
@@ -301,7 +303,7 @@ public class CreateTableAction implements DatabaseAction {
             } catch (TableDoesntExist e) {
                 log.error("CreateIndex for unique=" + uniqueFieldNames.get(finalInd) + " -> Can't find table");
                 throw new RuntimeException(e);
-            } catch (IndexAlreadyExists e) {
+            } catch (IndexAlreadyExists | FieldsNotCompatible e) {
                 log.error("CreateIndex for unique=" + uniqueFieldNames.get(finalInd) + " -> Index already exists!");
                 throw new RuntimeException(e);
             }

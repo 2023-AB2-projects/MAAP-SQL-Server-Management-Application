@@ -5,8 +5,7 @@ import backend.service.CatalogManager;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class RecordReader {
     private RecordHandler recordHandler;
@@ -26,6 +25,16 @@ public class RecordReader {
             }catch (InvalidReadException ignored){}
         }
         return table;
+    }
+
+    public Set<Integer> getAllPointers() throws IOException {
+        Set<Integer> pointers = new HashSet<>();
+        for (int i = 0; i < recordHandler.getRecordCount(); i++){
+            pointers.add(i);
+        }
+        ArrayDeque<Integer> deletedLines = CatalogManager.deletedRecordLinesQueue(databaseName, tableName);
+        pointers.removeAll(deletedLines);
+        return pointers;
     }
 
     public ArrayList<ArrayList<Object>> scan(ArrayList<String> columnNames) throws IOException {

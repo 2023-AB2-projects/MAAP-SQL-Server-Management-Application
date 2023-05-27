@@ -155,7 +155,7 @@ public class CatalogManager {
         return null;
     }
 
-    private static ArrayDeque<Integer> deletedRecordLinesQueue(String databaseName, String tableName) {
+    public static ArrayDeque<Integer> deletedRecordLinesQueue(String databaseName, String tableName) {
         // Find table JSON node
         JsonNode tableNode = CatalogManager.findTableNode(databaseName, tableName);
         if(tableNode == null) {

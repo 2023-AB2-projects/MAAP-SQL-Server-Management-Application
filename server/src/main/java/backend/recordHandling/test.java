@@ -6,6 +6,7 @@ import backend.exceptions.recordHandlingExceptions.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -144,8 +145,9 @@ public class test {
         System.out.println(manager.greaterQuery(1, true));
     }
 
-    public static void tableTest() {
-
+    public static void tableTest() throws IOException {
+        RecordReader io = new RecordReader("master", "people");
+        System.out.println(io.getAllPointers());
     }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
