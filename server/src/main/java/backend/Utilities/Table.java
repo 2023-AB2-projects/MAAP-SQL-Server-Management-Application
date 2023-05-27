@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class Table {
     @Getter
-    private final ArrayList<String> columnTypes, columnNames;
+    private ArrayList<String> columnTypes, columnNames;
     private final String databaseName, tableName;
 
     private final HashMap<Integer, Integer> pointerMapper;
@@ -185,9 +185,11 @@ public class Table {
 
     public void projection(ArrayList<String> wantedColumnNames){
         ArrayList<Integer> wantedColumnIndexes = new ArrayList<>();
+        ArrayList<String> newColumnTypes = new ArrayList<>();
         for(var columnName : columnNames){
             if(wantedColumnNames.contains(columnName)){
                 int i = columnNames.indexOf(columnName);
+                newColumnTypes.add(columnTypes.get(i));
                 wantedColumnIndexes.add(i);
             }
         }
@@ -198,6 +200,9 @@ public class Table {
             }
             return newElem;
         }).collect(Collectors.toCollection(ArrayList::new));
+
+        columnNames = wantedColumnNames;
+        columnTypes = newColumnTypes;
     }
 
     public void join(String childColumnName, String tableName) throws IOException {
