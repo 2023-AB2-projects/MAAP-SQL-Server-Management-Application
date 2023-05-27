@@ -1,23 +1,36 @@
 package frontend.object_explorer;
 
 import service.CatalogManager;
+import service.Config;
 import service.ForeignKeyModel;
 import service.IndexFileModel;
 
+import java.awt.*;
+import java.io.File;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.IntStream;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
 public class ObjectExplorerPanel extends javax.swing.JPanel {
     private DefaultMutableTreeNode databasesNode;
     private DefaultTreeModel jTreeNode;
+
+    // Stored names
+    private static HashSet<String> databaseNames = new HashSet<>();
+    private static HashSet<String> tableNames = new HashSet<>(), fieldNames = new HashSet<>();
     
     public ObjectExplorerPanel() {
         // Init variables
         this.initVariables();
-        
+
         initComponents();
+
+        // Set cell renderer
+        this.treeDatabases.setCellRenderer(new CustomTreeCellRendererTable());
     }
     
     private void initVariables() {
@@ -30,23 +43,29 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
                 .range(0, Math.min(fieldNames.size(), fieldTypes.size()))
                 .mapToObj(i -> fieldNames.get(i) + " - " + fieldTypes.get(i))
                 .forEach(fieldData -> fieldNode.add(new DefaultMutableTreeNode(fieldData)));
+
+        // Add field names to set
+        ObjectExplorerPanel.fieldNames.addAll(fieldNames);
     }
 
     public void update() {
         // Get current databaseNames
         List<String> databaseNames = CatalogManager.getDatabaseNames();
+        ObjectExplorerPanel.databaseNames = new HashSet<>(databaseNames);
+        ObjectExplorerPanel.tableNames = new HashSet<>();
+        ObjectExplorerPanel.fieldNames = new HashSet<>();
 
         // Update nodes
         this.databasesNode.removeAllChildren(); // Clear the tree
 
         for(final String databaseName : databaseNames) {
             DefaultMutableTreeNode databaseNode = new DefaultMutableTreeNode(databaseName);
-            // Create a node for all the tables
-            DefaultMutableTreeNode tablesNode = new DefaultMutableTreeNode("Tables");
-            databaseNode.add(tablesNode);
 
             // Add all the tables from this database to that node
             for(final String tableName : CatalogManager.getCurrentDatabaseTableNames(databaseName)) {
+                // Add table names
+                tableNames.add(tableName);
+
                 DefaultMutableTreeNode tableNode = new DefaultMutableTreeNode(tableName);
 
                 // For all tables add a 'Fields', 'Unique Fields', 'Foreign Keys', 'IndexFiles'
@@ -87,7 +106,7 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
                 tableNode.add(fieldsNode); tableNode.add(primaryKeyNode); tableNode.add(uniqueFieldsNode); tableNode.add(foreignKeysNode); tableNode.add(indexFilesNode);
 
                 // Add table to tables node
-                tablesNode.add(tableNode);
+                databaseNode.add(tableNode);
             }
 
             this.databasesNode.add(databaseNode);
@@ -95,6 +114,37 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
 
         // Update the tree node
         this.jTreeNode.setRoot(this.databasesNode);
+    }
+
+    // Custom cell renderer class
+    static class CustomTreeCellRendererTable extends DefaultTreeCellRenderer {
+        // Override the getTreeCellRendererComponent method
+        @Override
+        public Component getTreeCellRendererComponent(
+                JTree tree,
+                Object value,
+                boolean selected,
+                boolean expanded,
+                boolean leaf,
+                int row,
+                boolean hasFocus) {
+            // Invoke the default implementation
+            super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+
+            // Check if the node's value is equal to "Tables"
+            String valueName = value.toString();
+            if (databaseNames.contains(valueName)) {
+                // Set a custom icon for "Database"
+                setIcon(new ImageIcon(Config.getImagesPath() + File.separator + "database_mini2.png"));
+            } else if (tableNames.contains(valueName)) {
+                // Set a custom icon for "Table"
+                setIcon(new ImageIcon(Config.getImagesPath() + File.separator + "table_icon_mini.png"));
+            } else if (fieldNames.stream().anyMatch(valueName::startsWith)) {
+                // Set a custom icon for "Field"
+                setIcon(new ImageIcon(Config.getImagesPath() + File.separator + "field_mini.png"));
+            }
+            return this;
+        }
     }
 
     /* Setters */
