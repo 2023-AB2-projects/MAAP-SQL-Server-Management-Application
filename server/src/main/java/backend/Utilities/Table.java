@@ -184,16 +184,20 @@ public class Table {
     }
 
     public void projection(ArrayList<String> wantedColumnNames){
+        ArrayList<Integer> wantedColumnIndexes = new ArrayList<>();
         for(var columnName : columnNames){
-            if(!wantedColumnNames.contains(columnName)){
+            if(wantedColumnNames.contains(columnName)){
                 int i = columnNames.indexOf(columnName);
-                columnTypes.remove(i);
-                for(var record : tableContent){
-                    record.remove(i);
-                }
-                columnNames.remove(columnName);
+                wantedColumnIndexes.add(i);
             }
         }
+        tableContent = tableContent.stream().map(elem -> {
+            ArrayList<Object> newElem = new ArrayList<>();
+            for(var i : wantedColumnIndexes){
+                newElem.add(elem.get(i));
+            }
+            return newElem;
+        }).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public void join(String childColumnName, String tableName) throws IOException {

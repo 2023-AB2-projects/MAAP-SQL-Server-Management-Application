@@ -156,6 +156,12 @@ public class test {
         //conds.add(new FunctionCall("people", "age", Function.BETWEEN, args));
         //conds.add(new Equation("name", Operator.EQUALS, "daniel"));
         Table people = new Table("master", "people");
+        ArrayList<String> columns = new ArrayList<>();
+        columns.add("name");
+        columns.add("age");
+        people.projection(columns);
+
+
         people.printState();
     }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
