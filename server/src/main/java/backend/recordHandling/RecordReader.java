@@ -27,8 +27,8 @@ public class RecordReader {
         return table;
     }
 
-    public Set<Integer> getAllPointers() throws IOException {
-        Set<Integer> pointers = new HashSet<>();
+    public HashSet<Integer> getAllPointers() throws IOException {
+        HashSet<Integer> pointers = new HashSet<>();
         for (int i = 0; i < recordHandler.getRecordCount(); i++){
             pointers.add(i);
         }
@@ -59,15 +59,17 @@ public class RecordReader {
         return table;
     }
 
-    public ArrayList<ArrayList<Object>> scanLines(ArrayList<Integer> pointers) throws IOException, InvalidReadException {
+    public ArrayList<ArrayList<Object>> scanLines(ArrayList<Integer> pointers) throws IOException {
         ArrayList<ArrayList<Object>> table = new ArrayList<>();
         for(int i : pointers){
-            table.add(recordHandler.readLineAsObjectList(i));
+            try {
+                table.add(recordHandler.readLineAsObjectList(i));
+            } catch (InvalidReadException ignored){}
         }
         return table;
     }
 
-    public ArrayList<ArrayList<Object>> scanLines(ArrayList<Integer> pointers, ArrayList<String> columnNames) throws IOException, InvalidReadException {
+    public ArrayList<ArrayList<Object>> scanLines(ArrayList<Integer> pointers, ArrayList<String> columnNames) throws IOException {
         List<String> allColumnNames = CatalogManager.getFieldNames(databaseName, tableName);
 
         ArrayList<Integer> columns = new ArrayList<>();
@@ -77,12 +79,14 @@ public class RecordReader {
 
         ArrayList<ArrayList<Object>> table = new ArrayList<>();
         for(int i : pointers){
-            ArrayList<Object> record = recordHandler.readLineAsObjectList(i);
-            ArrayList<Object> partialRecord = new ArrayList<>();
-            for(int column : columns){
-                partialRecord.add(record.get(column));
-            }
-            table.add(partialRecord);
+            try {
+                ArrayList<Object> record = recordHandler.readLineAsObjectList(i);
+                ArrayList<Object> partialRecord = new ArrayList<>();
+                for(int column : columns){
+                    partialRecord.add(record.get(column));
+                }
+                table.add(partialRecord);
+            } catch (InvalidReadException ignored){}
         }
         return table;
     }

@@ -1,9 +1,17 @@
 package backend.Utilities;
 
+import backend.Indexing.NonUniqueIndexManager;
+import backend.Indexing.Queryable;
 import backend.Indexing.UniqueIndexManager;
 import backend.databaseModels.conditions.Condition;
 import backend.databaseModels.conditions.Equation;
+import backend.databaseModels.conditions.FunctionCall;
+import backend.exceptions.recordHandlingExceptions.InvalidReadException;
+import backend.exceptions.recordHandlingExceptions.InvalidTypeException;
+import backend.exceptions.recordHandlingExceptions.UndefinedQueryException;
 import backend.recordHandling.RecordReader;
+import backend.recordHandling.RecordStandardizer;
+import backend.recordHandling.TypeConverter;
 import backend.service.CatalogManager;
 import lombok.Getter;
 
@@ -12,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class Table {
     @Getter
@@ -27,10 +36,88 @@ public class Table {
         this.tableName = tableName;
 
         //use the indexes where able
-        HashSet<Integer> wantedRecordPointers;
         RecordReader io = new RecordReader(databaseName, tableName);
+        HashSet<Integer> wantedRecordPointers = io.getAllPointers();
+
+        for (var condition : conditions){
+            HashSet<Integer> pointers = new HashSet<>();
+            if (condition instanceof Equation){
+                String fieldName = ((Equation) condition).getLFieldName();
+                System.out.println(fieldName);
+                //this is good only for testing tell them to fix it
+                try {
+                    List<String> indexName = CatalogManager.getIndexFieldNames(databaseName, tableName, fieldName);
+                    conditions.remove(condition);
+                } catch (Exception e) {
+                    continue;
+                }
+
+                String fieldType = CatalogManager.getFieldType(databaseName, tableName, fieldName);
+                String compareValueString = ((Equation) condition).getRFieldName();
+                Object compareValue = TypeConverter.toObject(fieldType, compareValueString);
+
+                Queryable index;
+                //replace with index name later
+                String indexName = fieldName;
+                if(CatalogManager.isFieldUnique(databaseName, tableName, indexName)){
+                    index = new UniqueIndexManager(databaseName, tableName, indexName);
+                } else {
+                    index = new NonUniqueIndexManager(databaseName, tableName, indexName);
+                }
+
+                HashMap<Integer, Object> queryResult = new HashMap<>();
+                try {
+                    switch (((Equation) condition).getOp()){
+                        case EQUALS -> queryResult = index.equalityQuery(compareValue);
+                        case LESS_THAN -> queryResult = index.lesserQuery(compareValue, false);
+                        case LESS_THAN_OR_EQUAL_TO -> queryResult = index.lesserQuery(compareValue, true);
+                        case GREATER_THAN -> queryResult = index.greaterQuery(compareValue, false);
+                        case GREATER_THAN_OR_EQUAL_TO -> queryResult = index.greaterQuery(compareValue, true);
+                    }
+                    pointers = new HashSet<>(queryResult.keySet());
+
+                } catch (UndefinedQueryException ignored){}
 
 
+
+            } else if ( condition instanceof FunctionCall) {
+                String fieldName = ((FunctionCall) condition).getFieldName();
+
+                try {
+                    List<String> indexName = CatalogManager.getIndexFieldNames(databaseName, tableName, fieldName);
+                    conditions.remove(condition);
+                } catch (Exception e) {
+                    continue;
+                }
+
+                String fieldType = CatalogManager.getFieldType(databaseName, tableName, fieldName);
+                ArrayList<String> args = ((FunctionCall) condition).getArgs();
+                Object lower = TypeConverter.toObject(fieldType, args.get(0));
+                Object upper = TypeConverter.toObject(fieldType, args.get(1));
+
+                Queryable index;
+                //replace with index name later
+                String indexName = fieldName;
+                if(CatalogManager.isFieldUnique(databaseName, tableName, indexName)){
+                    index = new UniqueIndexManager(databaseName, tableName, indexName);
+                } else {
+                    index = new NonUniqueIndexManager(databaseName, tableName, indexName);
+                }
+
+                HashMap<Integer, Object> queryResult = new HashMap<>();
+                try {
+                    switch (((FunctionCall) condition).getFunction()){
+                        case BETWEEN -> queryResult = index.rangeQuery(lower, upper, true, true);
+                    }
+                    pointers = new HashSet<>(queryResult.keySet());
+
+                } catch (UndefinedQueryException ignored){}
+            }
+
+            wantedRecordPointers.retainAll(pointers);
+        }
+
+        tableContent = io.scanLines(new ArrayList<>(wantedRecordPointers));
     }
 
     public void projection(ArrayList<String> wantedColumnNames){

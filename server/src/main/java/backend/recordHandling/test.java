@@ -1,7 +1,9 @@
 package backend.recordHandling;
 
 import backend.Indexing.*;
+import backend.Utilities.Table;
 import backend.config.Config;
+import backend.databaseModels.conditions.*;
 import backend.exceptions.recordHandlingExceptions.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -146,8 +148,15 @@ public class test {
     }
 
     public static void tableTest() throws IOException {
-        RecordReader io = new RecordReader("master", "people");
-        System.out.println(io.getAllPointers());
+        ArrayList<Condition> conds = new ArrayList<>();
+        conds.add(new Equation("id", Operator.LESS_THAN, "4"));
+        ArrayList<String> args = new ArrayList<>();
+        args.add("23");
+        args.add("50");
+        conds.add(new FunctionCall("people", "age", Function.BETWEEN, args));
+        //conds.add(new Equation("name", Operator.EQUALS, "bob"));
+        Table people = new Table("master", "people", conds);
+        people.printState();
     }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
