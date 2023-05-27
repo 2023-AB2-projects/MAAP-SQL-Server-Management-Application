@@ -149,12 +149,12 @@ public class test {
 
     public static void tableTest() throws IOException {
         ArrayList<Condition> conds = new ArrayList<>();
-        conds.add(new Equation("id", Operator.LESS_THAN, "4"));
+        //conds.add(new Equation("id", Operator.LESS_THAN, "4"));
         ArrayList<String> args = new ArrayList<>();
         args.add("23");
         args.add("50");
         conds.add(new FunctionCall("people", "age", Function.BETWEEN, args));
-        //conds.add(new Equation("name", Operator.EQUALS, "bob"));
+        //conds.add(new Equation("name", Operator.EQUALS, "daniel"));
         Table people = new Table("master", "people", conds);
         people.printState();
     }

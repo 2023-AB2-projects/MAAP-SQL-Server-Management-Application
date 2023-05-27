@@ -5,6 +5,7 @@ import backend.Indexing.Queryable;
 import backend.Indexing.UniqueIndexManager;
 import backend.databaseModels.conditions.Condition;
 import backend.databaseModels.conditions.Equation;
+import backend.databaseModels.conditions.Function;
 import backend.databaseModels.conditions.FunctionCall;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.InvalidTypeException;
@@ -17,10 +18,10 @@ import lombok.Getter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Table {
     @Getter
@@ -39,6 +40,7 @@ public class Table {
         RecordReader io = new RecordReader(databaseName, tableName);
         HashSet<Integer> wantedRecordPointers = io.getAllPointers();
 
+        ArrayList<Condition> usedConditions = new ArrayList<>();
         for (var condition : conditions){
             HashSet<Integer> pointers = new HashSet<>();
             if (condition instanceof Equation){
@@ -47,7 +49,7 @@ public class Table {
                 //this is good only for testing tell them to fix it
                 try {
                     List<String> indexName = CatalogManager.getIndexFieldNames(databaseName, tableName, fieldName);
-                    conditions.remove(condition);
+                    usedConditions.add(condition);
                 } catch (Exception e) {
                     continue;
                 }
@@ -118,6 +120,56 @@ public class Table {
         }
 
         tableContent = io.scanLines(new ArrayList<>(wantedRecordPointers));
+        conditions.removeAll(usedConditions);
+        for (var condition : conditions){
+            Predicate<ArrayList<Object>> lambda = (ArrayList<Object> elem) -> {
+                return true;
+            };
+            Integer fieldIndex;
+            if (condition instanceof Equation){
+                String fieldName = ((Equation) condition).getLFieldName();
+                fieldIndex = columnNames.indexOf(fieldName);
+                System.out.println(fieldName);
+
+                String fieldType = CatalogManager.getFieldType(databaseName, tableName, fieldName);
+                String compareValueString = ((Equation) condition).getRFieldName();
+                Object compareValue = TypeConverter.toObject(fieldType, compareValueString);
+
+                switch (((Equation) condition).getOp()){
+                    case EQUALS -> lambda = (ArrayList<Object> elem) -> {
+                        return TypeConverter.compare(fieldType, elem.get(fieldIndex), compareValue) == 0;
+                    };
+                    case LESS_THAN -> lambda = (ArrayList<Object> elem) -> {
+                        return TypeConverter.compare(fieldType, elem.get(fieldIndex), compareValue) < 0;
+                    };
+                    case LESS_THAN_OR_EQUAL_TO -> lambda = (ArrayList<Object> elem) -> {
+                        return TypeConverter.compare(fieldType, elem.get(fieldIndex), compareValue) <= 0;
+                    };
+                    case GREATER_THAN -> lambda = (ArrayList<Object> elem) -> {
+                        return TypeConverter.compare(fieldType, elem.get(fieldIndex), compareValue) > 0;
+                    };
+                    case GREATER_THAN_OR_EQUAL_TO -> lambda = (ArrayList<Object> elem) -> {
+                        return TypeConverter.compare(fieldType, elem.get(fieldIndex), compareValue) >= 0;
+                    };
+                }
+
+            } else if ( condition instanceof FunctionCall) {
+                String fieldName = ((FunctionCall) condition).getFieldName();
+                fieldIndex = columnNames.indexOf(fieldName);
+                String fieldType = CatalogManager.getFieldType(databaseName, tableName, fieldName);
+                ArrayList<String> args = ((FunctionCall) condition).getArgs();
+                Object lower = TypeConverter.toObject(fieldType, args.get(0));
+                Object upper = TypeConverter.toObject(fieldType, args.get(1));
+
+                switch (((FunctionCall) condition).getFunction()){
+                    case BETWEEN -> lambda = (ArrayList<Object> elem) -> {
+                        return TypeConverter.compare(fieldType, elem.get(fieldIndex), lower) >= 0 && TypeConverter.compare(fieldType, elem.get(fieldIndex), upper) <= 0;
+                    };
+                }
+            }
+
+            tableContent = tableContent.stream().filter(lambda).collect(Collectors.toCollection(ArrayList::new));
+        }
     }
 
     public void projection(ArrayList<String> wantedColumnNames){
