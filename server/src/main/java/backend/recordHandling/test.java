@@ -153,9 +153,9 @@ public class test {
         ArrayList<String> args = new ArrayList<>();
         args.add("23");
         args.add("50");
-        conds.add(new FunctionCall("people", "age", Function.BETWEEN, args));
+        //conds.add(new FunctionCall("people", "age", Function.BETWEEN, args));
         //conds.add(new Equation("name", Operator.EQUALS, "daniel"));
-        Table people = new Table("master", "people", conds);
+        Table people = new Table("master", "people");
         people.printState();
     }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {

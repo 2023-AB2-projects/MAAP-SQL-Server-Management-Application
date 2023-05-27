@@ -5,36 +5,35 @@ import backend.Indexing.Queryable;
 import backend.Indexing.UniqueIndexManager;
 import backend.databaseModels.conditions.Condition;
 import backend.databaseModels.conditions.Equation;
-import backend.databaseModels.conditions.Function;
 import backend.databaseModels.conditions.FunctionCall;
-import backend.exceptions.recordHandlingExceptions.InvalidReadException;
-import backend.exceptions.recordHandlingExceptions.InvalidTypeException;
 import backend.exceptions.recordHandlingExceptions.UndefinedQueryException;
 import backend.recordHandling.RecordReader;
-import backend.recordHandling.RecordStandardizer;
 import backend.recordHandling.TypeConverter;
 import backend.service.CatalogManager;
 import lombok.Getter;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Table {
     @Getter
-    private ArrayList<String> columnTypes, columnNames;
+    private final ArrayList<String> columnTypes, columnNames;
     private final String databaseName, tableName;
 
+    private final HashMap<Integer, Integer> pointerMapper;
     private ArrayList<ArrayList<Object>> tableContent;
 
+    public Table(String databaseName, String tableName) throws IOException {
+        this(databaseName, tableName, new ArrayList<>());
+    }
     public Table(String databaseName, String tableName, ArrayList<Condition> conditions) throws IOException {
         this.columnTypes = (ArrayList<String>) CatalogManager.getFieldTypes(databaseName, tableName);
         this.columnNames = (ArrayList<String>) CatalogManager.getFieldNames(databaseName, tableName);
         this.databaseName = databaseName;
         this.tableName = tableName;
+        pointerMapper = new HashMap<>();
 
         //use the indexes where able
         RecordReader io = new RecordReader(databaseName, tableName);
@@ -119,7 +118,13 @@ public class Table {
             wantedRecordPointers.retainAll(pointers);
         }
 
-        tableContent = io.scanLines(new ArrayList<>(wantedRecordPointers));
+        ArrayList<Integer> listOfWantedPointers =  new ArrayList<>(wantedRecordPointers);
+        tableContent = io.scanLines(listOfWantedPointers);
+
+        for (int i = 0; i < tableContent.size(); i++){
+            tableContent.get(i).add(listOfWantedPointers.get(i));
+        }
+
         conditions.removeAll(usedConditions);
         for (var condition : conditions){
             Predicate<ArrayList<Object>> lambda = (ArrayList<Object> elem) -> {
@@ -169,6 +174,12 @@ public class Table {
             }
 
             tableContent = tableContent.stream().filter(lambda).collect(Collectors.toCollection(ArrayList::new));
+        }
+
+        int last = columnNames.size();
+        for (int i = 0; i < tableContent.size(); i++){
+            Integer origin = (Integer) tableContent.get(i).remove(last);
+            pointerMapper.put(origin, i);
         }
     }
 
@@ -255,7 +266,7 @@ public class Table {
     public void printState(){
         System.out.println(columnNames);
         System.out.println(columnTypes);
-
+        System.out.println(pointerMapper);
         for(var record : tableContent) {
             System.out.println(record);
         }
