@@ -1,12 +1,18 @@
 package backend.Utilities;
 
+import backend.Indexing.Queryable;
+import backend.Indexing.UniqueIndexManager;
 import backend.databaseModels.JoinModel;
 import backend.databaseModels.aggregations.Aggregator;
 import backend.databaseModels.aggregations.AggregatorSymbol;
+import backend.recordHandling.RecordReader;
 import backend.recordHandling.TypeConverter;
+import backend.service.CatalogManager;
 import lombok.Getter;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class JoinedTable implements Table{
@@ -27,14 +33,57 @@ public class JoinedTable implements Table{
 
                                     // Nested Join \\
     //-----------------------------------------------------------------------------------------\\
-    public static JoinedTable join(BaseTable parentTable, BaseTable childTable, JoinModel join){
-        return null;
+    public static JoinedTable join(BaseTable parentTable, BaseTable childTable, JoinModel join) throws IOException {
+        String databaseName = parentTable.getDatabaseName();
+        ArrayList<String> parentColumnNames = parentTable.getColumnNames(), parentColumnTypes = parentTable.getColumnTypes();
+        ArrayList<String> childColumnNames = childTable.getColumnNames(), childColumnTypes = childTable.getColumnTypes();
+        ArrayList<String> columnNames = new ArrayList<>(), columnTypes = new ArrayList<>();
+        columnNames.addAll(childColumnNames);
+        columnNames.addAll(parentColumnNames);
+        columnTypes.addAll(childColumnTypes);
+        columnTypes.addAll(parentColumnTypes);
+
+        String parentTableName = join.getLeftTableName(), childTableName = join.getRightTableName();
+        String parentKey = join.getLeftFieldName(), foreignKey = join.getRightFieldName();
+
+        ArrayList<ArrayList<Object>> parentTableContent = parentTable.getTableContent();
+        ArrayList<ArrayList<Object>> childTableContent = childTable.getTableContent();
+        ArrayList<ArrayList<Object>> tableContent = new ArrayList<>();
+
+        //---------Intro Over--------\\
+
+        int foreignKeyColumnIndex = childColumnNames.indexOf(foreignKey);
+        HashMap<Integer, Integer> pointerMap = parentTable.getPointerMapper();
+        String primaryKeyIndexName = CatalogManager.getPrimaryKeyIndexName(databaseName, parentTableName);
+
+        UniqueIndexManager indexManager = new UniqueIndexManager(databaseName, parentTableName, primaryKeyIndexName);
+        ArrayList<Integer> pointers = new ArrayList<>();
+
+        for(var record : childTableContent){
+            Object foreignKeyValue = record.get(foreignKeyColumnIndex);
+            try {
+                HashMap<Integer, Object> map = indexManager.equalityQuery(foreignKeyValue);
+                pointers.addAll(map.keySet());
+            } catch (Exception ignored) {}
+        }
+        indexManager.close();
+
+        pointers = pointers.stream().map(pointerMap::get).collect(Collectors.toCollection(ArrayList::new));
+        for(int i = 0; i < pointers.size(); i++) {
+            ArrayList<Object> row = new ArrayList<>();
+            row.addAll(childTableContent.get(i));
+            row.addAll(parentTableContent.get(pointers.get(i)));
+            tableContent.add(row);
+        }
+
+        return new JoinedTable(columnTypes, columnNames, tableContent);
     }
     //------------------------------------------------------------------------------------------\\
 
                                     //  Hash Join  \\
     //------------------------------------------------------------------------------------------\\
-    public static JoinedTable join(JoinedTable joinedTable, BaseTable baseTable, JoinModel join){
+    public static JoinedTable join(JoinedTable joinedTable, BaseTable baseTable, JoinModel join) {
+
         return null;
     }
     //-------------------------------------------------------------------------------------------\\
@@ -91,4 +140,11 @@ public class JoinedTable implements Table{
     }
 
 
+    public void printState(){
+        System.out.println(columnNames);
+        System.out.println(columnTypes);
+        for(var record : tableContent) {
+            System.out.println(record);
+        }
+    }
 }

@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class BaseTable implements Table {
     @Getter
     private ArrayList<String> columnTypes, columnNames;
+    @Getter
     private final String databaseName, tableName;
 
     @Getter
@@ -215,39 +216,6 @@ public class BaseTable implements Table {
 
         try{
             ArrayList<ArrayList<Object>> records = recordReader.scanLines(pointers);
-
-            for(int i = 0; i < tableContent.size(); i++){
-                tableContent.get(i).addAll(records.get(i));
-            }
-        } catch (Exception ignored) {}
-
-        recordReader.close();
-    }
-
-    public void join(String childColumnName, String tableName, ArrayList<String> wantedColumNames) throws IOException {
-        int foreignKeyColumnIndex = columnNames.indexOf(childColumnName);
-
-        ArrayList<String> parentColumnNames = (ArrayList<String>) CatalogManager.getFieldNames(databaseName, tableName);
-        columnNames.addAll(parentColumnNames);
-        columnTypes.addAll(CatalogManager.getFieldTypes(databaseName, tableName));
-
-        String primaryKeyIndexName = CatalogManager.getPrimaryKeyIndexName(databaseName, tableName);
-        UniqueIndexManager indexManager = new UniqueIndexManager(databaseName, tableName, primaryKeyIndexName);
-        ArrayList<Integer> pointers = new ArrayList<>();
-        for(var record : tableContent){
-            Object foreignKey = record.get(foreignKeyColumnIndex);
-
-            try {
-                HashMap<Integer, Object> map = indexManager.equalityQuery(foreignKey);
-                pointers.addAll(map.keySet());
-            } catch (Exception ignored) {}
-        }
-        indexManager.close();
-
-        RecordReader recordReader = new RecordReader(databaseName, tableName);
-
-        try{
-            ArrayList<ArrayList<Object>> records = recordReader.scanLines(pointers, wantedColumNames);
 
             for(int i = 0; i < tableContent.size(); i++){
                 tableContent.get(i).addAll(records.get(i));

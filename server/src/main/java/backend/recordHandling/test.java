@@ -3,8 +3,10 @@ package backend.recordHandling;
 import backend.Indexing.*;
 import backend.Utilities.BaseTable;
 import backend.Utilities.GroupedTable;
+import backend.Utilities.JoinedTable;
 import backend.Utilities.Table;
 import backend.config.Config;
+import backend.databaseModels.JoinModel;
 import backend.databaseModels.aggregations.Aggregator;
 import backend.databaseModels.aggregations.AggregatorSymbol;
 import backend.databaseModels.conditions.*;
@@ -193,6 +195,10 @@ public class test {
 
         users.printState();
         albums.printState();
+
+        JoinedTable joinedTable = JoinedTable.join(users, albums, new JoinModel("user", "user.id", "album", "album.uid"));
+
+        joinedTable.printState();
     }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
