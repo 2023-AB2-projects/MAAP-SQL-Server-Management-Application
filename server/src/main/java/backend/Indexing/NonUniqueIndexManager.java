@@ -144,6 +144,7 @@ public class NonUniqueIndexManager implements Queryable{
         }catch (KeyNotFoundException ignored){}
     }
 
+    @Override
     public void close() throws IOException {
         bPlusTree.close();
     }

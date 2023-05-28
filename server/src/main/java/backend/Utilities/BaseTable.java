@@ -85,7 +85,7 @@ public class BaseTable implements Table {
                     pointers = new HashSet<>(queryResult.keySet());
 
                 } catch (UndefinedQueryException ignored){}
-
+                index.close();
 
 
             } else if ( condition instanceof FunctionCall) {
@@ -120,6 +120,8 @@ public class BaseTable implements Table {
                     pointers = new HashSet<>(queryResult.keySet());
 
                 } catch (UndefinedQueryException ignored){}
+
+                index.close();
             }
 
             wantedRecordPointers.retainAll(pointers);
