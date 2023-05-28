@@ -3,6 +3,7 @@ package backend.recordHandling;
 import backend.Indexing.*;
 import backend.Utilities.BaseTable;
 import backend.Utilities.GroupedTable;
+import backend.Utilities.Table;
 import backend.config.Config;
 import backend.databaseModels.aggregations.Aggregator;
 import backend.databaseModels.aggregations.AggregatorSymbol;
@@ -185,6 +186,14 @@ public class test {
 
         //people.printState();
     }
+
+    public static void joinTest() throws IOException {
+        BaseTable users = new BaseTable("master", "user");
+        BaseTable albums = new BaseTable("master", "album");
+
+        users.printState();
+        albums.printState();
+    }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
         types = new ArrayList<>();
@@ -194,7 +203,8 @@ public class test {
         //testUniqueIndexManager();
         //scanTest();
         //rangeQueryTest();
-        tableTest();
+        //tableTest();
+        joinTest();
 
     }
 }

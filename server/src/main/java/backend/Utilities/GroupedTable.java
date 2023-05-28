@@ -4,7 +4,6 @@ import backend.databaseModels.aggregations.Aggregator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 public class GroupedTable implements Table{
     private ArrayList<String> groupedColumnNames, groupedColumnTypes;
