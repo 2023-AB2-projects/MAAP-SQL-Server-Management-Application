@@ -167,6 +167,7 @@ public class test {
 
         ArrayList<Aggregator> aggregators = new ArrayList<>();
         aggregators.add(new Aggregator("height", AggregatorSymbol.AVG));
+        aggregators.add(new Aggregator("height", AggregatorSymbol.MAX));
 
         //people.aggregation(aggregators);
 
@@ -174,6 +175,7 @@ public class test {
         wantedColumns.add("age");
         GroupedTable groupedPeople = people.groupBy(wantedColumns);
 
+        groupedPeople.aggregation(aggregators);
         groupedPeople.printState();
 
         //people.printState();

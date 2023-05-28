@@ -3,13 +3,17 @@ package backend.Utilities;
 import backend.databaseModels.aggregations.Aggregator;
 import backend.databaseModels.aggregations.AggregatorSymbol;
 import backend.recordHandling.TypeConverter;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class AnonymousTable implements Table {
 
+    @Getter
     private ArrayList<String> columnNames, columnTypes;
+
+    @Getter
     private ArrayList<ArrayList<Object>> tableContent;
 
     public AnonymousTable(ArrayList<String> columnNames, ArrayList<String> columnTypes) {

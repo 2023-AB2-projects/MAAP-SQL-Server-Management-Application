@@ -52,7 +52,24 @@ public class GroupedTable implements Table{
 
     @Override
     public void aggregation(ArrayList<Aggregator> aggregators) {
+        HashMap<ArrayList<Object>, AnonymousTable> newTableMap = new HashMap<>();
+        AnonymousTable anonymousTable = null;
+        for(var key : tableMap.keySet()){
+            anonymousTable = tableMap.get(key);
+            anonymousTable.aggregation(aggregators);
+            ArrayList<Object> newKey = (ArrayList<Object>) key.clone();
+            newKey.addAll(anonymousTable.getTableContent().get(0));
+            newTableMap.put(newKey, anonymousTable);
 
+        }
+
+        assert anonymousTable != null;
+        unGroupedColumnNames = anonymousTable.getColumnNames();
+        unGroupedColumnTypes = anonymousTable.getColumnTypes();
+        groupedColumnNames.addAll(unGroupedColumnNames);
+        groupedColumnTypes.addAll(unGroupedColumnTypes);
+
+        tableMap = newTableMap;
     }
 
     @Override
