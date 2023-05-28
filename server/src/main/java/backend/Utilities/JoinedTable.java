@@ -1,5 +1,6 @@
 package backend.Utilities;
 
+import backend.databaseModels.JoinModel;
 import backend.databaseModels.aggregations.Aggregator;
 import backend.databaseModels.aggregations.AggregatorSymbol;
 import backend.recordHandling.TypeConverter;
@@ -20,17 +21,23 @@ public class JoinedTable implements Table{
         this.tableContent = tableContent;
     }
 
-    public static JoinedTable join(ArrayList<BaseTable> tables){
+    public static JoinedTable join(ArrayList<BaseTable> tables, ArrayList<JoinModel> joins){
         return null;
     }
 
-    private static JoinedTable nestedJoin(){
+                                    // Nested Join \\
+    //-----------------------------------------------------------------------------------------\\
+    public static JoinedTable join(BaseTable parentTable, BaseTable childTable, JoinModel join){
         return null;
     }
+    //------------------------------------------------------------------------------------------\\
 
-    private static JoinedTable hashJoin(){
+                                    //  Hash Join  \\
+    //------------------------------------------------------------------------------------------\\
+    public static JoinedTable join(JoinedTable joinedTable, BaseTable baseTable, JoinModel join){
         return null;
     }
+    //-------------------------------------------------------------------------------------------\\
 
     @Override
     public GroupedTable groupBy(ArrayList<String> groupingColumns) {

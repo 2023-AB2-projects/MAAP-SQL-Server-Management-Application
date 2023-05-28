@@ -24,6 +24,7 @@ public class BaseTable implements Table {
     private ArrayList<String> columnTypes, columnNames;
     private final String databaseName, tableName;
 
+    @Getter
     private final HashMap<Integer, Integer> pointerMapper;
 
     @Getter
