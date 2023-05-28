@@ -259,7 +259,7 @@ public class BaseTable implements Table {
     //-------------------------------------------------------------------------------------------------------------------------------//
 
     public GroupedTable groupBy(ArrayList<String> groupingColumns) {
-        return null;
+        return new GroupedTable(columnNames, columnTypes, groupingColumns, tableContent);
     }
 
     public void printState(){

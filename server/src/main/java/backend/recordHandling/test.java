@@ -2,6 +2,7 @@ package backend.recordHandling;
 
 import backend.Indexing.*;
 import backend.Utilities.BaseTable;
+import backend.Utilities.GroupedTable;
 import backend.config.Config;
 import backend.databaseModels.aggregations.Aggregator;
 import backend.databaseModels.aggregations.AggregatorSymbol;
@@ -156,7 +157,8 @@ public class test {
         args.add("50");
         conds.add(new FunctionCall("people", "age", Function.BETWEEN, args));
         conds.add(new Equation("name", Operator.EQUALS, "daniel"));
-        BaseTable people = new BaseTable("master", "people", conds);
+        //BaseTable people = new BaseTable("master", "people", conds);
+        BaseTable people = new BaseTable("master", "people");
         ArrayList<String> columns = new ArrayList<>();
         columns.add("name");
         columns.add("age");
@@ -166,9 +168,15 @@ public class test {
         ArrayList<Aggregator> aggregators = new ArrayList<>();
         aggregators.add(new Aggregator("height", AggregatorSymbol.AVG));
 
-        people.aggregation(aggregators);
+        //people.aggregation(aggregators);
 
-        people.printState();
+        ArrayList<String> wantedColumns = new ArrayList<>();
+        wantedColumns.add("age");
+        GroupedTable groupedPeople = people.groupBy(wantedColumns);
+
+        groupedPeople.printState();
+
+        //people.printState();
     }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
@@ -180,5 +188,6 @@ public class test {
         //scanTest();
         //rangeQueryTest();
         tableTest();
+
     }
 }
