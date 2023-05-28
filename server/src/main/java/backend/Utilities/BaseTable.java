@@ -48,7 +48,7 @@ public class BaseTable implements Table {
             HashSet<Integer> pointers = new HashSet<>();
             if (condition instanceof Equation){
                 String fieldName = ((Equation) condition).getLFieldName();
-                System.out.println(fieldName);
+                int fieldIndex = columnNames.indexOf(fieldName);
                 //this is good only for testing tell them to fix it
                 try {
                     List<String> indexName = CatalogManager.getIndexFieldNames(databaseName, tableName, fieldName);
@@ -57,7 +57,7 @@ public class BaseTable implements Table {
                     continue;
                 }
 
-                String fieldType = CatalogManager.getFieldType(databaseName, tableName, fieldName);
+                String fieldType = columnTypes.get(fieldIndex);
                 String compareValueString = ((Equation) condition).getRFieldName();
                 Object compareValue = TypeConverter.toObject(fieldType, compareValueString);
 
@@ -87,7 +87,7 @@ public class BaseTable implements Table {
 
             } else if ( condition instanceof FunctionCall) {
                 String fieldName = ((FunctionCall) condition).getFieldName();
-
+                int fieldIndex = columnNames.indexOf(fieldName);
                 try {
                     List<String> indexName = CatalogManager.getIndexFieldNames(databaseName, tableName, fieldName);
                     conditions.remove(condition);
@@ -95,7 +95,7 @@ public class BaseTable implements Table {
                     continue;
                 }
 
-                String fieldType = CatalogManager.getFieldType(databaseName, tableName, fieldName);
+                String fieldType = columnTypes.get(fieldIndex);
                 ArrayList<String> args = ((FunctionCall) condition).getArgs();
                 Object lower = TypeConverter.toObject(fieldType, args.get(0));
                 Object upper = TypeConverter.toObject(fieldType, args.get(1));
@@ -140,7 +140,7 @@ public class BaseTable implements Table {
                 fieldIndex = columnNames.indexOf(fieldName);
                 System.out.println(fieldName);
 
-                String fieldType = CatalogManager.getFieldType(databaseName, tableName, fieldName);
+                String fieldType = columnTypes.get(fieldIndex);
                 String compareValueString = ((Equation) condition).getRFieldName();
                 Object compareValue = TypeConverter.toObject(fieldType, compareValueString);
 
@@ -165,7 +165,7 @@ public class BaseTable implements Table {
             } else if ( condition instanceof FunctionCall) {
                 String fieldName = ((FunctionCall) condition).getFieldName();
                 fieldIndex = columnNames.indexOf(fieldName);
-                String fieldType = CatalogManager.getFieldType(databaseName, tableName, fieldName);
+                String fieldType = columnTypes.get(fieldIndex);
                 ArrayList<String> args = ((FunctionCall) condition).getArgs();
                 Object lower = TypeConverter.toObject(fieldType, args.get(0));
                 Object upper = TypeConverter.toObject(fieldType, args.get(1));
@@ -257,6 +257,11 @@ public class BaseTable implements Table {
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------//
+
+    public GroupedTable groupBy(ArrayList<String> groupingColumns) {
+        return null;
+    }
+
     public void printState(){
         System.out.println(columnNames);
         System.out.println(columnTypes);
@@ -274,7 +279,7 @@ public class BaseTable implements Table {
         for(var aggregator : aggregators) {
             String fieldName = aggregator.getFieldName();
             int fieldIndex = columnNames.indexOf(fieldName);
-            String fieldType = CatalogManager.getFieldType(databaseName, tableName, fieldName);
+            String fieldType = columnTypes.get(fieldIndex);
             AggregatorSymbol aggregatorSymbol = aggregator.getAggr();
             newTypes.add(TypeConverter.mapAggregatorType(fieldType, aggregatorSymbol));
 
