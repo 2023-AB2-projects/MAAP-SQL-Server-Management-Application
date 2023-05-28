@@ -175,7 +175,12 @@ public class test {
         wantedColumns.add("age");
         GroupedTable groupedPeople = people.groupBy(wantedColumns);
 
+        columns = new ArrayList<>();
+        columns.add("AVG(height)");
+
         groupedPeople.aggregation(aggregators);
+
+        groupedPeople.projection(columns);
         groupedPeople.printState();
 
         //people.printState();

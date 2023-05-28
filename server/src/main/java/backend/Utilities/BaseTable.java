@@ -295,11 +295,11 @@ public class BaseTable implements Table {
     }
 
     @Override
-    public void projection(ArrayList<String> wantedColumnNames){
+    public void projection(ArrayList<String> wantedColumns){
         ArrayList<Integer> wantedColumnIndexes = new ArrayList<>();
         ArrayList<String> newColumnTypes = new ArrayList<>();
         for(var columnName : columnNames){
-            if(wantedColumnNames.contains(columnName)){
+            if(wantedColumns.contains(columnName)){
                 int i = columnNames.indexOf(columnName);
                 newColumnTypes.add(columnTypes.get(i));
                 wantedColumnIndexes.add(i);
@@ -313,7 +313,7 @@ public class BaseTable implements Table {
             return newElem;
         }).collect(Collectors.toCollection(ArrayList::new));
 
-        columnNames = wantedColumnNames;
+        columnNames = wantedColumns;
         columnTypes = newColumnTypes;
     }
 }

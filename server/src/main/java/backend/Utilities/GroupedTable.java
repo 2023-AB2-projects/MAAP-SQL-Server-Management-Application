@@ -4,6 +4,7 @@ import backend.databaseModels.aggregations.Aggregator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 public class GroupedTable implements Table{
     private ArrayList<String> groupedColumnNames, groupedColumnTypes;
@@ -52,14 +53,11 @@ public class GroupedTable implements Table{
 
     @Override
     public void aggregation(ArrayList<Aggregator> aggregators) {
-        HashMap<ArrayList<Object>, AnonymousTable> newTableMap = new HashMap<>();
         AnonymousTable anonymousTable = null;
         for(var key : tableMap.keySet()){
             anonymousTable = tableMap.get(key);
             anonymousTable.aggregation(aggregators);
-            ArrayList<Object> newKey = (ArrayList<Object>) key.clone();
-            newKey.addAll(anonymousTable.getTableContent().get(0));
-            newTableMap.put(newKey, anonymousTable);
+            key.addAll(anonymousTable.getTableContent().get(0));
 
         }
 
@@ -68,13 +66,33 @@ public class GroupedTable implements Table{
         unGroupedColumnTypes = anonymousTable.getColumnTypes();
         groupedColumnNames.addAll(unGroupedColumnNames);
         groupedColumnTypes.addAll(unGroupedColumnTypes);
-
-        tableMap = newTableMap;
     }
 
     @Override
     public void projection(ArrayList<String> wantedColumns) {
+        ArrayList<Integer> wantedColumnIndexes = new ArrayList<>();
+        ArrayList<String> newColumnTypes = new ArrayList<>();
+        for(var columnName : groupedColumnNames){
+            if(wantedColumns.contains(columnName)){
+                int i = groupedColumnNames.indexOf(columnName);
+                newColumnTypes.add(groupedColumnTypes.get(i));
+                wantedColumnIndexes.add(i);
+            }
+        }
 
+        System.out.println(wantedColumnIndexes);
+        for ( var key : tableMap.keySet()) {
+            ArrayList<Object> wanted = new ArrayList<>();
+            for (var i : wantedColumnIndexes) {
+                wanted.add(key.get(i));
+            }
+            System.out.println(wanted);
+            key.clear();
+            key.addAll(wanted);
+        }
+
+        groupedColumnNames = wantedColumns;
+        groupedColumnTypes = newColumnTypes;
     }
 
     public void printState() {
