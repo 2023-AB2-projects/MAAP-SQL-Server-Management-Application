@@ -50,6 +50,12 @@ public class GroupedTable implements Table{
         }
     }
 
+
+    @Override
+    public GroupedTable groupBy(ArrayList<String> groupingColumns) {
+        return null;
+    }
+
     @Override
     public void aggregation(ArrayList<Aggregator> aggregators) {
         AnonymousTable anonymousTable = null;

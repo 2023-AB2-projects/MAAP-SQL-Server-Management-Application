@@ -27,6 +27,11 @@ public class AnonymousTable implements Table {
     }
 
     @Override
+    public GroupedTable groupBy(ArrayList<String> groupingColumns) {
+        return null;
+    }
+
+    @Override
     public void aggregation(ArrayList<Aggregator> aggregators) {
         ArrayList<String> newTypes = new ArrayList<>();
         ArrayList<ArrayList<Object>> newTable = new ArrayList<>();

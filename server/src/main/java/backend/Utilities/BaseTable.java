@@ -258,9 +258,7 @@ public class BaseTable implements Table {
 
     //-------------------------------------------------------------------------------------------------------------------------------//
 
-    public GroupedTable groupBy(ArrayList<String> groupingColumns) {
-        return new GroupedTable(columnNames, columnTypes, groupingColumns, tableContent);
-    }
+
 
     public void printState(){
         System.out.println(columnNames);
@@ -269,6 +267,11 @@ public class BaseTable implements Table {
         for(var record : tableContent) {
             System.out.println(record);
         }
+    }
+
+    @Override
+    public GroupedTable groupBy(ArrayList<String> groupingColumns) {
+        return new GroupedTable(columnNames, columnTypes, groupingColumns, tableContent);
     }
 
     @Override
