@@ -80,13 +80,11 @@ public class GroupedTable implements Table{
             }
         }
 
-        System.out.println(wantedColumnIndexes);
         for ( var key : tableMap.keySet()) {
             ArrayList<Object> wanted = new ArrayList<>();
             for (var i : wantedColumnIndexes) {
                 wanted.add(key.get(i));
             }
-            System.out.println(wanted);
             key.clear();
             key.addAll(wanted);
         }

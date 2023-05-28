@@ -151,32 +151,32 @@ public class test {
 
     public static void tableTest() throws IOException {
         ArrayList<Condition> conds = new ArrayList<>();
-        conds.add(new Equation("id", Operator.LESS_THAN, "4"));
+        conds.add(new Equation("people.id", Operator.LESS_THAN, "4"));
         ArrayList<String> args = new ArrayList<>();
         args.add("23");
         args.add("50");
-        conds.add(new FunctionCall("people", "age", Function.BETWEEN, args));
-        conds.add(new Equation("name", Operator.EQUALS, "daniel"));
-        //BaseTable people = new BaseTable("master", "people", conds);
-        BaseTable people = new BaseTable("master", "people");
+        conds.add(new FunctionCall("people", "people.age", Function.BETWEEN, args));
+        conds.add(new Equation("people.name", Operator.EQUALS, "daniel"));
+        BaseTable people = new BaseTable("master", "people", conds);
+        //BaseTable people = new BaseTable("master", "people");
         ArrayList<String> columns = new ArrayList<>();
-        columns.add("name");
-        columns.add("age");
-        columns.add("height");
+        columns.add("people.name");
+        columns.add("people.age");
+        columns.add("people.height");
         people.projection(columns);
 
         ArrayList<Aggregator> aggregators = new ArrayList<>();
-        aggregators.add(new Aggregator("height", AggregatorSymbol.AVG));
-        aggregators.add(new Aggregator("height", AggregatorSymbol.MAX));
+        aggregators.add(new Aggregator("people.height", AggregatorSymbol.AVG));
+        aggregators.add(new Aggregator("people.height", AggregatorSymbol.MAX));
 
         //people.aggregation(aggregators);
 
         ArrayList<String> wantedColumns = new ArrayList<>();
-        wantedColumns.add("age");
+        wantedColumns.add("people.age");
         GroupedTable groupedPeople = people.groupBy(wantedColumns);
 
         columns = new ArrayList<>();
-        columns.add("AVG(height)");
+        columns.add("AVG(people.height)");
 
         groupedPeople.aggregation(aggregators);
 

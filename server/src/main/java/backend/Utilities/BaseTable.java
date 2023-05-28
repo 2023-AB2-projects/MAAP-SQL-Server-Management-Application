@@ -35,6 +35,7 @@ public class BaseTable implements Table {
     public BaseTable(String databaseName, String tableName, ArrayList<Condition> conditions) throws IOException {
         this.columnTypes = (ArrayList<String>) CatalogManager.getFieldTypes(databaseName, tableName);
         this.columnNames = (ArrayList<String>) CatalogManager.getFieldNames(databaseName, tableName);
+        this.columnNames = columnNames.stream().map((elem) -> tableName + "." + elem).collect(Collectors.toCollection(ArrayList::new));
         this.databaseName = databaseName;
         this.tableName = tableName;
         pointerMapper = new HashMap<>();
@@ -138,7 +139,6 @@ public class BaseTable implements Table {
             if (condition instanceof Equation){
                 String fieldName = ((Equation) condition).getLFieldName();
                 fieldIndex = columnNames.indexOf(fieldName);
-                System.out.println(fieldName);
 
                 String fieldType = columnTypes.get(fieldIndex);
                 String compareValueString = ((Equation) condition).getRFieldName();
