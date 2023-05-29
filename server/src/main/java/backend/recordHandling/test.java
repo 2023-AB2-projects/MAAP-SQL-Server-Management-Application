@@ -1,13 +1,22 @@
 package backend.recordHandling;
 
 import backend.Indexing.*;
+import backend.Utilities.BaseTable;
+import backend.Utilities.GroupedTable;
+import backend.Utilities.JoinedTable;
+import backend.Utilities.Table;
 import backend.config.Config;
+import backend.databaseModels.JoinModel;
+import backend.databaseModels.aggregations.Aggregator;
+import backend.databaseModels.aggregations.AggregatorSymbol;
+import backend.databaseModels.conditions.*;
 import backend.exceptions.recordHandlingExceptions.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.time.chrono.ThaiBuddhistChronology;
 import java.util.*;
 
 @Slf4j
@@ -144,8 +153,64 @@ public class test {
         System.out.println(manager.greaterQuery(1, true));
     }
 
-    public static void tableTest() {
+    public static void tableTest() throws IOException {
+        ArrayList<Condition> conds = new ArrayList<>();
+        conds.add(new Equation("people.id", Operator.LESS_THAN, "4"));
+        ArrayList<String> args = new ArrayList<>();
+        args.add("23");
+        args.add("50");
+        conds.add(new FunctionCall("people", "people.age", Function.BETWEEN, args));
+        conds.add(new Equation("people.name", Operator.EQUALS, "daniel"));
+        BaseTable people = new BaseTable("master", "people", conds);
+        //BaseTable people = new BaseTable("master", "people");
+        ArrayList<String> columns = new ArrayList<>();
+        columns.add("people.name");
+        columns.add("people.age");
+        columns.add("people.height");
+        people.projection(columns);
 
+        ArrayList<Aggregator> aggregators = new ArrayList<>();
+        aggregators.add(new Aggregator("people.height", AggregatorSymbol.AVG));
+        aggregators.add(new Aggregator("people.height", AggregatorSymbol.MAX));
+
+        //people.aggregation(aggregators);
+
+        ArrayList<String> wantedColumns = new ArrayList<>();
+        wantedColumns.add("people.age");
+        GroupedTable groupedPeople = people.groupBy(wantedColumns);
+
+        columns = new ArrayList<>();
+        columns.add("AVG(people.height)");
+
+        groupedPeople.aggregation(aggregators);
+
+        groupedPeople.projection(columns);
+        groupedPeople.printState();
+
+        //people.printState();
+    }
+
+    public static void joinTest() throws IOException {
+        ArrayList<Condition> conds = new ArrayList<>();
+        conds.add(new Equation("user.id", Operator.LESS_THAN_OR_EQUAL_TO, "4"));
+        BaseTable users = new BaseTable("master", "user", conds);
+        BaseTable albums = new BaseTable("master", "album");
+
+        users.printState();
+        albums.printState();
+
+        ArrayList<JoinModel> joinModels = new ArrayList<>();
+        joinModels.add(new JoinModel("user", "user.id", "album", "album.uid"));
+        //joinModels.add(new JoinModel("album", "album.uid", "album", "album.uid"));
+
+        ArrayList<Table> tables =new ArrayList<>();
+        tables.add(users);
+        tables.add(albums);
+        tables.add(albums);
+
+        JoinedTable joinedTable = (JoinedTable) JoinedTable.join(tables, joinModels);
+
+        joinedTable.printState();
     }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
@@ -156,6 +221,8 @@ public class test {
         //testUniqueIndexManager();
         //scanTest();
         //rangeQueryTest();
-        tableTest();
+        //tableTest();
+        joinTest();
+
     }
 }

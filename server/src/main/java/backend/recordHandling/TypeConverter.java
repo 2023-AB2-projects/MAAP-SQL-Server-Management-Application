@@ -1,6 +1,7 @@
 package backend.recordHandling;
 
 import backend.Indexing.Key;
+import backend.databaseModels.aggregations.AggregatorSymbol;
 import backend.exceptions.recordHandlingExceptions.InvalidTypeException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -295,6 +296,28 @@ public class TypeConverter {
                     log.error("Invalid type given to comparator");
                     return 0;
                 }
+            }
+        }
+    }
+
+    public static String mapAggregatorType(String type, AggregatorSymbol aggr){
+        return switch (aggr) {
+            case MIN, MAX -> type;
+            case COUNT -> "int";
+            case AVG, SUM -> "float";
+        };
+    }
+
+    public static Object addObjects(String type, Object o1, Object o2) {
+        switch (type) {
+            case "int" -> {
+                return (int)o1 + (int)o2;
+             }
+            case "float" -> {
+                return (float) o1 + (float) o2;
+            }
+            default -> {
+                throw new IllegalArgumentException("Invalid Type: " + type);
             }
         }
     }

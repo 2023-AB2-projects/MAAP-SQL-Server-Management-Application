@@ -129,6 +129,7 @@ public class UniqueIndexManager implements Queryable{
         }catch (KeyNotFoundException ignored){}
     }
 
+    @Override
     public void close() throws IOException {
         bPlusTree.close();
     }
