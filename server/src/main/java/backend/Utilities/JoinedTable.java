@@ -26,12 +26,20 @@ public class JoinedTable implements Table{
         this.columnNames = columnNames;
         this.tableContent = tableContent;
     }
+                                         // Multi Join \\
+    //-----------------------------------------------------------------------------------------\\
+    public static Table join(ArrayList<Table> tables, ArrayList<JoinModel> joins){
+        Table currentTable = tables.get(0);
 
-    public static JoinedTable join(ArrayList<BaseTable> tables, ArrayList<JoinModel> joins){
-        return null;
+        for (int i = 0; i < joins.size(); i++) {
+            currentTable = join(currentTable, tables.get(i + 1), joins.get(i));
+        }
+
+        return currentTable;
     }
+    //-----------------------------------------------------------------------------------------\\
 
-                                    // Nested Join \\
+                                    // Indexed Nested Join \\
     //-----------------------------------------------------------------------------------------\\
     public static JoinedTable join(BaseTable parentTable, BaseTable childTable, JoinModel join) throws IOException {
         String databaseName = parentTable.getDatabaseName();

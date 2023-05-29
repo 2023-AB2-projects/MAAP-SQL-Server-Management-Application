@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.time.chrono.ThaiBuddhistChronology;
 import java.util.*;
 
 @Slf4j
@@ -198,12 +199,18 @@ public class test {
         users.printState();
         albums.printState();
 
+        ArrayList<JoinModel> joinModels = new ArrayList<>();
+        joinModels.add(new JoinModel("user", "user.id", "album", "album.uid"));
+        //joinModels.add(new JoinModel("album", "album.uid", "album", "album.uid"));
 
-        JoinedTable joinedTable = JoinedTable.join(users, albums, new JoinModel("user", "user.id", "album", "album.uid"));
-        JoinedTable table = JoinedTable.join(joinedTable, albums, new JoinModel("album", "album.uid", "album", "album.uid"));
+        ArrayList<Table> tables =new ArrayList<>();
+        tables.add(users);
+        tables.add(albums);
+        tables.add(albums);
+
+        JoinedTable joinedTable = (JoinedTable) JoinedTable.join(tables, joinModels);
 
         joinedTable.printState();
-        table.printState();
     }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
