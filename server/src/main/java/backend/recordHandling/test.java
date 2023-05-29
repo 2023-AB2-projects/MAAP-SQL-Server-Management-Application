@@ -190,15 +190,20 @@ public class test {
     }
 
     public static void joinTest() throws IOException {
-        BaseTable users = new BaseTable("master", "user");
+        ArrayList<Condition> conds = new ArrayList<>();
+        conds.add(new Equation("user.id", Operator.LESS_THAN_OR_EQUAL_TO, "4"));
+        BaseTable users = new BaseTable("master", "user", conds);
         BaseTable albums = new BaseTable("master", "album");
 
         users.printState();
         albums.printState();
 
+
         JoinedTable joinedTable = JoinedTable.join(users, albums, new JoinModel("user", "user.id", "album", "album.uid"));
+        JoinedTable table = JoinedTable.join(joinedTable, albums, new JoinModel("album", "album.uid", "album", "album.uid"));
 
         joinedTable.printState();
+        table.printState();
     }
     public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};

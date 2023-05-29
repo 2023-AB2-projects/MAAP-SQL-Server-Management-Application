@@ -70,10 +70,12 @@ public class JoinedTable implements Table{
 
         pointers = pointers.stream().map(pointerMap::get).collect(Collectors.toCollection(ArrayList::new));
         for(int i = 0; i < pointers.size(); i++) {
-            ArrayList<Object> row = new ArrayList<>();
-            row.addAll(childTableContent.get(i));
-            row.addAll(parentTableContent.get(pointers.get(i)));
-            tableContent.add(row);
+            if (pointers.get(i) != null) {
+                ArrayList<Object> row = new ArrayList<>();
+                row.addAll(childTableContent.get(i));
+                row.addAll(parentTableContent.get(pointers.get(i)));
+                tableContent.add(row);
+            }
         }
 
         return new JoinedTable(columnTypes, columnNames, tableContent);
@@ -83,8 +85,50 @@ public class JoinedTable implements Table{
                                     //  Hash Join  \\
     //------------------------------------------------------------------------------------------\\
     public static JoinedTable join(JoinedTable joinedTable, BaseTable baseTable, JoinModel join) {
+        String databaseName = baseTable.getDatabaseName();
+        ArrayList<String> leftColumnNames = joinedTable.getColumnNames(), leftColumnTypes = joinedTable.getColumnTypes();
+        ArrayList<String> rightColumnNames = baseTable.getColumnNames(), rightColumnTypes = baseTable.getColumnTypes();
+        ArrayList<String> columnNames = new ArrayList<>(), columnTypes = new ArrayList<>();
+        columnNames.addAll(rightColumnNames);
+        columnNames.addAll(leftColumnNames);
+        columnTypes.addAll(rightColumnTypes);
+        columnTypes.addAll(leftColumnTypes);
 
-        return null;
+        //String parentTableName = join.getLeftTableName(), childTableName = join.getRightTableName();
+        String leftKey = join.getLeftFieldName(), rightKey = join.getRightFieldName();
+
+        ArrayList<ArrayList<Object>> leftTableContent = joinedTable.getTableContent();
+        ArrayList<ArrayList<Object>> rightTableContent = baseTable.getTableContent();
+        ArrayList<ArrayList<Object>> tableContent = new ArrayList<>();
+
+        int leftKeyIndex = leftColumnNames.indexOf(leftKey), rightKeyIndex = rightColumnNames.indexOf(rightKey);
+        HashMap<Object, ArrayList<Integer>> keyMap = new HashMap<>();
+
+        for (int i = 0; i < leftTableContent.size(); i++) {
+            Object leftKeyValue = leftTableContent.get(i).get(leftKeyIndex);
+            if (keyMap.containsKey(leftKeyValue)) {
+                keyMap.get(leftKeyValue).add(i);
+            } else {
+                keyMap.put(leftKeyValue, new ArrayList<>());
+                keyMap.get(leftKeyValue).add(i);
+            }
+        }
+
+        for (ArrayList<Object> rightRow : rightTableContent) {
+            Object rightKeyValue = rightRow.get(rightKeyIndex);
+            ArrayList<Integer> pointers = keyMap.get(rightKeyValue);
+
+            if (pointers != null) {
+                for (var pointer : pointers) {
+                    ArrayList<Object> row = new ArrayList<>();
+                    row.addAll(rightRow);
+                    row.addAll(leftTableContent.get(pointer));
+                    tableContent.add(row);
+                }
+            }
+        }
+
+        return new JoinedTable(columnTypes, columnNames, tableContent);
     }
     //-------------------------------------------------------------------------------------------\\
 
