@@ -9,4 +9,9 @@ public interface Table {
     void aggregation(ArrayList<Aggregator> aggregators);
     void projection(ArrayList<String> wantedColumns);
 
+    ArrayList<String> getColumnNames();
+
+    ArrayList<String> getColumnTypes();
+
+    ArrayList<ArrayList<Object>> getTableContent();
 }

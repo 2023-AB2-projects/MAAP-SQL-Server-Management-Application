@@ -84,8 +84,7 @@ public class JoinedTable implements Table{
 
                                     //  Hash Join  \\
     //------------------------------------------------------------------------------------------\\
-    public static JoinedTable join(JoinedTable joinedTable, BaseTable baseTable, JoinModel join) {
-        String databaseName = baseTable.getDatabaseName();
+    public static JoinedTable join(Table joinedTable, Table baseTable, JoinModel join) {
         ArrayList<String> leftColumnNames = joinedTable.getColumnNames(), leftColumnTypes = joinedTable.getColumnTypes();
         ArrayList<String> rightColumnNames = baseTable.getColumnNames(), rightColumnTypes = baseTable.getColumnTypes();
         ArrayList<String> columnNames = new ArrayList<>(), columnTypes = new ArrayList<>();

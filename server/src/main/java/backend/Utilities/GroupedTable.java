@@ -98,6 +98,21 @@ public class GroupedTable implements Table{
         groupedColumnTypes = newColumnTypes;
     }
 
+    @Override
+    public ArrayList<String> getColumnNames() {
+        return groupedColumnNames;
+    }
+
+    @Override
+    public ArrayList<String> getColumnTypes() {
+        return groupedColumnTypes;
+    }
+
+    @Override
+    public ArrayList<ArrayList<Object>> getTableContent() {
+        return new ArrayList<>(tableMap.keySet());
+    }
+
     public void printState() {
         System.out.println(groupedColumnNames);
         System.out.println(groupedColumnTypes);
