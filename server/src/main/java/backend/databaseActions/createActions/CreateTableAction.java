@@ -136,7 +136,7 @@ public class CreateTableAction implements DatabaseAction {
 
     @Override
     public Object actionPerform() throws TableNameAlreadyExists, DatabaseDoesntExist,
-            PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique, ForeignKeyFieldNotFound {
+            PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique, ForeignKeyFieldNotFound, FieldsNotCompatible {
         // File that contains the whole catalog
         File catalog = Config.getCatalogFile();
 
