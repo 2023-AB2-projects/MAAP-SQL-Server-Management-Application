@@ -106,24 +106,28 @@ public class CreateIndexAction implements DatabaseAction {
             }
         }
 
-        //Ez egy Szar Minek van meghivva create table utan ha nincs pk vagy unique???
 //      Check if unique index is for unique columns and viceversa
-//        boolean requestedFieldsAreUnique = CatalogManager.areUnique(databaseName, tableName, indexFile.getIndexFields());
-//        log.info(indexFile.getIndexFields().toString());
-//        log.info(CatalogManager.getTableAsJSON(databaseName, tableName));
-//
-//        if( this.indexFile.isUnique() && !requestedFieldsAreUnique ) {
-//            log.error("Requested fields are not compatible: No unique field for unique index!");
-//            throw new FieldsNotCompatible(requestedFieldsAreUnique, indexFile.getIndexFields());
-//        } else if( !this.indexFile.isUnique() && requestedFieldsAreUnique ) {
-//            log.error("Requested fields are not compatible: Unique field found for unique index!");
-//            throw new FieldsNotCompatible(requestedFieldsAreUnique, indexFile.getIndexFields());
-//        }
 
-        // check if fields are already indexed
-        if(CatalogManager.isIndexed(databaseName, tableName, indexFile.getIndexFields())) {
-            log.error("Some fields are already indexed!");
-            throw new IndexAlreadyExists(indexFile.getIndexName(), tableName);
+        // On createTable action, this is called with 0 fields to be indexed
+        if(indexFile.getIndexFields().size() > 0) {
+            boolean requestedFieldsAreUnique = CatalogManager.areUnique(databaseName, tableName, indexFile.getIndexFields());
+            log.error("indexFields: " + indexFile.getIndexFields().toString());
+            log.error(CatalogManager.getTableAsJSON(databaseName, tableName));
+
+
+            if (this.indexFile.isUnique() && !requestedFieldsAreUnique) {
+                log.error("Requested fields are not compatible: No unique field for unique index!");
+                throw new FieldsNotCompatible(requestedFieldsAreUnique, indexFile.getIndexFields());
+            } else if (!this.indexFile.isUnique() && requestedFieldsAreUnique) {
+                log.error("Requested fields are not compatible: Unique field found for unique index!");
+                throw new FieldsNotCompatible(requestedFieldsAreUnique, indexFile.getIndexFields());
+            }
+
+            // check if fields are already indexed
+            if (CatalogManager.isIndexed(databaseName, tableName, indexFile.getIndexFields())) {
+                log.error("Some fields are already indexed!");
+                throw new IndexAlreadyExists(indexFile.getIndexName(), tableName);
+            }
         }
 
         // Add index to table

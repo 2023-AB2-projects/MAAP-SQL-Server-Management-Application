@@ -669,11 +669,14 @@ public class CatalogManager {
     }
 
     public static Boolean areUnique(String databaseName, String tableName, ArrayList<String> fields) {
+        // get unique fields and primary key fields
         List<String> uniqueColumns = CatalogManager.getUniqueFieldNames(databaseName, tableName);
+        List<String> primaryKeyColumns = CatalogManager.getPrimaryKeyFieldNames(databaseName, tableName);
+
 
         // check if one given field is unique
         for(String field : fields){
-            if( uniqueColumns.contains(field)) {
+            if( uniqueColumns.contains(field) || primaryKeyColumns.contains(field)) {
                 return true;
             }
         }
