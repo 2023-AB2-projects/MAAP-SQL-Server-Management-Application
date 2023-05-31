@@ -29,7 +29,8 @@
               <Component id="objectExplorerPanel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="centerClientPanel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="294" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="projectManagerPanel1" min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -37,6 +38,7 @@
       <Group type="103" groupAlignment="1" attributes="0">
           <Component id="objectExplorerPanel1" min="-2" max="-2" attributes="0"/>
           <Component id="centerClientPanel1" min="-2" max="-2" attributes="0"/>
+          <Component id="projectManagerPanel1" alignment="0" min="-2" max="-2" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -44,6 +46,8 @@
     <Component class="frontend.object_explorer.ObjectExplorerPanel" name="objectExplorerPanel1">
     </Component>
     <Component class="frontend.center_panel.CenterClientPanel" name="centerClientPanel1">
+    </Component>
+    <Component class="frontend.project_manager.ProjectManagerPanel" name="projectManagerPanel1">
     </Component>
   </SubComponents>
 </Form>

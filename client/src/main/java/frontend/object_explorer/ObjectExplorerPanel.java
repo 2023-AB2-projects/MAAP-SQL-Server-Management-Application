@@ -185,9 +185,11 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
 
         usingDatabaseLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         usingDatabaseLabel.setText("Using database:");
+        usingDatabaseLabel.setFocusable(false);
 
         usingDatabaseField.setEditable(false);
         usingDatabaseField.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        usingDatabaseField.setFocusable(false);
 
         javax.swing.GroupLayout databasesPanelLayout = new javax.swing.GroupLayout(databasesPanel);
         databasesPanel.setLayout(databasesPanelLayout);

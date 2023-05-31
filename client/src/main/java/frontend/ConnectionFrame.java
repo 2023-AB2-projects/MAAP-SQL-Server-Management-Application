@@ -45,6 +45,7 @@ public class ConnectionFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Connect to Server");
+        setResizable(false);
 
         ipTextField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         ipTextField.addActionListener(new java.awt.event.ActionListener() {
