@@ -79,6 +79,8 @@ public class ClientFrame extends javax.swing.JFrame {
 
     public void updateObjectExplorer() { this.objectExplorerPanel1.update(); }
 
+    public void readCurrentFile() { this.projectManagerPanel1.readCurrentFile(); }
+
     /* Getters */
     public String getInputTextAreaString() { return this.centerClientPanel1.getInputAreaText(); }
     

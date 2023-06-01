@@ -56,6 +56,9 @@ public class ClientController {
             log.error("Could not create server socket!");
             throw new RuntimeException(e);
         }
+
+        // Read initial file contents
+        this.clientFrame.readCurrentFile();
     }
 
     /* Utility */

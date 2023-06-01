@@ -9,10 +9,7 @@ import service.Utility;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 @Slf4j
 public class ProjectManagerPanel extends javax.swing.JPanel {
@@ -90,10 +87,7 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
 
         // Check if file already exists in root folder
         this.currentFile = new File(Config.getUserScriptsPath() + File.separator + this.currentFileName);
-        if (this.currentFile.exists()) {
-            // If it exists -> Load the file into client input text area
-            // TODO: Loading
-        } else {
+        if (!this.currentFile.exists()) {
             // If it doesn't exist -> Create a new file
             try {
                 if (this.currentFile.createNewFile()) {
@@ -152,6 +146,22 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
 
             // Add the file node to the parent node
             parentNode.add(fileNode);
+        }
+    }
+
+    /* Setters */
+    public void readCurrentFile() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(this.currentFile))) {
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line).append("\n");
+            }
+
+            // Set the text area text
+            this.clientController.setInputTextAreaString(stringBuilder.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -294,26 +304,25 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_newQueryButtonActionPerformed
 
     private void saveFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveFileButtonActionPerformed
-        // Find the currently selected Tree node
-        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) documentJTree.getLastSelectedPathComponent();
-
-        // If nothing is selected -> Use the root node
-        if (selectedNode == null) selectedNode = this.projectsRootNode;
-
-        // Reconstruct path to current node (In file system)
-        StringBuilder pathBuilder = new StringBuilder();
-        for (final TreeNode pathNode : selectedNode.getPath()) {
-            String pathElementString = pathNode.toString();
-            if (pathElementString.equals("User Projects")) continue;
-            pathBuilder.append(File.separator).append(pathElementString);
-        }
-
-        String pathToFile = Config.getUserScriptsPath() + pathBuilder.toString();
-        System.out.println(pathToFile);
+//        // Find the currently selected Tree node
+//        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) documentJTree.getLastSelectedPathComponent();
+//
+//        // If nothing is selected -> Use the root node
+//        if (selectedNode == null) selectedNode = this.projectsRootNode;
+//
+//        // Reconstruct path to current node (In file system)
+//        StringBuilder pathBuilder = new StringBuilder();
+//        for (final TreeNode pathNode : selectedNode.getPath()) {
+//            String pathElementString = pathNode.toString();
+//            if (pathElementString.equals("User Projects")) continue;
+//            pathBuilder.append(File.separator).append(pathElementString);
+//        }
+//
+//        String pathToFile = Config.getUserScriptsPath() + pathBuilder.toString();
+//        System.out.println(pathToFile);
 
         // Get the text from the editor
         String currentSQLText = this.clientController.getInputTextAreaString();
-        System.out.println(currentSQLText);
 
         // Save SQL text to file
         try {
