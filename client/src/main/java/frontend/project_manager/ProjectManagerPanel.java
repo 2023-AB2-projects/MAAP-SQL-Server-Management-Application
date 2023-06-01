@@ -40,6 +40,18 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
                 new ImageIcon(Config.getImagesPath() + File.separator + "sql_folder_icon.png"),
                 32, 32
         ));
+
+        // Save file label
+        saveFileLabel.setIcon(Utility.resizeIcon(
+                new ImageIcon(Config.getImagesPath() + File.separator + "save_file_icon.png"),
+                32, 32
+        ));
+
+        // Delete label
+        deleteLabel.setIcon(Utility.resizeIcon(
+                new ImageIcon(Config.getImagesPath() + File.separator + "delete_file_icon.png"),
+                32, 32
+        ));
     }
 
     private void update() {
@@ -58,7 +70,7 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
             // If the directory exists -> Parse it recursively (After skipping the root folder)
             File[] files = rootFolder.listFiles();
             if (files != null) {
-                for (File subFile : files) {
+                for (final File subFile : files) {
                     this.parseUserScripts(subFile, this.projectsRootNode);
                 }
             }
@@ -77,7 +89,7 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
             // Parse every file in the directory
             File[] files = file.listFiles();
             if (files != null) {
-                for (File subFile : files) {
+                for (final File subFile : files) {
                     this.parseUserScripts(subFile, directoryNode);
                 }
             }
@@ -107,6 +119,10 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
         newQueryButton = new javax.swing.JButton();
         documentTreeScrollPanel = new javax.swing.JScrollPane();
         documentJTree = new javax.swing.JTree();
+        saveFileButton = new javax.swing.JButton();
+        deleteButton = new javax.swing.JButton();
+        saveFileLabel = new javax.swing.JLabel();
+        deleteLabel = new javax.swing.JLabel();
 
         projectManagerTag.setBackground(java.awt.Color.darkGray);
         projectManagerTag.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
@@ -137,35 +153,59 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
         documentJTree.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         documentTreeScrollPanel.setViewportView(documentJTree);
 
+        saveFileButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        saveFileButton.setText("Save");
+
+        deleteButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        deleteButton.setText("Delete");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(projectManagerTag, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(documentTreeScrollPanel)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(sqlQueryLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(sqlQueryLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(saveFileLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(newQueryButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(saveFileButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(newQueryButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(projectLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(projectLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(deleteLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(newProjectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(deleteButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(newProjectButton, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(documentTreeScrollPanel)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(projectManagerTag, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(projectLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(newQueryButton)
-                    .addComponent(newProjectButton)
-                    .addComponent(sqlQueryLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(sqlQueryLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(projectLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(newQueryButton)
+                        .addComponent(newProjectButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(documentTreeScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 816, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(saveFileLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(saveFileButton)
+                            .addComponent(deleteButton)
+                            .addComponent(deleteLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(documentTreeScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 784, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -180,12 +220,16 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton deleteButton;
+    private javax.swing.JLabel deleteLabel;
     private javax.swing.JTree documentJTree;
     private javax.swing.JScrollPane documentTreeScrollPanel;
     private javax.swing.JButton newProjectButton;
     private javax.swing.JButton newQueryButton;
     private javax.swing.JLabel projectLabel;
     private javax.swing.JLabel projectManagerTag;
+    private javax.swing.JButton saveFileButton;
+    private javax.swing.JLabel saveFileLabel;
     private javax.swing.JLabel sqlQueryLabel;
     // End of variables declaration//GEN-END:variables
 }
