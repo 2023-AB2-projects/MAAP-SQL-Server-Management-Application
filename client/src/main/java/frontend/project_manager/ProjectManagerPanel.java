@@ -39,7 +39,7 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
 
         // Init default file
         this.initDefaultFile();
-        this.currentFileField.setText(this.currentFileName);
+        this.currentFileField.setText(this.currentFileName.replaceAll("\\.sql$", ""));
 
         // Update file system
         this.update();
@@ -84,7 +84,7 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
     }
 
     private void initDefaultFile() {
-        this.currentFileName = "New SQL query.sql";
+        this.currentFileName = "New query.sql";
 
         // Check if file already exists in root folder
         this.currentFile = new File(Config.getUserScriptsPath() + File.separator + this.currentFileName);
@@ -265,6 +265,11 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
 
         deleteButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deleteButton.setText("Delete");
+        deleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButtonActionPerformed(evt);
+            }
+        });
 
         currentFileLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         currentFileLabel.setText("Current file:");
@@ -334,8 +339,7 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void newProjectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectButtonActionPerformed
-        // Selected file (or directory)
-        File selectedFile = new File(this.pathToSelectedFile());
+        File selectedFile = new File(this.pathToSelectedFile());    // Selected file (or directory)
 
         // Display the input dialog and get the user's input
         String userInput = JOptionPane.showInputDialog(this.clientController.getClientFrame(), "New project name:");
@@ -404,7 +408,7 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
             // Set current file to the newly created file
             this.currentFile = newFile;
             this.currentFileName = fileName;
-            this.currentFileField.setText(fileName);
+            this.currentFileField.setText(userInput);
 
             // Load new current file
             this.readCurrentFile();
@@ -417,6 +421,48 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
     private void saveFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveFileButtonActionPerformed
         this.saveCurrentFile();
     }//GEN-LAST:event_saveFileButtonActionPerformed
+
+    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) this.documentJTree.getLastSelectedPathComponent();
+        // Remove currently selected node from JTree and it's children (if the user confirms)
+
+        // Selected node value
+        String selectedNodeValue = selectedNode.toString();
+
+        // Ask use if they are sure they want to delete the selected node
+        String question = "Are you sure you want to delete the ";
+        question += (selectedNode.isLeaf()) ? "file " : "directory ";
+        question += selectedNodeValue + "?";
+        int dialogResult = JOptionPane.showConfirmDialog(this.clientController.getClientFrame(), question, "Delete", JOptionPane.YES_NO_OPTION);
+
+        // Check if user clicked no
+        if (dialogResult != JOptionPane.YES_OPTION) {
+           return;
+        }
+
+        // Check if node is a file
+        if (selectedNode.isLeaf()) {
+            // Delete the file
+            File fileToDelete = new File(this.pathToSelectedFile());
+            if (!fileToDelete.delete()) {
+                log.error("Failed to delete file: " + fileToDelete.getAbsolutePath());
+                JOptionPane.showMessageDialog(this.clientController.getClientFrame(), "Failed to delete file: " + fileToDelete.getAbsolutePath(), "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                // Refresh the file tree
+                this.update();
+            }
+        } else {
+            // Delete the directory
+            File directoryToDelete = new File(this.pathToSelectedFile());
+            if (!Utility.deleteDirectory(directoryToDelete)) {
+                log.error("Failed to delete directory: " + directoryToDelete.getAbsolutePath());
+                JOptionPane.showMessageDialog(this.clientController.getClientFrame(), "Failed to delete directory: " + directoryToDelete.getAbsolutePath(), "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                // Refresh the file tree
+                this.update();
+            }
+        }
+    }//GEN-LAST:event_deleteButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
