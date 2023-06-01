@@ -83,6 +83,8 @@ public class ClientFrame extends javax.swing.JFrame {
 
     public void inputAreaChanged() { this.projectManagerPanel1.inputAreaChanged(); }
 
+    public void saveCurrentFile() { this.projectManagerPanel1.saveCurrentFile(); }
+
     /* Getters */
     public String getInputTextAreaString() { return this.centerClientPanel1.getInputAreaText(); }
     

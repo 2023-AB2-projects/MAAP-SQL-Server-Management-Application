@@ -10,6 +10,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 public class CommandInputOutputPanel extends javax.swing.JPanel {
@@ -71,6 +72,9 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
         inputArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         inputArea.setStyledDocument(new SQLDocument());
         inputArea.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                inputAreaKeyPressed(evt);
+            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 inputAreaKeyReleased(evt);
             }
@@ -141,8 +145,17 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void inputAreaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_inputAreaKeyReleased
-        this.clientController.inputAreaChanged();
+
     }//GEN-LAST:event_inputAreaKeyReleased
+
+    private void inputAreaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_inputAreaKeyPressed
+        // Check if Ctrl + S was pressed
+        if ((evt.getKeyCode() == KeyEvent.VK_S) && ((evt.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) {
+            this.clientController.saveCurrentFile();
+        } else {
+            this.clientController.inputAreaChanged();
+        }
+    }//GEN-LAST:event_inputAreaKeyPressed
 
     /* Setters */
     public void setInputAreaFont(Font font) { this.inputArea.setFont(font); }

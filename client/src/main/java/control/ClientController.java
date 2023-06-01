@@ -264,6 +264,8 @@ public class ClientController {
 
     public void inputAreaChanged() { this.clientFrame.inputAreaChanged(); }
 
+    public void saveCurrentFile() { this.clientFrame.saveCurrentFile(); }
+
     /* Getters */
     public String getInputTextAreaString() { return this.clientFrame.getInputTextAreaString(); }
 
