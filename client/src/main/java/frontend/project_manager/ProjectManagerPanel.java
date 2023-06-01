@@ -9,6 +9,7 @@ import service.Utility;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.io.*;
 
 @Slf4j
@@ -121,6 +122,9 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
                 }
             }
         }
+
+        // Update the JTree
+        this.documentJTreeMutable.reload();
     }
 
     private void parseUserScripts(File file, DefaultMutableTreeNode parentNode) {
@@ -161,6 +165,21 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
             // Set the text area text
             this.clientController.setInputTextAreaString(stringBuilder.toString());
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveCurrentFile() {
+        // Get the text from the editor
+        String currentSQLText = this.clientController.getInputTextAreaString();
+
+        // Save SQL text to file
+        try {
+            FileWriter fileWriter = new FileWriter(this.currentFile);
+            fileWriter.write(currentSQLText);
+            fileWriter.close();
+        } catch (IOException e) {
+            log.error("Error saving file: " + this.currentFileName);
             e.printStackTrace();
         }
     }
@@ -300,40 +319,72 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_newProjectButtonActionPerformed
 
     private void newQueryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newQueryButtonActionPerformed
-        // TODO add your handling code here:
+        // Find the currently selected Tree node
+        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) documentJTree.getLastSelectedPathComponent();
+
+        // If nothing is selected -> Use the root node
+        if (selectedNode == null) selectedNode = this.projectsRootNode;
+
+        // Reconstruct path to current node (In file system)
+        StringBuilder pathBuilder = new StringBuilder();
+        for (final TreeNode pathNode : selectedNode.getPath()) {
+            String pathElementString = pathNode.toString();
+            if (pathElementString.equals("User Projects")) continue;
+            pathBuilder.append(File.separator).append(pathElementString);
+        }
+
+        // Get the path to the file that is selected in system view
+        String pathToFile = Config.getUserScriptsPath() + pathBuilder.toString();
+        File selectedFile = new File(pathToFile);
+
+        // Display the input dialog and get the user's input
+        String userInput = JOptionPane.showInputDialog("New SQL query name:");
+
+        // Display the input provided by the user
+        if (userInput != null) { // User clicked OK or entered a value
+            // Remove any extensions from file name
+            userInput = userInput.replaceAll("\\.sql$", "");
+
+            // Check if selected file is a directory
+            File folder;
+            if (selectedFile.isDirectory()) {
+                folder = selectedFile;
+            } else {
+                folder = selectedFile.getParentFile();
+            }
+
+            // Create a new file in the selected directory
+            String fileName = userInput + ".sql";
+            File newFile = new File(folder, fileName);
+            try {
+                // Create the new file
+                if (!newFile.createNewFile()) {
+                    log.error("Failed to create new file: " + newFile.getAbsolutePath());
+                } else {
+                    log.info("Created new file: " + fileName);
+                }
+            } catch (IOException ex) {
+                log.error("Failed to create new file: " + newFile.getAbsolutePath());
+            }
+
+            // Save the current file
+            this.saveCurrentFile();
+
+            // Set current file to the newly created file
+            this.currentFile = newFile;
+            this.currentFileName = fileName;
+            this.currentFileField.setText(fileName);
+
+            // Load new current file
+            this.readCurrentFile();
+
+            // Refresh the file tree
+            this.update();
+        }
     }//GEN-LAST:event_newQueryButtonActionPerformed
 
     private void saveFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveFileButtonActionPerformed
-//        // Find the currently selected Tree node
-//        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) documentJTree.getLastSelectedPathComponent();
-//
-//        // If nothing is selected -> Use the root node
-//        if (selectedNode == null) selectedNode = this.projectsRootNode;
-//
-//        // Reconstruct path to current node (In file system)
-//        StringBuilder pathBuilder = new StringBuilder();
-//        for (final TreeNode pathNode : selectedNode.getPath()) {
-//            String pathElementString = pathNode.toString();
-//            if (pathElementString.equals("User Projects")) continue;
-//            pathBuilder.append(File.separator).append(pathElementString);
-//        }
-//
-//        String pathToFile = Config.getUserScriptsPath() + pathBuilder.toString();
-//        System.out.println(pathToFile);
-
-        // Get the text from the editor
-        String currentSQLText = this.clientController.getInputTextAreaString();
-
-        // Save SQL text to file
-        try {
-            FileWriter fileWriter = new FileWriter(this.currentFile);
-            fileWriter.write(currentSQLText);
-            fileWriter.close();
-        } catch (IOException e) {
-            log.error("Error saving file: " + this.currentFileName);
-            e.printStackTrace();
-        }
-
+        this.saveCurrentFile();
     }//GEN-LAST:event_saveFileButtonActionPerformed
 
 

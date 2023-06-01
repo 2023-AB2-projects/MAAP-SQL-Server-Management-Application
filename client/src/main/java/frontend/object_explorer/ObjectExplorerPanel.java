@@ -113,7 +113,7 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
         }
 
         // Update the tree node
-        this.jTreeNode.setRoot(this.databasesNode);
+        this.jTreeNode.reload();
     }
 
     // Custom cell renderer class
