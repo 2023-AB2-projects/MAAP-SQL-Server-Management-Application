@@ -153,6 +153,25 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
         }
     }
 
+    private String pathToSelectedFile() {
+        // Find the currently selected Tree node
+        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) documentJTree.getLastSelectedPathComponent();
+
+        // If nothing is selected -> Use the root node
+        if (selectedNode == null) selectedNode = this.projectsRootNode;
+
+        // Reconstruct path to current node (In file system)
+        StringBuilder pathBuilder = new StringBuilder();
+        for (final TreeNode pathNode : selectedNode.getPath()) {
+            String pathElementString = pathNode.toString();
+            if (pathElementString.equals("User Projects")) continue;
+            pathBuilder.append(File.separator).append(pathElementString);
+        }
+
+        // Path to the file
+        return Config.getUserScriptsPath() + pathBuilder.toString();
+    }
+
     /* Setters */
     public void readCurrentFile() {
         try (BufferedReader reader = new BufferedReader(new FileReader(this.currentFile))) {
@@ -315,27 +334,39 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void newProjectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectButtonActionPerformed
-        // TODO add your handling code here:
+        // Selected file (or directory)
+        File selectedFile = new File(this.pathToSelectedFile());
+
+        // Display the input dialog and get the user's input
+        String userInput = JOptionPane.showInputDialog(this.clientController.getClientFrame(), "New project name:");
+
+        // Display the input provided by the user
+        if (userInput != null) { // User clicked OK or entered a value
+            // Remove any extensions from file name
+            userInput = userInput.replaceAll("\\.sql$", "");
+
+            // Check if selected file is a directory
+            File folder;
+            if (selectedFile.isDirectory()) {
+                folder = selectedFile;
+            } else {
+                folder = selectedFile.getParentFile();
+            }
+
+            // Create new directory with given name
+            File newDirectory = new File(folder, userInput);
+            if (!newDirectory.mkdir()) {
+                log.error("Failed to create new project directory: " + userInput);
+                JOptionPane.showMessageDialog(this.clientController.getClientFrame(), "Failed to create new project directory: " + userInput, "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                // Refresh the file tree
+                this.update();
+            }
+        }
     }//GEN-LAST:event_newProjectButtonActionPerformed
 
     private void newQueryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newQueryButtonActionPerformed
-        // Find the currently selected Tree node
-        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) documentJTree.getLastSelectedPathComponent();
-
-        // If nothing is selected -> Use the root node
-        if (selectedNode == null) selectedNode = this.projectsRootNode;
-
-        // Reconstruct path to current node (In file system)
-        StringBuilder pathBuilder = new StringBuilder();
-        for (final TreeNode pathNode : selectedNode.getPath()) {
-            String pathElementString = pathNode.toString();
-            if (pathElementString.equals("User Projects")) continue;
-            pathBuilder.append(File.separator).append(pathElementString);
-        }
-
-        // Get the path to the file that is selected in system view
-        String pathToFile = Config.getUserScriptsPath() + pathBuilder.toString();
-        File selectedFile = new File(pathToFile);
+        File selectedFile = new File(this.pathToSelectedFile());
 
         // Display the input dialog and get the user's input
         String userInput = JOptionPane.showInputDialog("New SQL query name:");

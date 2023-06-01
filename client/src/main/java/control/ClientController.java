@@ -26,6 +26,7 @@ import service.Config;
 @Slf4j
 public class ClientController {
     /* ClientController has a reference to GUI, MessageHandler and ConnectionManager */
+    @Getter
     private ClientFrame clientFrame;
     private ConnectionFrame connectionFrame;
     private MessageHandler messageHandler;
