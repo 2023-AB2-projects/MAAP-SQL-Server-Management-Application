@@ -262,6 +262,8 @@ public class ClientController {
 
     public void decreaseCenterPanelFont() { this.clientFrame.decreaseCenterPanelFont();}
 
+    public void inputAreaChanged() { this.clientFrame.inputAreaChanged(); }
+
     /* Getters */
     public String getInputTextAreaString() { return this.clientFrame.getInputTextAreaString(); }
 

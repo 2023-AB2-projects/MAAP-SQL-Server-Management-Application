@@ -1,7 +1,9 @@
 package frontend.center_panel;
 
+import control.ClientController;
 import frontend.other_elements.SQLDocument;
 import frontend.other_elements.TabConfig;
+import lombok.Setter;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.Style;
@@ -11,6 +13,9 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class CommandInputOutputPanel extends javax.swing.JPanel {
+    @Setter
+    private ClientController clientController;
+
     private static Style redStyle;
     private static Style greenStyle;
 
@@ -65,6 +70,11 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
 
         inputArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         inputArea.setStyledDocument(new SQLDocument());
+        inputArea.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                inputAreaKeyReleased(evt);
+            }
+        });
         input.setViewportView(inputArea);
 
         commandSplitPane.setLeftComponent(input);
@@ -129,6 +139,10 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
             .addComponent(commandSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void inputAreaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_inputAreaKeyReleased
+        this.clientController.inputAreaChanged();
+    }//GEN-LAST:event_inputAreaKeyReleased
 
     /* Setters */
     public void setInputAreaFont(Font font) { this.inputArea.setFont(font); }

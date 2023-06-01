@@ -18,6 +18,16 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
     @Setter
     private ClientController clientController;
 
+    // OK and warning symbol icons
+    private final ImageIcon okSymbolIcon = Utility.resizeIcon(
+            new ImageIcon(Config.getImagesPath() + File.separator + "ok_symbol.png"),
+            30, 30
+    );
+    private final ImageIcon warningSymbolIcon = Utility.resizeIcon(
+            new ImageIcon(Config.getImagesPath() + File.separator + "warning_symbol.png"),
+            30, 30
+    );
+
     // File system logic
     private DefaultMutableTreeNode projectsRootNode;
     private DefaultTreeModel documentJTreeMutable;
@@ -69,6 +79,9 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
                 new ImageIcon(Config.getImagesPath() + File.separator + "delete_file_icon.png"),
                 32, 32
         ));
+
+        // File indicator label
+        fileIndicatorLabel.setIcon(okSymbolIcon);
     }
 
     private void createRootFolderIfNotExists() {
@@ -96,7 +109,6 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
                 }
             } catch (IOException e) {
                 log.error("Failed to create new file");
-                throw new RuntimeException(e);
             }
         }
     }
@@ -201,6 +213,14 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
             log.error("Error saving file: " + this.currentFileName);
             e.printStackTrace();
         }
+
+        // File saved -> Switch to OK icon
+        this.fileIndicatorLabel.setIcon(okSymbolIcon);
+    }
+
+    public void inputAreaChanged() {
+        // File changed -> Switch to warning icon
+        this.fileIndicatorLabel.setIcon(warningSymbolIcon);
     }
 
     /**
@@ -225,6 +245,7 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
         deleteLabel = new javax.swing.JLabel();
         currentFileLabel = new javax.swing.JLabel();
         currentFileField = new javax.swing.JTextField();
+        fileIndicatorLabel = new javax.swing.JLabel();
 
         projectManagerTag.setBackground(java.awt.Color.darkGray);
         projectManagerTag.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
@@ -308,7 +329,9 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(currentFileLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(currentFileField)))
+                        .addComponent(currentFileField)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(fileIndicatorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -316,9 +339,13 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(projectManagerTag, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(currentFileField, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(currentFileLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(currentFileLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(currentFileField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(fileIndicatorLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(sqlQueryLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -472,6 +499,7 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
     private javax.swing.JLabel deleteLabel;
     private javax.swing.JTree documentJTree;
     private javax.swing.JScrollPane documentTreeScrollPanel;
+    private javax.swing.JLabel fileIndicatorLabel;
     private javax.swing.JButton newProjectButton;
     private javax.swing.JButton newQueryButton;
     private javax.swing.JLabel projectLabel;

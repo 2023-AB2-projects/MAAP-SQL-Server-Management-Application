@@ -64,6 +64,9 @@
                   <Connection code="new SQLDocument()" type="code"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="inputAreaKeyReleased"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
