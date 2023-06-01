@@ -7,12 +7,17 @@ import service.Utility;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.io.File;
+import java.io.IOException;
 
 @Slf4j
 public class ProjectManagerPanel extends javax.swing.JPanel {
     private DefaultMutableTreeNode projectsRootNode;
     private DefaultTreeModel documentJTreeMutable;
+
+    // File logic
+    private String currentFileName;
 
     public ProjectManagerPanel() {
         initComponents();
@@ -24,7 +29,21 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
 
         this.initLabelIcons();
 
-        // Get the initial document states
+        // Create root folder if it doesn't exist
+        File rootFolder = new File(Config.getUserScriptsPath());
+
+        // If the root folder doesn't exist, create it
+        if (!rootFolder.exists()) {
+            if (!rootFolder.mkdir()) {
+                log.error("Failed to create user scripts directory");
+            }
+        }
+
+        // Init default file
+        this.initDefaultFile();
+        this.currentFileField.setText(this.currentFileName);
+
+        // Update file system
         this.update();
     }
 
@@ -52,6 +71,27 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
                 new ImageIcon(Config.getImagesPath() + File.separator + "delete_file_icon.png"),
                 32, 32
         ));
+    }
+
+    private void initDefaultFile() {
+        this.currentFileName = "New SQL query.sql";
+
+        // Check if file already exists in root folder
+        File file = new File(Config.getUserScriptsPath() + File.separator + this.currentFileName);
+        if (file.exists()) {
+            // If it exists -> Load the file into client input text area
+            // TODO: Loading
+        } else {
+            // If it doesn't exist -> Create a new file
+            try {
+                if (file.createNewFile()) {
+                    log.info("Created new file: " + this.currentFileName);
+                }
+            } catch (IOException e) {
+                log.error("Failed to create new file");
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private void update() {
@@ -123,6 +163,8 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
         deleteButton = new javax.swing.JButton();
         saveFileLabel = new javax.swing.JLabel();
         deleteLabel = new javax.swing.JLabel();
+        currentFileLabel = new javax.swing.JLabel();
+        currentFileField = new javax.swing.JTextField();
 
         projectManagerTag.setBackground(java.awt.Color.darkGray);
         projectManagerTag.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
@@ -155,9 +197,22 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
 
         saveFileButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         saveFileButton.setText("Save");
+        saveFileButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveFileButtonActionPerformed(evt);
+            }
+        });
 
         deleteButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         deleteButton.setText("Delete");
+
+        currentFileLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        currentFileLabel.setText("Current file:");
+        currentFileLabel.setFocusable(false);
+
+        currentFileField.setEditable(false);
+        currentFileField.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        currentFileField.setFocusable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -167,27 +222,38 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
             .addComponent(documentTreeScrollPanel)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(sqlQueryLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(saveFileLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(saveFileButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(newQueryButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(projectLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(deleteLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(deleteButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(newProjectButton, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(sqlQueryLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(saveFileLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(saveFileButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(newQueryButton))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(projectLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(deleteLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(deleteButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(newProjectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(currentFileLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(currentFileField)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(projectManagerTag, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(currentFileField, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(currentFileLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(sqlQueryLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -198,14 +264,11 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(saveFileLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(saveFileButton)
-                            .addComponent(deleteButton)
-                            .addComponent(deleteLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(documentTreeScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 784, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(saveFileButton)
+                    .addComponent(deleteButton)
+                    .addComponent(deleteLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(13, 13, 13)
+                .addComponent(documentTreeScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 740, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -218,8 +281,31 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_newQueryButtonActionPerformed
 
+    private void saveFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveFileButtonActionPerformed
+        // Find the currently selected Tree node
+        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) documentJTree.getLastSelectedPathComponent();
+
+        // If nothing is selected -> Use the root node
+        if (selectedNode == null) selectedNode = this.projectsRootNode;
+        System.out.println(selectedNode.toString());
+
+        // Reconstruct path to current node (In file system)
+        StringBuilder pathBuilder = new StringBuilder();
+        for (final TreeNode pathNode : selectedNode.getPath()) {
+            String pathElementString = pathNode.toString();
+            if (pathElementString.equals("User Projects")) continue;
+            pathBuilder.append(File.separator).append(pathElementString);
+        }
+
+        String pathToFile = Config.getUserScriptsPath() + pathBuilder.toString();
+        System.out.println(pathToFile);
+
+    }//GEN-LAST:event_saveFileButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField currentFileField;
+    private javax.swing.JLabel currentFileLabel;
     private javax.swing.JButton deleteButton;
     private javax.swing.JLabel deleteLabel;
     private javax.swing.JTree documentJTree;
