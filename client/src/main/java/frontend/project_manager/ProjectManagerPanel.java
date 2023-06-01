@@ -49,7 +49,7 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
 
         // Init default file
         this.initDefaultFile();
-        this.currentFileField.setText(this.currentFileName.replaceAll("\\.sql$", ""));
+        this.currentFileField.setText(this.currentFileName);
 
         // Update file system
         this.update();
@@ -216,6 +216,9 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
 
         // File saved -> Switch to OK icon
         this.fileIndicatorLabel.setIcon(okSymbolIcon);
+
+        // Update the JTree
+        this.update();
     }
 
     public void inputAreaChanged() {
@@ -274,6 +277,11 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
         });
 
         documentJTree.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        documentJTree.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                documentJTreeMousePressed(evt);
+            }
+        });
         documentTreeScrollPanel.setViewportView(documentJTree);
 
         saveFileButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -435,7 +443,7 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
             // Set current file to the newly created file
             this.currentFile = newFile;
             this.currentFileName = fileName;
-            this.currentFileField.setText(userInput);
+            this.currentFileField.setText(fileName);
 
             // Load new current file
             this.readCurrentFile();
@@ -490,6 +498,31 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
             }
         }
     }//GEN-LAST:event_deleteButtonActionPerformed
+
+    private void documentJTreeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_documentJTreeMousePressed
+        // Check if the user double-clicked
+        if (evt.getClickCount() != 2) {
+            return;
+        }
+
+        // Path to selected file
+        String pathToSelectedFile = this.pathToSelectedFile();
+
+        // Check if selected file is a directory
+        File selectedFile = new File(pathToSelectedFile);
+        if (!selectedFile.isDirectory()) {
+            // Save current file
+            this.saveCurrentFile();
+
+            // Set the current file
+            this.currentFile = selectedFile;
+            this.currentFileName = selectedFile.getName();
+            this.currentFileField.setText(selectedFile.getName());
+
+            // Read the current file
+            this.readCurrentFile();
+        }
+    }//GEN-LAST:event_documentJTreeMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
