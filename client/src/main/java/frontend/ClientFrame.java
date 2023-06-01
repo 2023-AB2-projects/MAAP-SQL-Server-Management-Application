@@ -18,6 +18,7 @@ public class ClientFrame extends javax.swing.JFrame {
 
         // Set references
         this.centerClientPanel1.setClientController(this.clientController);
+        this.projectManagerPanel1.setClientController(this.clientController);
     }
     
     /**

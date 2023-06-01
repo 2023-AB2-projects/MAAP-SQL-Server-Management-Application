@@ -1,5 +1,7 @@
 package frontend.project_manager;
 
+import control.ClientController;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import service.Config;
 import service.Utility;
@@ -9,15 +11,22 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 @Slf4j
 public class ProjectManagerPanel extends javax.swing.JPanel {
+    // References
+    @Setter
+    private ClientController clientController;
+
+    // File system logic
     private DefaultMutableTreeNode projectsRootNode;
     private DefaultTreeModel documentJTreeMutable;
 
     // File logic
     private String currentFileName;
+    private File currentFile;
 
     public ProjectManagerPanel() {
         initComponents();
@@ -28,16 +37,7 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
         this.documentJTree.setModel(this.documentJTreeMutable);
 
         this.initLabelIcons();
-
-        // Create root folder if it doesn't exist
-        File rootFolder = new File(Config.getUserScriptsPath());
-
-        // If the root folder doesn't exist, create it
-        if (!rootFolder.exists()) {
-            if (!rootFolder.mkdir()) {
-                log.error("Failed to create user scripts directory");
-            }
-        }
+        this.createRootFolderIfNotExists();
 
         // Init default file
         this.initDefaultFile();
@@ -73,18 +73,30 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
         ));
     }
 
+    private void createRootFolderIfNotExists() {
+        // Create root folder if it doesn't exist
+        File rootFolder = new File(Config.getUserScriptsPath());
+
+        // If the root folder doesn't exist, create it
+        if (!rootFolder.exists()) {
+            if (!rootFolder.mkdir()) {
+                log.error("Failed to create user scripts directory");
+            }
+        }
+    }
+
     private void initDefaultFile() {
         this.currentFileName = "New SQL query.sql";
 
         // Check if file already exists in root folder
-        File file = new File(Config.getUserScriptsPath() + File.separator + this.currentFileName);
-        if (file.exists()) {
+        this.currentFile = new File(Config.getUserScriptsPath() + File.separator + this.currentFileName);
+        if (this.currentFile.exists()) {
             // If it exists -> Load the file into client input text area
             // TODO: Loading
         } else {
             // If it doesn't exist -> Create a new file
             try {
-                if (file.createNewFile()) {
+                if (this.currentFile.createNewFile()) {
                     log.info("Created new file: " + this.currentFileName);
                 }
             } catch (IOException e) {
@@ -287,7 +299,6 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
 
         // If nothing is selected -> Use the root node
         if (selectedNode == null) selectedNode = this.projectsRootNode;
-        System.out.println(selectedNode.toString());
 
         // Reconstruct path to current node (In file system)
         StringBuilder pathBuilder = new StringBuilder();
@@ -299,6 +310,20 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
 
         String pathToFile = Config.getUserScriptsPath() + pathBuilder.toString();
         System.out.println(pathToFile);
+
+        // Get the text from the editor
+        String currentSQLText = this.clientController.getInputTextAreaString();
+        System.out.println(currentSQLText);
+
+        // Save SQL text to file
+        try {
+            FileWriter fileWriter = new FileWriter(this.currentFile);
+            fileWriter.write(currentSQLText);
+            fileWriter.close();
+        } catch (IOException e) {
+            log.error("Error saving file: " + this.currentFileName);
+            e.printStackTrace();
+        }
 
     }//GEN-LAST:event_saveFileButtonActionPerformed
 
