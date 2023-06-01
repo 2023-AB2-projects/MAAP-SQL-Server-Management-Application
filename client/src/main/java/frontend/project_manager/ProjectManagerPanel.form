@@ -40,7 +40,7 @@
                   <Component id="projectLabel" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
                   <Component id="newQueryButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="newProjectButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="sqlQueryLabel" pref="32" max="32767" attributes="0"/>
+                  <Component id="sqlQueryLabel" alignment="0" pref="32" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="documentTreeScrollPanel" min="-2" pref="816" max="-2" attributes="0"/>
@@ -70,9 +70,6 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="sqlQueryLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel1"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="newProjectButton">
       <Properties>
@@ -89,9 +86,6 @@
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="projectLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel1"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="newQueryButton">
       <Properties>

@@ -1,20 +1,31 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package frontend.project_manager;
 
-/**
- *
- * @author lorin
- */
+import service.Config;
+import service.Utility;
+
+import javax.swing.*;
+import java.io.File;
+
 public class ProjectManagerPanel extends javax.swing.JPanel {
 
-    /**
-     * Creates new form ProjectManagerPanel
-     */
     public ProjectManagerPanel() {
         initComponents();
+
+        this.initLabelIcons();
+    }
+
+    private void initLabelIcons() {
+        // Set SQL Query Label Icon (resize it to 32x32)
+        sqlQueryLabel.setIcon(Utility.resizeIcon(
+                new ImageIcon(Config.getImagesPath() + File.separator + "sql_file_icon.png"),
+                32, 32
+        ));
+
+        // Set Project Label Icon (resize it to 32x32)
+        projectLabel.setIcon(Utility.resizeIcon(
+                new ImageIcon(Config.getImagesPath() + File.separator + "sql_folder_icon.png"),
+                32, 32
+        ));
     }
 
     /**
@@ -42,8 +53,6 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
         projectManagerTag.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         projectManagerTag.setOpaque(true);
 
-        sqlQueryLabel.setText("jLabel1");
-
         newProjectButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         newProjectButton.setText("New Project");
         newProjectButton.setMargin(new java.awt.Insets(2, 7, 3, 7));
@@ -52,8 +61,6 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
                 newProjectButtonActionPerformed(evt);
             }
         });
-
-        projectLabel.setText("jLabel1");
 
         newQueryButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         newQueryButton.setText("New Query");
