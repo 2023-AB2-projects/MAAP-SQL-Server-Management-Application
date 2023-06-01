@@ -26,6 +26,7 @@ import service.Config;
 @Slf4j
 public class ClientController {
     /* ClientController has a reference to GUI, MessageHandler and ConnectionManager */
+    @Getter
     private ClientFrame clientFrame;
     private ConnectionFrame connectionFrame;
     private MessageHandler messageHandler;
@@ -56,6 +57,9 @@ public class ClientController {
             log.error("Could not create server socket!");
             throw new RuntimeException(e);
         }
+
+        // Read initial file contents
+        this.clientFrame.readCurrentFile();
     }
 
     /* Utility */
@@ -257,6 +261,10 @@ public class ClientController {
     public void increaseCenterPanelFont() { this.clientFrame.increaseCenterPanelFont(); }
 
     public void decreaseCenterPanelFont() { this.clientFrame.decreaseCenterPanelFont();}
+
+    public void inputAreaChanged() { this.clientFrame.inputAreaChanged(); }
+
+    public void saveCurrentFile() { this.clientFrame.saveCurrentFile(); }
 
     /* Getters */
     public String getInputTextAreaString() { return this.clientFrame.getInputTextAreaString(); }
