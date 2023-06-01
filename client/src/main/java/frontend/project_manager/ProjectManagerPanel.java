@@ -8,8 +8,10 @@ import service.Utility;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import java.awt.*;
 import java.io.*;
 
 @Slf4j
@@ -28,9 +30,19 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
             30, 30
     );
 
+    private static final ImageIcon sqlIcon = Utility.resizeIcon(
+            new ImageIcon(Config.getImagesPath() + File.separator + "sql_file_icon.png"),
+            22, 22
+    );
+
+    private static final ImageIcon folderIcon = Utility.resizeIcon(
+            new ImageIcon(Config.getImagesPath() + File.separator + "sql_simple_folder_icon.png"),
+            22, 22
+    );
+
     // File system logic
-    private DefaultMutableTreeNode projectsRootNode;
-    private DefaultTreeModel documentJTreeMutable;
+    private final DefaultMutableTreeNode projectsRootNode;
+    private final DefaultTreeModel documentJTreeMutable;
 
     // File logic
     private String currentFileName;
@@ -50,6 +62,9 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
         // Init default file
         this.initDefaultFile();
         this.currentFileField.setText(this.currentFileName);
+
+        // Set JTree cell renderer
+        this.documentJTree.setCellRenderer(new CustomTreeCellRendererTable());
 
         // Update file system
         this.update();
@@ -224,6 +239,35 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
     public void inputAreaChanged() {
         // File changed -> Switch to warning icon
         this.fileIndicatorLabel.setIcon(warningSymbolIcon);
+    }
+
+    // Custom cell renderer class
+    static class CustomTreeCellRendererTable extends DefaultTreeCellRenderer {
+        // Override the getTreeCellRendererComponent method
+        @Override
+        public Component getTreeCellRendererComponent(
+                JTree tree,
+                Object value,
+                boolean selected,
+                boolean expanded,
+                boolean leaf,
+                int row,
+                boolean hasFocus) {
+            // Invoke the default implementation
+            super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+
+            // Check if the node's value is equal to "Tables"
+            String valueName = value.toString();
+
+            // If it's a sql file (ends with .sql) -> Set the icon to the sql file icon
+            if (valueName.contains(".sql")) {
+                setIcon(sqlIcon);
+            } else {
+                setIcon(folderIcon);
+            }
+
+            return this;
+        }
     }
 
     /**
