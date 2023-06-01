@@ -1,17 +1,31 @@
 package frontend.project_manager;
 
+import lombok.extern.slf4j.Slf4j;
 import service.Config;
 import service.Utility;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.io.File;
 
+@Slf4j
 public class ProjectManagerPanel extends javax.swing.JPanel {
+    private DefaultMutableTreeNode projectsRootNode;
+    private DefaultTreeModel documentJTreeMutable;
 
     public ProjectManagerPanel() {
         initComponents();
 
+        // Init root node
+        this.projectsRootNode = new DefaultMutableTreeNode("User Projects");
+        this.documentJTreeMutable = new DefaultTreeModel(this.projectsRootNode);
+        this.documentJTree.setModel(this.documentJTreeMutable);
+
         this.initLabelIcons();
+
+        // Get the initial document states
+        this.update();
     }
 
     private void initLabelIcons() {
@@ -26,6 +40,55 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
                 new ImageIcon(Config.getImagesPath() + File.separator + "sql_folder_icon.png"),
                 32, 32
         ));
+    }
+
+    private void update() {
+        // Clear out the current JTree
+        this.projectsRootNode.removeAllChildren();
+
+        // Read all the files and directories in the user scripts directory recursively
+        File rootFolder = new File(Config.getUserScriptsPath());
+
+        // If the root folder doesn't exist, create it
+        if (!rootFolder.exists()) {
+            if (!rootFolder.mkdir()) {
+                log.error("Failed to create user scripts directory");
+            }
+        } else {
+            // If the directory exists -> Parse it recursively (After skipping the root folder)
+            File[] files = rootFolder.listFiles();
+            if (files != null) {
+                for (File subFile : files) {
+                    this.parseUserScripts(subFile, this.projectsRootNode);
+                }
+            }
+        }
+    }
+
+    private void parseUserScripts(File file, DefaultMutableTreeNode parentNode) {
+        // If it's directory -> Recursive case
+        if (file.isDirectory()) {
+            // Create a TreeNode for the directory
+            DefaultMutableTreeNode directoryNode = new DefaultMutableTreeNode(file.getName());
+
+            // Add the directory node to the parent node
+            parentNode.add(directoryNode);
+
+            // Parse every file in the directory
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File subFile : files) {
+                    this.parseUserScripts(subFile, directoryNode);
+                }
+            }
+        } else {
+            // It's a file -> Base case
+            // Create a TreeNode for the file
+            DefaultMutableTreeNode fileNode = new DefaultMutableTreeNode(file.getName());
+
+            // Add the file node to the parent node
+            parentNode.add(fileNode);
+        }
     }
 
     /**
