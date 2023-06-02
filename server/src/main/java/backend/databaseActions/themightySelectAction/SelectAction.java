@@ -5,6 +5,7 @@ import backend.Utilities.JoinedTable;
 import backend.Utilities.Table;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseModels.JoinModel;
+import backend.databaseModels.aggregations.Aggregator;
 import backend.databaseModels.conditions.Condition;
 import backend.databaseModels.conditions.Equation;
 import backend.databaseModels.conditions.FunctionCall;
@@ -23,18 +24,18 @@ public class SelectAction implements DatabaseAction {
 
     private String databaseName;
     private String baseTable;
-    private List<String> projectionColumns;
+    private ArrayList<String> projectionColumns;
     private List<Condition> conditions;
     private List<JoinModel> joinModels;
     private List<String> groupedByColumns;
-    private List<String> aggregations;
+    private ArrayList<Aggregator> aggregations;
 
     /**
      * @author Kovacs Elek Akos
      * @version 1.0
      * @param databaseName This is databases name that is currently used
      * @param baseTable This is the base table name in FROM clause
-     * @param projectionColumns These are the table + column names that are projected eg: "users.name" or "package.price", where 'users' & 'package' are tables names, and 'name' & 'price' are column names
+     * @param projectionColumns These are the table + column names that are projected eg: "users.name" or "package.price", where 'users' & 'package' are tables names, and 'name' & 'price' are column names, IMPORTANT is SELECT * is present, than the only elem of the list is:  ['*']
      * @param conditions These are the conditions of the WHERE clause, see the Condition interface for more information
      * @param groupedByColumns A list of table names and column names eq: 'users.name'
      * @param aggregations A list of columns inside functions eq: SUM(users.ID)
@@ -125,8 +126,16 @@ public class SelectAction implements DatabaseAction {
 
         Table grouppedTable = null;
         if (groupedByColumns.size() > 0) {
-
+            grouppedTable = joinedTable.groupBy((ArrayList<String>) groupedByColumns);
+            grouppedTable.aggregation(aggregations);
+        } else if( aggregations.size() > 0) {
+            joinedTable.aggregation(aggregations);
+            grouppedTable = joinedTable;
+        } else {
+            grouppedTable = joinedTable;
         }
+
+
 
 
 
