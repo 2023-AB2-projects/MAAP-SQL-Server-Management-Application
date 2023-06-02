@@ -22,25 +22,24 @@ import java.util.Map;
 
 public class SelectAction implements DatabaseAction {
 
-    private String databaseName;
-    private String baseTable;
-    private ArrayList<String> projectionColumns;
-    private List<Condition> conditions;
-    private List<JoinModel> joinModels;
-    private List<String> groupedByColumns;
-    private ArrayList<Aggregator> aggregations;
+    private final String databaseName;
+    private final String baseTable;
+    private final ArrayList<String> projectionColumns;
+    private final List<Condition> conditions;
+    private final List<JoinModel> joinModels;
+    private final List<String> groupedByColumns;
+    private final ArrayList<Aggregator> aggregations;
 
     /**
      * @author Kovacs Elek Akos
-     * @version 1.0
      * @param databaseName This is databases name that is currently used
      * @param baseTable This is the base table name in FROM clause
      * @param projectionColumns These are the table + column names that are projected eg: "users.name" or "package.price", where 'users' & 'package' are tables names, and 'name' & 'price' are column names, IMPORTANT is SELECT * is present, than the only elem of the list is:  ['*']
      * @param conditions These are the conditions of the WHERE clause, see the Condition interface for more information
      * @param groupedByColumns A list of table names and column names eq: 'users.name'
-     * @param aggregations A list of columns inside functions eq: SUM(users.ID)
+     * @param aggregations A list of columns inside functions eq: SUM(users.ID) see Aggregator Class
      * */
-    public SelectAction(String databaseName, String baseTable, List<String> projectionColumns, List<Condition> conditions, List<JoinModel> joinModels, List<String> groupedByColumns, ArrayList<String> aggregations) {
+    public SelectAction(String databaseName, String baseTable, ArrayList<String> projectionColumns, List<Condition> conditions, List<JoinModel> joinModels, List<String> groupedByColumns, ArrayList<Aggregator> aggregations) {
         this.databaseName = databaseName;
         this.baseTable = baseTable;
         this.projectionColumns = projectionColumns;
@@ -59,14 +58,12 @@ public class SelectAction implements DatabaseAction {
         tableConditions.put(baseTable, new ArrayList<>());
 
         for (Condition condition : conditions) {
-            if (condition instanceof Equation) {
-                Equation equation = (Equation) condition;
+            if (condition instanceof Equation equation) {
                 String tableName = equation.getLFieldTable();
 
                 ArrayList<Condition> conditionsList = tableConditions.computeIfAbsent(tableName, k -> new ArrayList<>());
                 conditionsList.add(equation);
-            } else if (condition instanceof FunctionCall) {
-                FunctionCall functionCall = (FunctionCall) condition;
+            } else if (condition instanceof FunctionCall functionCall) {
                 String tableName = functionCall.getFieldTable();
                 ArrayList<Condition> conditionsList = tableConditions.computeIfAbsent(tableName, k -> new ArrayList<>());
                 conditionsList.add(functionCall);
@@ -116,15 +113,15 @@ public class SelectAction implements DatabaseAction {
 
         // If there were no joins, the only table that could be filtered is the base table
         // From now on the working table is called 'joinedTable'
-        Table joinedTable = null;
+        Table joinedTable;
         if (joinModels.size() > 0) {
             // Join the tables together
-            joinedTable = (JoinedTable) JoinedTable.join(finalTables, (ArrayList<JoinModel>) joinModels);
+            joinedTable = JoinedTable.join(finalTables, (ArrayList<JoinModel>) joinModels);
         } else {
             joinedTable = baseConditionedTables.get(0);
         }
 
-        Table grouppedTable = null;
+        Table grouppedTable;
         if (groupedByColumns.size() > 0) {
             grouppedTable = joinedTable.groupBy((ArrayList<String>) groupedByColumns);
             grouppedTable.aggregation(aggregations);
@@ -135,11 +132,11 @@ public class SelectAction implements DatabaseAction {
             grouppedTable = joinedTable;
         }
 
+        // Project selected fields
+        if (!projectionColumns.get(0).equals("*")) {
+            grouppedTable.projection(projectionColumns);
+        }
 
-
-
-
-
-        return null;
+        return grouppedTable;
     }
 }
