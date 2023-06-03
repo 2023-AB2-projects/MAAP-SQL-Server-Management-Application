@@ -2,8 +2,14 @@ package frontend;
 
 import backend.MessageModes;
 import control.ClientController;
+
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
+import service.Config;
+
+import javax.swing.*;
 
 @Slf4j
 public class ConnectionFrame extends javax.swing.JFrame {
@@ -14,12 +20,14 @@ public class ConnectionFrame extends javax.swing.JFrame {
         // Reference
         this.clientController = clientController;
 
-        // Look and feel
-//        try {
-//            javax.swing.UIManager.setLookAndFeel(this.clientController.getLookAndFeel());
-//        } catch (UnsupportedLookAndFeelException ex) {
-//            log.error("FlatLafDark is not supported!");
-//        }
+        // Set image icon for JFrame
+        ImageIcon logo = new ImageIcon(Config.getImagesPath() + File.separator + "logo_square.png");
+
+        // Set the icon for the taskbar
+        Taskbar taskbar = Taskbar.getTaskbar();
+        if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) {
+            taskbar.setIconImage(logo.getImage());
+        }
         
         initComponents();
 

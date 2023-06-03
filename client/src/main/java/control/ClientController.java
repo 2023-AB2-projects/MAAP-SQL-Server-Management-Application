@@ -8,15 +8,12 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import frontend.ClientFrame;
 import frontend.ConnectionFrame;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
+import java.awt.*;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import javax.swing.LookAndFeel;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +46,15 @@ public class ClientController {
         
         // Init controller variables
         this.initVariables();
+
+        // Set image icon for JFrame
+        ImageIcon logo = new ImageIcon(Config.getImagesPath() + File.separator + "logo_square.png");
+
+        // Set the icon for the taskbar
+        Taskbar taskbar = Taskbar.getTaskbar();
+        if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) {
+            taskbar.setIconImage(logo.getImage());
+        }
 
         // Init server socket
         try {

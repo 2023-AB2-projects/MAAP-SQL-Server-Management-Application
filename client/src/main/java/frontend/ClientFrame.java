@@ -2,7 +2,10 @@ package frontend;
 
 import control.ClientController;
 import lombok.extern.slf4j.Slf4j;
+import service.Config;
 
+import javax.swing.*;
+import java.io.File;
 import java.util.ArrayList;
 
 @Slf4j
@@ -13,6 +16,10 @@ public class ClientFrame extends javax.swing.JFrame {
     public ClientFrame(ClientController clientController) {
         // Reference
         this.clientController = clientController;
+
+        // Set image icon for JFrame
+        ImageIcon logo = new ImageIcon(Config.getImagesPath() + File.separator + "logo_square.png");
+        this.setIconImage(logo.getImage());
 
         initComponents();
 
