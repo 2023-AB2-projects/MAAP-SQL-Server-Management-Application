@@ -26,8 +26,8 @@ public class SelectValidator implements Validator{
     private final List<String> groupedByColumns;
     private final ArrayList<Aggregator> aggregations;
 
-    private String regex = "\\b\\w+\\s*\\(\\s*\\w+\\.\\w+\\s*\\)";
-    private Pattern pattern = Pattern.compile(regex);
+    private final String regex = "\\b\\w+\\s*\\(\\s*\\w+\\.\\w+\\s*\\)";
+    private final Pattern pattern = Pattern.compile(regex);
 
     public SelectValidator(String databaseName, String baseTable, ArrayList<String> projectionColumns, List<Condition> conditions, List<JoinModel> joinModels, List<String> groupedByColumns, ArrayList<Aggregator> aggregations) {
         this.databaseName = databaseName;
@@ -66,7 +66,7 @@ public class SelectValidator implements Validator{
                     throw new RuntimeException(" Types of where clause do not match " + model.getLeftFieldName() + " : " + lType + " AND " + model.getRightFieldName() + " : " + rType);
                 }
             } catch (Exception e) {
-                new RuntimeException(e.toString());
+                throw new RuntimeException(e.toString());
             }
 
             if (tableFields.containsKey(ltable)) {
@@ -89,7 +89,7 @@ public class SelectValidator implements Validator{
         }
 
         ArrayList<String> validTables = (ArrayList<String>) tableFields.keySet();
-        validTables.stream().forEach(e -> log.info(e.toString()));
+        validTables.forEach(e -> log.info(e.toString()));
 
         // check if tables and fields exist
         for (Map.Entry<String, ArrayList<String>> entry : tableFields.entrySet()) {
@@ -158,6 +158,8 @@ public class SelectValidator implements Validator{
         ArrayList<String> groupedColumns = new ArrayList<>();
         ArrayList<String> projectedColumns = new ArrayList<>();
         ArrayList<String> aggregatedColumns = new ArrayList<>();
+
+        // TODO Insert the aggregator list shit into aggregatedColumns
 
         // check if the projection tables and fields are correct
         for (String tableNameAndFieldName : projectionColumns) {
