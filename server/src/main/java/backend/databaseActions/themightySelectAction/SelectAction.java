@@ -13,6 +13,7 @@ import backend.exceptions.databaseActionsExceptions.*;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.exceptions.validatorExceptions.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class SelectAction implements DatabaseAction {
 
     private final String databaseName;
@@ -53,6 +55,7 @@ public class SelectAction implements DatabaseAction {
     public Object actionPerform() throws DatabaseNameAlreadyExists, TableNameAlreadyExists, DatabaseDoesntExist, PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique, TableDoesntExist, IndexAlreadyExists, ForeignKeyFieldNotFound, IOException, RecordNotFoundException, PrimaryKeyValuesContainDuplicates, UniqueFieldValuesContainDuplicates, PrimaryKeyValueAlreadyInTable, UniqueValueAlreadyInTable, ForeignKeyValueNotFoundInParentTable, InvalidReadException, ForeignKeyValueIsBeingReferencedInAnotherTable, FieldsNotCompatible {
         //TODO validate everything:
 
+        log.info("Select passed the validation!");
         // Group the conditions by tables
         LinkedHashMap<String, ArrayList<Condition>> tableConditions = new LinkedHashMap<>();
         tableConditions.put(baseTable, new ArrayList<>());
@@ -69,6 +72,7 @@ public class SelectAction implements DatabaseAction {
                 conditionsList.add(functionCall);
             }
         }
+        log.info("There were" + conditions.size() + " conditions for " + tableConditions.size() + " tables!");
 
         // Create base tables and apply conditions
         ArrayList<BaseTable> baseConditionedTables = new ArrayList<>();
@@ -99,6 +103,7 @@ public class SelectAction implements DatabaseAction {
                 }
             }
 
+
             // same for the right table
             if (! tableConditions.containsKey(rtable)) {
                 finalTables.add(new BaseTable(databaseName, ltable, new ArrayList<>()));
@@ -110,6 +115,9 @@ public class SelectAction implements DatabaseAction {
                 }
             }
         }
+        log.info(" There are " + finalTables.size() + " tables in total");
+
+
 
         // If there were no joins, the only table that could be filtered is the base table
         // From now on the working table is called 'joinedTable'
@@ -117,24 +125,30 @@ public class SelectAction implements DatabaseAction {
         if (joinModels.size() > 0) {
             // Join the tables together
             joinedTable = JoinedTable.join(finalTables, (ArrayList<JoinModel>) joinModels);
+            log.info(" Tables joined");
         } else {
             joinedTable = baseConditionedTables.get(0);
+            log.info("No join was executed, working table : " + baseTable);
         }
 
         Table grouppedTable;
         if (groupedByColumns.size() > 0) {
             grouppedTable = joinedTable.groupBy((ArrayList<String>) groupedByColumns);
             grouppedTable.aggregation(aggregations);
+            log.info("Tables groupped!");
         } else if( aggregations.size() > 0) {
             joinedTable.aggregation(aggregations);
             grouppedTable = joinedTable;
+            log.info("Tables aggregated!");
         } else {
             grouppedTable = joinedTable;
+            log.info("No groupBy was executed!");
         }
 
         // Project selected fields
         if (!projectionColumns.get(0).equals("*")) {
             grouppedTable.projection(projectionColumns);
+            log.info("Projection executed!");
         }
 
         return grouppedTable;
