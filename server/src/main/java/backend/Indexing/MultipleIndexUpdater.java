@@ -33,7 +33,7 @@ public class MultipleIndexUpdater {
 
         // All non-unique indexes
         List<IndexFileModel> nonUniqueIndexes = CatalogManager.getNonUniqueIndexes(databaseName, tableName);
-        ArrayList<String> nonUniqueIndexNames = uniqueIndexes.stream().map(IndexFileModel::getIndexName).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<String> nonUniqueIndexNames = nonUniqueIndexes.stream().map(IndexFileModel::getIndexName).collect(Collectors.toCollection(ArrayList::new));
         nonUniqueIndexFieldNames = nonUniqueIndexes.stream().map(IndexFileModel::getIndexFields).collect(Collectors.toCollection(ArrayList::new));
         nonUniqueIndexManagers = new ArrayList<>();
         for (final String indexName : nonUniqueIndexNames) {
@@ -61,8 +61,6 @@ public class MultipleIndexUpdater {
         }
 
         try {
-            System.out.println(row);
-            System.out.println(pointer);
             for(int i = 0; i < uniqueIndexManagers.size(); i++) {
                 uniqueIndexManagers.get(i).insert(uniqueValues.get(i), pointer);
             }
@@ -70,7 +68,6 @@ public class MultipleIndexUpdater {
                 nonUniqueIndexManagers.get(i).insert(nonUniqueValues.get(i), pointer);
             }
         }catch (Exception e){
-            System.out.println(e.toString());
             System.out.println("Something went wrong with insert");
             System.out.println(e.getMessage());
         }

@@ -225,7 +225,11 @@ public class test {
         //tableTest();
         //joinTest();
 
-        System.out.println(CatalogManager.getNonUniqueIndexes("test", "user"));
-        System.out.println(CatalogManager.getPrimaryKeyIndexName("test", "user"));
+        NonUniqueIndexManager manager = new NonUniqueIndexManager("master", "testing", "asd");
+        ArrayList<String> values = new ArrayList<>();
+        values.add("4");
+        System.out.println(values);
+        manager.insert(values,5);
+        manager.close();
     }
 }
