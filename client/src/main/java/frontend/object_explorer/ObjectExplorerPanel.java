@@ -1,9 +1,6 @@
 package frontend.object_explorer;
 
-import service.CatalogManager;
-import service.Config;
-import service.ForeignKeyModel;
-import service.IndexFileModel;
+import service.*;
 
 import java.awt.*;
 import java.io.File;
@@ -150,6 +147,21 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
             } else if (fieldNames.stream().anyMatch(valueName::startsWith)) {
                 // Set a custom icon for "Field"
                 setIcon(new ImageIcon(Config.getImagesPath() + File.separator + "field_mini.png"));
+            } else if (valueName.equals("Primary Key")) {
+                ImageIcon pKIcon = new ImageIcon(Config.getImagesPath() + File.separator + "primary_key.png");
+                pKIcon = Utility.resizeIcon(pKIcon, 30, 20);
+                setIcon(pKIcon);
+            } else if (valueName.equals("Foreign Keys")) {
+                ImageIcon fkIcon = new ImageIcon(Config.getImagesPath() + File.separator + "foreign_key.png");
+                fkIcon = Utility.resizeIcon(fkIcon, 30, 20);
+                setIcon(fkIcon);
+            } else if (valueName.equals("Index Files")) {
+                ImageIcon indexIcon = new ImageIcon(Config.getImagesPath() + File.separator + "index_file.png");
+                indexIcon = Utility.resizeIcon(indexIcon, 25, 25);
+                setIcon(indexIcon);
+            }  else if (valueName.equals("Unique Fields")) {
+                ImageIcon uniqueIcon = new ImageIcon(Config.getImagesPath() + File.separator + "unique_field_mini.png");
+                setIcon(uniqueIcon);
             }
             return this;
         }
