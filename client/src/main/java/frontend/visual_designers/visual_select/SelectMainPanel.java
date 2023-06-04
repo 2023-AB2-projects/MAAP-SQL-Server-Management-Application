@@ -8,6 +8,7 @@ import service.ForeignKeyModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -85,6 +86,18 @@ public class SelectMainPanel extends javax.swing.JPanel {
     }
 
     /* Setters */
+    public void setLightMode() {
+        for (final SelectTableFieldsPanel panel : this.tableFieldsPanels) {
+            panel.setLightMode();
+        }
+    }
+
+    public void setDarkMode() {
+        for (final SelectTableFieldsPanel panel : this.tableFieldsPanels) {
+            panel.setDarkMode();
+        }
+    }
+
     public void setCenterClientPanel(CenterClientPanel clientPanel) { this.centerClientPanel = clientPanel; }
 
     public void fieldIsSelected(String tableName, String fieldName) {

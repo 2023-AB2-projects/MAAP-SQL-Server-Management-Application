@@ -65,6 +65,8 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tabelNameLabel.setText("Table Name:");
         tabelNameLabel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        tabelNameLabel.setMinimumSize(new java.awt.Dimension(85, 22));
+        tabelNameLabel.setPreferredSize(new java.awt.Dimension(85, 22));
 
         tableSelectComboBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tableSelectComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "table_1", "table_2", "table_3", "table_4" }));
@@ -118,7 +120,7 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)

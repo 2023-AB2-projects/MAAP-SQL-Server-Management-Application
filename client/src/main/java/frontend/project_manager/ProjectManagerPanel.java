@@ -241,6 +241,14 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
         this.fileIndicatorLabel.setIcon(warningSymbolIcon);
     }
 
+    public void setLightMode() {
+        this.projectManagerTag.setBackground(Color.LIGHT_GRAY);
+    }
+
+    public void setDarkMode() {
+        this.projectManagerTag.setBackground(Color.DARK_GRAY);
+    }
+
     // Custom cell renderer class
     static class CustomTreeCellRendererTable extends DefaultTreeCellRenderer {
         // Override the getTreeCellRendererComponent method

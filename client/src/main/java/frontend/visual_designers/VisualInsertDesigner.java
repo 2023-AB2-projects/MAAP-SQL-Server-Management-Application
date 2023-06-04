@@ -159,10 +159,11 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        insertTable.setGridColor(new java.awt.Color(90, 90, 90));
+        insertTable.setGridColor(new java.awt.Color(102, 102, 102));
         insertTable.setInheritsPopupMenu(true);
         insertTable.setName(""); // NOI18N
         insertTable.setShowGrid(true);
+        insertTable.getTableHeader().setReorderingAllowed(false);
         tableScrollPanel.setViewportView(insertTable);
 
         splitInsertPanel.setTopComponent(tableScrollPanel);
@@ -212,7 +213,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tabelNameLabel)
+                .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)

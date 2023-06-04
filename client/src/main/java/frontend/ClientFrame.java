@@ -92,8 +92,16 @@ public class ClientFrame extends javax.swing.JFrame {
 
     public void saveCurrentFile() { this.projectManagerPanel1.saveCurrentFile(); }
 
-    public void setLightMode() { this.centerClientPanel1.setLightMode(); }
-    public void setDarkMode() { this.centerClientPanel1.setDarkMode(); }
+    public void setLightMode() {
+        this.centerClientPanel1.setLightMode();
+        this.objectExplorerPanel1.setLightMode();
+        this.projectManagerPanel1.setLightMode();
+    }
+    public void setDarkMode() {
+        this.centerClientPanel1.setDarkMode();
+        this.objectExplorerPanel1.setDarkMode();
+        this.projectManagerPanel1.setDarkMode();
+    }
 
     /* Getters */
     public String getInputTextAreaString() { return this.centerClientPanel1.getInputAreaText(); }

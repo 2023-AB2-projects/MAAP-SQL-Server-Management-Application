@@ -134,14 +134,14 @@ public class FieldSelectionPanelDelete extends javax.swing.JPanel {
         conditionLabel2 = new javax.swing.JLabel();
         selectionPanel = new javax.swing.JPanel();
 
-        onOffLabel.setBackground(new java.awt.Color(102, 102, 102));
+        onOffLabel.setBackground(java.awt.Color.gray);
         onOffLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         onOffLabel.setText("On/Off");
         onOffLabel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         onOffLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         onOffLabel.setOpaque(true);
 
-        columnLabel.setBackground(new java.awt.Color(102, 102, 102));
+        columnLabel.setBackground(java.awt.Color.gray);
         columnLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         columnLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         columnLabel.setText("Column Name");
@@ -149,7 +149,7 @@ public class FieldSelectionPanelDelete extends javax.swing.JPanel {
         columnLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         columnLabel.setOpaque(true);
 
-        conditionLabel3.setBackground(new java.awt.Color(102, 102, 102));
+        conditionLabel3.setBackground(java.awt.Color.gray);
         conditionLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         conditionLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         conditionLabel3.setText("Or...");
@@ -157,7 +157,7 @@ public class FieldSelectionPanelDelete extends javax.swing.JPanel {
         conditionLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         conditionLabel3.setOpaque(true);
 
-        tableLabel.setBackground(new java.awt.Color(102, 102, 102));
+        tableLabel.setBackground(java.awt.Color.gray);
         tableLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tableLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         tableLabel.setText("Table Name");
@@ -165,7 +165,7 @@ public class FieldSelectionPanelDelete extends javax.swing.JPanel {
         tableLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         tableLabel.setOpaque(true);
 
-        conditionLabel1.setBackground(new java.awt.Color(102, 102, 102));
+        conditionLabel1.setBackground(java.awt.Color.gray);
         conditionLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         conditionLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         conditionLabel1.setText("Condition");
@@ -173,7 +173,7 @@ public class FieldSelectionPanelDelete extends javax.swing.JPanel {
         conditionLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         conditionLabel1.setOpaque(true);
 
-        conditionLabel2.setBackground(new java.awt.Color(102, 102, 102));
+        conditionLabel2.setBackground(java.awt.Color.gray);
         conditionLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         conditionLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         conditionLabel2.setText("Or...");
@@ -208,8 +208,8 @@ public class FieldSelectionPanelDelete extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(conditionLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(conditionLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(conditionLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(conditionLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()

@@ -116,6 +116,14 @@ public class ObjectExplorerPanel extends javax.swing.JPanel {
         this.jTreeNode.reload();
     }
 
+    public void setLightMode() {
+        this.objectExplorerTag.setBackground(Color.LIGHT_GRAY);
+    }
+
+    public void setDarkMode() {
+        this.objectExplorerTag.setBackground(Color.DARK_GRAY);
+    }
+
     // Custom cell renderer class
     static class CustomTreeCellRendererTable extends DefaultTreeCellRenderer {
         // Override the getTreeCellRendererComponent method
