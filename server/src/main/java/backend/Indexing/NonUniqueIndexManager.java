@@ -172,12 +172,12 @@ public class NonUniqueIndexManager implements Queryable{
         RecordReader reader = new RecordReader(databaseName, tableName);
 
         ArrayList<ArrayList<Object>> table = reader.scan(keyColumnNames);
-
+        ArrayList<Integer> pointers = new ArrayList<>(reader.getAllPointers());
         for(int i = 0; i < table.size(); i++){
             try{
                 ArrayList<Object> key = table.get(i);
-                key.add(i);
-                tree.insert(new Key(key, keyStruct), i);
+                key.add(pointers.get(i));
+                tree.insert(new Key(key, keyStruct), pointers.get(i));
             }catch (KeyAlreadyInTreeException ignored){}
         }
 

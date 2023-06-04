@@ -154,10 +154,10 @@ public class UniqueIndexManager implements Queryable{
         RecordReader reader = new RecordReader(databaseName, tableName);
 
         ArrayList<ArrayList<Object>> table = reader.scan(keyColumnNames);
-
+        ArrayList<Integer> pointers = new ArrayList<>(reader.getAllPointers());
         for(int i = 0; i < table.size(); i++){
             try{
-                tree.insert(new Key(table.get(i), keyStruct), i);
+                tree.insert(new Key(table.get(i), keyStruct), pointers.get(i));
             }catch (KeyAlreadyInTreeException ignored){}
         }
 
