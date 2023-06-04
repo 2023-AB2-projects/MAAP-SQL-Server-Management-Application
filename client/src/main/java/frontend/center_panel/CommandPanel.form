@@ -27,12 +27,12 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="selectComboBox" min="-2" pref="89" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="createAlterComboBox" min="-2" pref="135" max="-2" attributes="0"/>
+              <Component id="createAlterComboBox" min="-2" pref="110" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="dropDeleteComboBox" min="-2" pref="135" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="insertUpdateComboBox" min="-2" pref="145" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="133" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="158" max="-2" attributes="0"/>
               <Component id="toggleThemeButton" min="-2" pref="31" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="minusButton" min="-2" pref="27" max="-2" attributes="0"/>
@@ -55,11 +55,6 @@
                           <Component id="selectComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="useComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="createAlterComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="5" pref="5" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="dropDeleteComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="insertUpdateComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -113,13 +108,12 @@
           <Font name="Segoe UI" size="14" style="0"/>
         </Property>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="6">
-            <StringItem index="0" value="CREATE/ALTER"/>
+          <StringArray count="5">
+            <StringItem index="0" value="CREATE"/>
             <StringItem index="1" value="CREATE DATABASE"/>
             <StringItem index="2" value="CREATE TABLE"/>
             <StringItem index="3" value="CREATE INDEX"/>
             <StringItem index="4" value="CREATE UNIQUE INDEX"/>
-            <StringItem index="5" value="ALTER TABLE"/>
           </StringArray>
         </Property>
         <Property name="toolTipText" type="java.lang.String" value=""/>
