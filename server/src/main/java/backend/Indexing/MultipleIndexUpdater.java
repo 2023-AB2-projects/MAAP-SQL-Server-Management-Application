@@ -10,11 +10,10 @@ import java.util.stream.Collectors;
 
 public class MultipleIndexUpdater {
     // List of field names, PK, FK and unique
-    private final List<String> tableFieldNames, primaryKeyFieldNames;
+    private final List<String> tableFieldNames;
     private final List<List<String>> uniqueIndexFieldNames, nonUniqueIndexFieldNames;
 
     // Primary key has one index manager, each FK and unique fields have one manager
-    private final UniqueIndexManager primaryKeyIndexManager;
     private final ArrayList<UniqueIndexManager> uniqueIndexManagers;
 
     private final ArrayList<NonUniqueIndexManager> nonUniqueIndexManagers;
@@ -22,12 +21,6 @@ public class MultipleIndexUpdater {
     public MultipleIndexUpdater(String databaseName, String tableName) {
         // Get table field names
         this.tableFieldNames = CatalogManager.getFieldNames(databaseName, tableName);
-
-        // Find each primary key, unique field and foreign key in table
-        this.primaryKeyFieldNames = CatalogManager.getPrimaryKeyFieldNames(databaseName, tableName);
-        // Create index for primary key
-        String pKIndexName = CatalogManager.getPrimaryKeyIndexName(databaseName, tableName);
-        this.primaryKeyIndexManager = new UniqueIndexManager(databaseName, tableName, pKIndexName);
 
         // All the unique indexes
         List<IndexFileModel> uniqueIndexes = CatalogManager.getUniqueIndexes(databaseName, tableName);
@@ -49,11 +42,6 @@ public class MultipleIndexUpdater {
     }
 
     public void insert(ArrayList<String> row, Integer pointer) {
-        ArrayList<String> primaryKeyValues = new ArrayList<>();
-        for (final String primaryKeyFieldName : primaryKeyFieldNames) {
-            primaryKeyValues.add(row.get(tableFieldNames.indexOf(primaryKeyFieldName)));
-        }
-
         ArrayList<ArrayList<String>> uniqueValues = new ArrayList<>();
         for (var uniqueFieldNames : uniqueIndexFieldNames) {
             ArrayList<String> uniqueValue =new ArrayList<>();
@@ -73,7 +61,8 @@ public class MultipleIndexUpdater {
         }
 
         try {
-            primaryKeyIndexManager.insert(primaryKeyValues, pointer);
+            System.out.println(row);
+            System.out.println(pointer);
             for(int i = 0; i < uniqueIndexManagers.size(); i++) {
                 uniqueIndexManagers.get(i).insert(uniqueValues.get(i), pointer);
             }
@@ -81,17 +70,13 @@ public class MultipleIndexUpdater {
                 nonUniqueIndexManagers.get(i).insert(nonUniqueValues.get(i), pointer);
             }
         }catch (Exception e){
+            System.out.println(e.toString());
             System.out.println("Something went wrong with insert");
             System.out.println(e.getMessage());
         }
     }
 
     public void delete(ArrayList<String> row, Integer pointer){
-        ArrayList<String> primaryKeyValues = new ArrayList<>();
-        for (final String primaryKeyFieldName : primaryKeyFieldNames) {
-            primaryKeyValues.add(row.get(tableFieldNames.indexOf(primaryKeyFieldName)));
-        }
-
         ArrayList<ArrayList<String>> uniqueValues = new ArrayList<>();
         for (var uniqueFieldNames : uniqueIndexFieldNames) {
             ArrayList<String> uniqueValue =new ArrayList<>();
@@ -111,7 +96,6 @@ public class MultipleIndexUpdater {
         }
 
         try {
-            primaryKeyIndexManager.insert(primaryKeyValues, pointer);
             for(int i = 0; i < uniqueIndexManagers.size(); i++) {
                 uniqueIndexManagers.get(i).delete(uniqueValues.get(i));
             }
@@ -125,7 +109,6 @@ public class MultipleIndexUpdater {
     }
 
     public void close() throws IOException {
-        primaryKeyIndexManager.close();
         for(var manager : uniqueIndexManagers){
             manager.close();
         }
