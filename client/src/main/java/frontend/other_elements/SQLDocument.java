@@ -41,6 +41,14 @@ public class SQLDocument extends DefaultStyledDocument {
             "==", "!=", "=", ">=", "<=", ">", "<",
     };
 
+    public void lightMode() {
+        StyleConstants.setForeground(normal, Color.BLACK);
+    }
+
+    public void darkMode() {
+        StyleConstants.setForeground(normal, Color.WHITE);
+    }
+
     public SQLDocument() {
 
         doc = this;

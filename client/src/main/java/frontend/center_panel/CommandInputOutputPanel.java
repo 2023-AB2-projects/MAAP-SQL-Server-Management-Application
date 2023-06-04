@@ -227,6 +227,28 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
         }
     }
 
+    public void setLightMode() {
+        SQLDocument doc = (SQLDocument) this.inputArea.getStyledDocument();
+        doc.lightMode();
+
+        // Get text from input area
+        String text = this.inputArea.getText();
+
+        // Set text
+        this.inputArea.setText(text);
+    }
+
+    public void setDarkMode() {
+        SQLDocument doc = (SQLDocument) this.inputArea.getStyledDocument();
+        doc.darkMode();
+
+        // Get text from input area
+        String text = this.inputArea.getText();
+
+        // Set text
+        this.inputArea.setText(text);
+    }
+
     /* Getters */
     public String getInputAreaText() { return this.inputArea.getText(); }
     
