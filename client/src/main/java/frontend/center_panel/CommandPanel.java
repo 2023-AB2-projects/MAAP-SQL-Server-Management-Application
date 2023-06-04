@@ -7,6 +7,11 @@ import control.ClientController;
 import frontend.center_panel.command_templates.*;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import service.Config;
+import service.Utility;
+
+import javax.swing.*;
+import java.io.File;
 
 @Slf4j
 public class CommandPanel extends javax.swing.JPanel {
@@ -15,8 +20,20 @@ public class CommandPanel extends javax.swing.JPanel {
 
     private boolean isLightTheme = false;
 
+    private ImageIcon lightThemeIcon, darkThemeIcon;
+
     public CommandPanel() {
         initComponents();
+
+        // Load icons
+        this.lightThemeIcon = new ImageIcon(Config.getImagesPath() + File.separator + "light_mode_icon.png");
+        this.lightThemeIcon = Utility.resizeIcon(this.lightThemeIcon, 20, 20);
+
+        this.darkThemeIcon = new ImageIcon(Config.getImagesPath() + File.separator + "dark_mode_icon.png");
+        this.darkThemeIcon = Utility.resizeIcon(this.darkThemeIcon, 20, 20);
+
+        // Set light icon for label
+        this.toggleThemeButton.setIcon(this.lightThemeIcon);
     }
 
     /**
@@ -123,7 +140,8 @@ public class CommandPanel extends javax.swing.JPanel {
         });
 
         toggleThemeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        toggleThemeButton.setText("Light");
+        toggleThemeButton.setToolTipText("");
+        toggleThemeButton.setMaximumSize(new java.awt.Dimension(76, 31));
         toggleThemeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 toggleThemeButtonActionPerformed(evt);
@@ -145,8 +163,8 @@ public class CommandPanel extends javax.swing.JPanel {
                 .addComponent(dropDeleteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(insertUpdateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(79, 79, 79)
-                .addComponent(toggleThemeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(133, 133, 133)
+                .addComponent(toggleThemeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(minusButton, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -176,12 +194,13 @@ public class CommandPanel extends javax.swing.JPanel {
                         .addComponent(horizontalFiller, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(runCommandButton)
-                            .addComponent(plusButton)
-                            .addComponent(minusButton)
-                            .addComponent(toggleThemeButton))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(toggleThemeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(runCommandButton)
+                                .addComponent(plusButton)
+                                .addComponent(minusButton)))))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -269,16 +288,14 @@ public class CommandPanel extends javax.swing.JPanel {
     private void toggleThemeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleThemeButtonActionPerformed
         if (isLightTheme) {
             this.clientController.setDarkMode();
-            this.isLightTheme = false;
+            this.toggleThemeButton.setIcon(this.lightThemeIcon);
 
-            // Set button text to 'Light'
-            this.toggleThemeButton.setText("Light");
+            this.isLightTheme = false;
         } else {
             this.clientController.setLightMode();
-            this.isLightTheme = true;
+            this.toggleThemeButton.setIcon(this.darkThemeIcon);
 
-            // Set button text to 'Dark'
-            this.toggleThemeButton.setText("Dark");
+            this.isLightTheme = true;
         }
     }//GEN-LAST:event_toggleThemeButtonActionPerformed
 
