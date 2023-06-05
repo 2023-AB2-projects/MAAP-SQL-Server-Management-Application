@@ -8,6 +8,7 @@ import backend.databaseModels.aggregations.AggregatorSymbol;
 import backend.databaseModels.conditions.Condition;
 import backend.databaseModels.conditions.Equation;
 import backend.databaseModels.conditions.FunctionCall;
+import backend.exceptions.NoIndexException;
 import backend.exceptions.recordHandlingExceptions.UndefinedQueryException;
 import backend.recordHandling.RecordReader;
 import backend.recordHandling.TypeConverter;
@@ -53,10 +54,12 @@ public class BaseTable implements Table {
                 String fieldName = ((Equation) condition).getLFieldName();
                 int fieldIndex = columnNames.indexOf(fieldName);
                 //this is good only for testing tell them to fix it
+                String indexName;
                 try {
-                    List<String> indexName = CatalogManager.getIndexFieldNames(databaseName, tableName, fieldName);
+                    String trueFieldName = fieldName.substring(fieldName.indexOf('.') + 1);
+                    indexName = CatalogManager.getIndexName(databaseName, tableName, trueFieldName);
                     usedConditions.add(condition);
-                } catch (Exception e) {
+                } catch (NoIndexException e) {
                     continue;
                 }
 
@@ -65,8 +68,6 @@ public class BaseTable implements Table {
                 Object compareValue = TypeConverter.toObject(fieldType, compareValueString);
 
                 Queryable index;
-                //replace with index name later
-                String indexName = fieldName;
                 if(CatalogManager.isFieldUnique(databaseName, tableName, indexName)){
                     index = new UniqueIndexManager(databaseName, tableName, indexName);
                 } else {

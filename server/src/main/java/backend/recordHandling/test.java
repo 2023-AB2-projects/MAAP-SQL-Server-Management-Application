@@ -10,6 +10,7 @@ import backend.databaseModels.JoinModel;
 import backend.databaseModels.aggregations.Aggregator;
 import backend.databaseModels.aggregations.AggregatorSymbol;
 import backend.databaseModels.conditions.*;
+import backend.exceptions.NoIndexException;
 import backend.exceptions.recordHandlingExceptions.*;
 import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
@@ -213,7 +214,7 @@ public class test {
 
         joinedTable.printState();
     }
-    public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException {
+    public static void main(String[] args) throws IOException, KeyAlreadyInTreeException, KeyNotFoundException, InvalidReadException, UndefinedQueryException, NoIndexException {
 //        byte[] bytes = {0,0,0,1,0,0,0,1,1};
         types = new ArrayList<>();
         types.add("int");
@@ -225,11 +226,6 @@ public class test {
         //tableTest();
         //joinTest();
 
-        NonUniqueIndexManager manager = new NonUniqueIndexManager("master", "testing", "asd");
-        ArrayList<String> values = new ArrayList<>();
-        values.add("4");
-        System.out.println(values);
-        manager.insert(values,5);
-        manager.close();
+        System.out.println(CatalogManager.getIndexName("master", "testing5", "age"));
     }
 }
