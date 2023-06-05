@@ -1,17 +1,5 @@
-<style>
-.sql {
-    color: #ffc936;
-}
-h1 {
-    color: #3395de;
-}
-h2 {
-    color: #81bbe6;
-}
-</style>
-
-# ab2-project-nemleszkitolmasolni
-ab2-project-nemleszkitolmasolni created by GitHub Classroom
+# MAAP SQL Server Management Application
+![](https://github.com/2023-AB2-projects/ab2-project-nemleszkitolmasolni/blob/new_develop/client/src/main/java/images/logo_wide.png)
 
 ## Build help
 
@@ -21,9 +9,7 @@ After installing gradle, in the root project folder, you can build everything wi
 <b> Client: </b> <code>gradle :client:build</code> && <code>gradle :client:run</code> <br>
 <b> Server: </b> <code>gradle :server:build</code> && <code>gradle :server:run</code> <br> 
 
-## User help
-
-## Commands
+## Commands supported
 
 <pre>
 <span class="sql">USE</span> database_name

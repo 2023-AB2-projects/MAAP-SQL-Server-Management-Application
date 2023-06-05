@@ -11,6 +11,7 @@ import backend.databaseModels.aggregations.Aggregator;
 import backend.databaseModels.aggregations.AggregatorSymbol;
 import backend.databaseModels.conditions.*;
 import backend.exceptions.recordHandlingExceptions.*;
+import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -222,7 +223,13 @@ public class test {
         //scanTest();
         //rangeQueryTest();
         //tableTest();
-        joinTest();
+        //joinTest();
 
+        NonUniqueIndexManager manager = new NonUniqueIndexManager("master", "testing", "asd");
+        ArrayList<String> values = new ArrayList<>();
+        values.add("4");
+        System.out.println(values);
+        manager.insert(values,5);
+        manager.close();
     }
 }

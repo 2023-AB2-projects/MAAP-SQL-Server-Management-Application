@@ -2,7 +2,10 @@ package frontend;
 
 import control.ClientController;
 import lombok.extern.slf4j.Slf4j;
+import service.Config;
 
+import javax.swing.*;
+import java.io.File;
 import java.util.ArrayList;
 
 @Slf4j
@@ -14,10 +17,15 @@ public class ClientFrame extends javax.swing.JFrame {
         // Reference
         this.clientController = clientController;
 
+        // Set image icon for JFrame
+        ImageIcon logo = new ImageIcon(Config.getImagesPath() + File.separator + "logo_square.png");
+        this.setIconImage(logo.getImage());
+
         initComponents();
 
         // Set references
         this.centerClientPanel1.setClientController(this.clientController);
+        this.projectManagerPanel1.setClientController(this.clientController);
     }
     
     /**
@@ -31,6 +39,7 @@ public class ClientFrame extends javax.swing.JFrame {
 
         objectExplorerPanel1 = new frontend.object_explorer.ObjectExplorerPanel();
         centerClientPanel1 = new frontend.center_panel.CenterClientPanel();
+        projectManagerPanel1 = new frontend.project_manager.ProjectManagerPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("MAAP SQL Server Management Application");
@@ -44,12 +53,14 @@ public class ClientFrame extends javax.swing.JFrame {
                 .addComponent(objectExplorerPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(centerClientPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(294, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(projectManagerPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addComponent(objectExplorerPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addComponent(centerClientPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(projectManagerPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -75,11 +86,29 @@ public class ClientFrame extends javax.swing.JFrame {
 
     public void updateObjectExplorer() { this.objectExplorerPanel1.update(); }
 
+    public void readCurrentFile() { this.projectManagerPanel1.readCurrentFile(); }
+
+    public void inputAreaChanged() { this.projectManagerPanel1.inputAreaChanged(); }
+
+    public void saveCurrentFile() { this.projectManagerPanel1.saveCurrentFile(); }
+
+    public void setLightMode() {
+        this.centerClientPanel1.setLightMode();
+        this.objectExplorerPanel1.setLightMode();
+        this.projectManagerPanel1.setLightMode();
+    }
+    public void setDarkMode() {
+        this.centerClientPanel1.setDarkMode();
+        this.objectExplorerPanel1.setDarkMode();
+        this.projectManagerPanel1.setDarkMode();
+    }
+
     /* Getters */
     public String getInputTextAreaString() { return this.centerClientPanel1.getInputAreaText(); }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private frontend.center_panel.CenterClientPanel centerClientPanel1;
     private frontend.object_explorer.ObjectExplorerPanel objectExplorerPanel1;
+    private frontend.project_manager.ProjectManagerPanel projectManagerPanel1;
     // End of variables declaration//GEN-END:variables
 }

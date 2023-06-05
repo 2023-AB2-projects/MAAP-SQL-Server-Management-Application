@@ -1,18 +1,39 @@
 package frontend.center_panel;
 
 import backend.MessageModes;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import control.ClientController;
 import frontend.center_panel.command_templates.*;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import service.Config;
+import service.Utility;
+
+import javax.swing.*;
+import java.io.File;
 
 @Slf4j
 public class CommandPanel extends javax.swing.JPanel {
     @Setter
     private ClientController clientController;
 
+    private boolean isLightTheme = false;
+
+    private ImageIcon lightThemeIcon, darkThemeIcon;
+
     public CommandPanel() {
         initComponents();
+
+        // Load icons
+        this.lightThemeIcon = new ImageIcon(Config.getImagesPath() + File.separator + "light_mode_icon.png");
+        this.lightThemeIcon = Utility.resizeIcon(this.lightThemeIcon, 20, 20);
+
+        this.darkThemeIcon = new ImageIcon(Config.getImagesPath() + File.separator + "dark_mode_icon.png");
+        this.darkThemeIcon = Utility.resizeIcon(this.darkThemeIcon, 20, 20);
+
+        // Set light icon for label
+        this.toggleThemeButton.setIcon(this.lightThemeIcon);
     }
 
     /**
@@ -33,6 +54,7 @@ public class CommandPanel extends javax.swing.JPanel {
         useComboBox = new javax.swing.JComboBox<>();
         minusButton = new javax.swing.JButton();
         plusButton = new javax.swing.JButton();
+        toggleThemeButton = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(1000, 42));
 
@@ -46,7 +68,7 @@ public class CommandPanel extends javax.swing.JPanel {
         });
 
         createAlterComboBox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        createAlterComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "CREATE/ALTER", "CREATE DATABASE", "CREATE TABLE", "CREATE INDEX", "CREATE UNIQUE INDEX", "ALTER TABLE" }));
+        createAlterComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "CREATE", "CREATE DATABASE", "CREATE TABLE", "CREATE INDEX", "CREATE UNIQUE INDEX" }));
         createAlterComboBox.setToolTipText("");
         createAlterComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -117,6 +139,15 @@ public class CommandPanel extends javax.swing.JPanel {
             }
         });
 
+        toggleThemeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        toggleThemeButton.setToolTipText("");
+        toggleThemeButton.setMaximumSize(new java.awt.Dimension(76, 31));
+        toggleThemeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toggleThemeButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -127,12 +158,14 @@ public class CommandPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(selectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(dropDeleteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(insertUpdateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(170, 170, 170)
+                .addGap(158, 158, 158)
+                .addComponent(toggleThemeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(minusButton, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(plusButton, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -150,10 +183,7 @@ public class CommandPanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(selectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(useComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(5, 5, 5)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(createAlterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(dropDeleteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(insertUpdateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
@@ -161,11 +191,13 @@ public class CommandPanel extends javax.swing.JPanel {
                         .addComponent(horizontalFiller, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(runCommandButton)
-                            .addComponent(plusButton)
-                            .addComponent(minusButton))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(toggleThemeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(runCommandButton)
+                                .addComponent(plusButton)
+                                .addComponent(minusButton)))))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -209,7 +241,6 @@ public class CommandPanel extends javax.swing.JPanel {
             case 2 -> this.clientController.setInputTextAreaString(new CreateTableTemplate().toString());
             case 3 -> this.clientController.setInputTextAreaString(new CreateNonUniqueIndexTemplate().toString());
             case 4 -> this.clientController.setInputTextAreaString(new CreateUniqueIndexTemplate().toString());
-            case 5 -> this.clientController.setInputTextAreaString(new AlterTableTemplate().toString());
         }
 
         // Reset to basic index
@@ -250,6 +281,20 @@ public class CommandPanel extends javax.swing.JPanel {
         this.clientController.decreaseCenterPanelFont();
     }//GEN-LAST:event_minusButtonMousePressed
 
+    private void toggleThemeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleThemeButtonActionPerformed
+        if (isLightTheme) {
+            this.clientController.setDarkMode();
+            this.toggleThemeButton.setIcon(this.lightThemeIcon);
+
+            this.isLightTheme = false;
+        } else {
+            this.clientController.setLightMode();
+            this.toggleThemeButton.setIcon(this.darkThemeIcon);
+
+            this.isLightTheme = true;
+        }
+    }//GEN-LAST:event_toggleThemeButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> createAlterComboBox;
@@ -260,6 +305,7 @@ public class CommandPanel extends javax.swing.JPanel {
     private javax.swing.JButton plusButton;
     private javax.swing.JButton runCommandButton;
     private javax.swing.JComboBox<String> selectComboBox;
+    private javax.swing.JButton toggleThemeButton;
     private javax.swing.JComboBox<String> useComboBox;
     // End of variables declaration//GEN-END:variables
 }

@@ -76,6 +76,14 @@ public class SelectTableFieldsPanel extends javax.swing.JPanel {
     /* Setters */
     public void setMainPanel(SelectMainPanel mainPanel) { this.mainPanel = mainPanel; }
 
+    public void setLightMode() {
+        this.tableNameLabel.setBackground(Color.LIGHT_GRAY);
+    }
+
+    public void setDarkMode() {
+        this.tableNameLabel.setBackground(Color.DARK_GRAY);
+    }
+
     /* Getters */
     public List<String> getSelectedFields() {
         // Check if all are selected
@@ -111,7 +119,7 @@ public class SelectTableFieldsPanel extends javax.swing.JPanel {
 
         setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        tableNameLabel.setBackground(new java.awt.Color(51, 51, 51));
+        tableNameLabel.setBackground(java.awt.Color.darkGray);
         tableNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         tableNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         tableNameLabel.setText("table_name");

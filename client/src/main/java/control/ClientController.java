@@ -5,18 +5,18 @@ import backend.responseObjects.SQLResponseObject;
 import backend.responseObjects.SQLTextResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import frontend.ClientFrame;
 import frontend.ConnectionFrame;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
+import java.awt.*;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import javax.swing.LookAndFeel;
-import javax.swing.UnsupportedLookAndFeelException;
+import java.util.Enumeration;
+import javax.swing.*;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +26,10 @@ import service.Config;
 @Slf4j
 public class ClientController {
     /* ClientController has a reference to GUI, MessageHandler and ConnectionManager */
+    @Getter
     private ClientFrame clientFrame;
     private ConnectionFrame connectionFrame;
     private MessageHandler messageHandler;
-
-    // Other variables
-    private LookAndFeel lookAndFeel;
 
     // Data/Logic
     private String catalogJSON;
@@ -49,6 +47,15 @@ public class ClientController {
         // Init controller variables
         this.initVariables();
 
+        // Set image icon for JFrame
+        ImageIcon logo = new ImageIcon(Config.getImagesPath() + File.separator + "logo_square.png");
+
+        // Set the icon for the taskbar
+        Taskbar taskbar = Taskbar.getTaskbar();
+        if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) {
+            taskbar.setIconImage(logo.getImage());
+        }
+
         // Init server socket
         try {
             this.serverSocket = new ServerSocket(4445);
@@ -56,19 +63,15 @@ public class ClientController {
             log.error("Could not create server socket!");
             throw new RuntimeException(e);
         }
+
+        // Read initial file contents
+        this.clientFrame.readCurrentFile();
     }
 
     /* Utility */
     private void initComponents() {
-        // Init GUI
-        this.lookAndFeel = new FlatDarculaLaf();
-        
         // Do not touch this (ffs)
-        try {
-            javax.swing.UIManager.setLookAndFeel(this.lookAndFeel);
-        } catch (UnsupportedLookAndFeelException ex) {
-            log.error("FlatLafDark is not supported!");
-        }
+        this.setDarkMode();
         
         this.connectionFrame = new ConnectionFrame(this);
         this.clientFrame = new ClientFrame(this);   // Hidden by default
@@ -246,6 +249,70 @@ public class ClientController {
     }
 
     /* Setters */
+    public void setLightMode() {
+        // Set look and feel
+        LookAndFeel lookAndFeel = new FlatLightLaf();
+        try {
+            javax.swing.UIManager.setLookAndFeel(lookAndFeel);
+        } catch (UnsupportedLookAndFeelException ex) {
+            log.error(lookAndFeel.getName() + " is not supported!");
+        }
+
+        // Update theme
+        this.updateTheme(false);
+    }
+
+    public void setDarkMode() {
+        // Set look and feel
+        LookAndFeel lookAndFeel = new FlatDarkLaf();
+        try {
+            javax.swing.UIManager.setLookAndFeel(lookAndFeel);
+        } catch (UnsupportedLookAndFeelException ex) {
+            log.error(lookAndFeel.getName() + " is not supported!");
+        }
+
+        // Update theme
+        this.updateTheme(true);
+    }
+
+    public void updateTheme(boolean isDarkMode) {
+        // Update client frame and recursively update all frames and panels
+        if (this.clientFrame != null) {
+            // Update all frames and panels
+            SwingUtilities.invokeLater(() -> {
+                Enumeration<Object> keys = UIManager.getDefaults().keys();
+                while (keys.hasMoreElements()) {
+                    Object key = keys.nextElement();
+                    Object value = UIManager.get(key);
+                    if (value instanceof javax.swing.plaf.FontUIResource) {
+                        UIManager.put(key, new javax.swing.plaf.FontUIResource("Segoe UI", Font.PLAIN, 14));
+                    }
+                }
+
+                updateUIRecursively(Frame.getFrames());
+            });
+
+            // Update other stuff
+            if (isDarkMode) {
+                this.clientFrame.setDarkMode();
+            } else {
+                this.clientFrame.setLightMode();
+            }
+        }
+    }
+
+    private static void updateUIRecursively(Window[] windows) {
+        for (Window window : windows) {
+            if (window instanceof Frame || window instanceof Dialog) {
+                SwingUtilities.updateComponentTreeUI(window);
+            }
+
+            if (window instanceof Frame) {
+                updateUIRecursively(window.getOwnedWindows());
+            }
+        }
+    }
+
     public void setClientFrameVisibility(boolean visibility) { this.clientFrame.setVisible(visibility); }
 
     public void setInputTextAreaString(String inputTextAreaString) { this.clientFrame.setInputTextAreaString(inputTextAreaString);}
@@ -257,6 +324,10 @@ public class ClientController {
     public void increaseCenterPanelFont() { this.clientFrame.increaseCenterPanelFont(); }
 
     public void decreaseCenterPanelFont() { this.clientFrame.decreaseCenterPanelFont();}
+
+    public void inputAreaChanged() { this.clientFrame.inputAreaChanged(); }
+
+    public void saveCurrentFile() { this.clientFrame.saveCurrentFile(); }
 
     /* Getters */
     public String getInputTextAreaString() { return this.clientFrame.getInputTextAreaString(); }

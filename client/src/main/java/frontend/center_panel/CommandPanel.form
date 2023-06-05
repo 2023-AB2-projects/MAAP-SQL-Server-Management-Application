@@ -27,12 +27,14 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="selectComboBox" min="-2" pref="89" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="createAlterComboBox" min="-2" pref="135" max="-2" attributes="0"/>
+              <Component id="createAlterComboBox" min="-2" pref="110" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="dropDeleteComboBox" min="-2" pref="135" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="insertUpdateComboBox" min="-2" pref="145" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="170" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="158" max="-2" attributes="0"/>
+              <Component id="toggleThemeButton" min="-2" pref="31" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="minusButton" min="-2" pref="27" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="plusButton" min="-2" pref="27" max="-2" attributes="0"/>
@@ -53,11 +55,6 @@
                           <Component id="selectComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="useComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="createAlterComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="5" pref="5" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="dropDeleteComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="insertUpdateComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -66,16 +63,19 @@
                       <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
                       <Component id="horizontalFiller" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="5" pref="5" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="runCommandButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="plusButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="minusButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="toggleThemeButton" max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="runCommandButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="plusButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="minusButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -108,13 +108,12 @@
           <Font name="Segoe UI" size="14" style="0"/>
         </Property>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="6">
-            <StringItem index="0" value="CREATE/ALTER"/>
+          <StringArray count="5">
+            <StringItem index="0" value="CREATE"/>
             <StringItem index="1" value="CREATE DATABASE"/>
             <StringItem index="2" value="CREATE TABLE"/>
             <StringItem index="3" value="CREATE INDEX"/>
             <StringItem index="4" value="CREATE UNIQUE INDEX"/>
-            <StringItem index="5" value="ALTER TABLE"/>
           </StringArray>
         </Property>
         <Property name="toolTipText" type="java.lang.String" value=""/>
@@ -234,6 +233,20 @@
       </Properties>
       <Events>
         <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="plusButtonMousePressed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="toggleThemeButton">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[76, 31]"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="toggleThemeButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

@@ -2,7 +2,6 @@ package frontend.center_panel;
 
 import control.ClientController;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class CenterClientPanel extends javax.swing.JPanel {
@@ -96,6 +95,7 @@ public class CenterClientPanel extends javax.swing.JPanel {
         this.commandPanel1.setClientController(clientController);
         this.visualInsertDesignerPanel.setClientController(clientController);
         this.visualDeleteDesignerPanel.setClientController(clientController);
+        this.commandInputOutputPanel1.setClientController(clientController);
     }
 
     public void setCurrentPane(int index) {
@@ -106,6 +106,15 @@ public class CenterClientPanel extends javax.swing.JPanel {
             }
             this.clientTabbedPane.setSelectedIndex(index);
         }
+    }
+
+    public void setLightMode() {
+        this.commandInputOutputPanel1.setLightMode();
+        this.visualSelectDesignerPanel.setLightMode();
+    }
+    public void setDarkMode() {
+        this.commandInputOutputPanel1.setDarkMode();
+        this.visualSelectDesignerPanel.setDarkMode();
     }
 
     /* Getters */
