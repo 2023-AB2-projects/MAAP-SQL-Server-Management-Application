@@ -12,54 +12,56 @@ After installing gradle, in the root project folder, you can build everything wi
 ## Commands supported
 
 <pre>
-<span class="sql">USE</span> database_name
+USE database_name
 </pre>
 
 ### Data definition language (DDL)
 
 <pre>
-<span class="sql">CREATE DATABASE</span> database_name
+CREATE DATABASE database_name
 </pre>
 
 <pre>
-<span class="sql">DROP DATABASE</span> database_name
+DROP DATABASE database_name
 </pre>
 
 <pre>
-<span class="sql">CREATE TABLE</span> table_name (
-    column_name data_type [ [<span class="sql">PRIMARY KEY</span>] | [<span class="sql">UNIQUE</span>] | [<span class="sql">FOREIGN KEY REFERENCES</span> reference_table(reference_field)] ]
+CREATE TABLE table_name (
+    column_name data_type [ [PRIMARY KEY] | [UNIQUE] | [FOREIGN KEY REFERENCES reference_table(reference_field)] ]
     [, ... n]
 )
 </pre>
 
 <pre>
-<span class="sql">DROP TABLE</span> table_name
+DROP TABLE table_name
 </pre>
 
 <pre>
-<span class="sql">CREATE INDEX</span> [<span class="sql">UNIQUE</span>] index_name
-<span class="sql">ON</span> table_name (column_name [, ... n])
+CREATE INDEX [UNIQUE] index_name
+ON table_name (column_name [, ... n])
 </pre>
 
 ### Data Manipulation language (DML)
 
 <pre>
-<span class="sql">INSERT INTO</span> table_name
-<span class="sql">VALUES</span> (field_value [, ... n])
+INSERT INTO table_name
+VALUES (field_value [, ... n])
 [, (field_value [, ... n])]
 </pre>
 
 <pre>
-<span class="sql">DELETE FROM</span> table_name
+DELETE FROM table_name
 primary_key_field_value [, ... n]
 </pre>
 
 ### Data Query Language (DQL)
 
 <pre>
-<span class="sql">SELECT</span> [table_name.]field_name [, ... n] | *
-<span class="sql">FROM</span> table_name
-<span class="sql">WHERE</span> &lt;condition_schema&gt; [<span class="sql">AND</span> ... n]
+SELECT table_name.field_name [, ... n] | *
+FROM table_name
+[ JOIN join_table ON &lt;condition_schema&gt; [... n] ]
+[ WHERE &lt;condition_schema&gt; [AND ... n] ]
+[ GROUP BY table_name.field_name [, ... n] ]
 </pre>
 
 <pre>
@@ -68,5 +70,5 @@ primary_key_field_value [, ... n]
 [table_name.]field FUNC func_args
 
 <b>Supported OP's:</b> <i>=, !=, <, >, <=, >=</i>
-<b>Supported FUNC:</b> <span class="sql">BETWEEN</span> <i>lower_bound upper_bound</i>
+<b>Supported FUNC:</b> BETWEEN <i>lower_bound upper_bound</i>
 </pre>

@@ -36,16 +36,6 @@ public class Equation implements Condition {
 
     @Override
     public String toString() {
-        String s = "";
-
-        if (lFieldTable != null) s += lFieldTable + ".";
-        s += lFieldName;
-
-        s += " " + op + " ";
-
-        if (rFieldTable != null) s += rFieldTable + ".";
-        s += rFieldName;
-
-        return s;
+        return lFieldName + " " + op + " " + rFieldName;
     }
 }

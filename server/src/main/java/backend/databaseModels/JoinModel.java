@@ -22,4 +22,8 @@ public class JoinModel {
         leftFieldName = rightFieldName;
         rightFieldName = temp;
     }
+
+    public String toString() {
+        return leftFieldName + " = " + rightFieldName;
+    }
 }

@@ -6,13 +6,18 @@ import backend.databaseActions.DatabaseAction;
 import backend.databaseActions.createActions.*;
 import backend.databaseActions.dropActions.*;
 import backend.databaseActions.miscActions.*;
+import backend.databaseActions.themightySelectAction.SelectAction;
 import backend.databaseModels.*;
+import backend.databaseModels.aggregations.Aggregator;
+import backend.databaseModels.aggregations.AggregatorSymbol;
 import backend.exceptions.InvalidSQLCommand;
 import backend.exceptions.SQLParseException;
 import backend.databaseModels.conditions.*;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.iterators.PeekingIterator;
+
+import static backend.databaseModels.aggregations.AggregatorSymbol.isValidAggregatorSymbol;
 
 @Slf4j
 public class Parser {
@@ -27,7 +32,8 @@ public class Parser {
         "(", ")", ",",
         "!=", "=", ">=", "<=", ">", "<", "between",
         "foreign", "primary", "key", "unique", "references",
-        "and"
+        "and",
+        "sum", "min", "max", "avg", "count"
     };
     private static String[] ATTRIBUTE_TYPES = {
         "int", "float", "bit", "date", "datetime", "char"
@@ -82,7 +88,6 @@ public class Parser {
         return true;
     } 
 
-    // TODO: remove function parameter `databaseName` and replace it with field referencing ServerController
     /**
      * @param input SQL string
      * @return database action corresponding to string
@@ -139,13 +144,18 @@ public class Parser {
     }
 
     private enum SELECT_STATE {
-        SELECT, FROM, JOIN, WHERE, END
+        SELECT, FROM, JOIN, WHERE, END, GROUP_BY
     }
     private DatabaseAction parseSelect(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
-        ArrayList<String> columnsTables = new ArrayList<>();
+        String baseTable = "";
         ArrayList<String> columns = new ArrayList<>();
-        String fromTable = null;
         ArrayList<Condition> conditions = new ArrayList<>();
+
+        List<String> joinTables = new ArrayList<>();            // not included in SelectAction, but parsed for proofing
+        List<JoinModel> joinModels = new ArrayList<>();
+
+        List<String> groupedByColumns = new ArrayList<>();
+        ArrayList<Aggregator> aggregations = new ArrayList<>();
 
         SELECT_STATE state = SELECT_STATE.SELECT;
 
@@ -170,28 +180,35 @@ public class Parser {
                             }
                             // continue
                         } else if (nextToken.equals("*")) {
-                            columnsTables.add(null);
                             columns.add(nextToken);
                             // continue
                         } else {
-                            String field = nextToken;
+                            // check if is aggregate function
+                            if (isValidAggregatorSymbol(nextToken)) {
+                                // check for format `function ( table.field ) `
+                                AggregatorSymbol aggregatorSymbol = AggregatorSymbol.getAggregatorSymbol(nextToken);
 
-                            if (field.contains(".")) {
-                                String[] split = field.split("[.]", 2);
+                                if (!it.next().equals("(")) {
+                                    throw (new SQLParseException("Expected opening parenthesis after aggregate function`" + nextToken + "`"));
+                                }
 
-                                String tableName = split[0];
-                                String columnName = split[1];
+                                // check for format `table.field`
+                                String aggregateColumn = it.next();
+                                if (aggregateColumn.split("\\.").length != 2) {
+                                    throw (new SQLParseException("Invalid field name in projection: `" + aggregateColumn + "` - Must be in table.field format"));
+                                }
 
-                                checkName(tableName, NAME_TYPE.TABLE);
-                                checkName(columnName, NAME_TYPE.COLUMN);
+                                if (!it.next().equals(")")) {
+                                    throw (new SQLParseException("Expected closing parenthesis after aggregate function parameter`" + aggregateColumn + "`"));
+                                }
 
-                                columnsTables.add(tableName);
-                                columns.add(columnName);
+                                aggregations.add(new Aggregator(aggregateColumn, aggregatorSymbol));
+                            }
+                            // else normal projection on column, needs to have format `table.field`
+                            else if (nextToken.split("\\.").length == 2) {
+                                columns.add(nextToken);
                             } else {
-                                checkName(field, NAME_TYPE.COLUMN);
-
-                                columnsTables.add(null);
-                                columns.add(field);
+                                throw new SQLParseException("Invalid field name in projection: `" + nextToken + "` - Must be in table.field format");
                             }
                         }
                     }
@@ -205,7 +222,7 @@ public class Parser {
                     String tableName = it.next();
                     checkName(tableName, NAME_TYPE.TABLE);
 
-                    fromTable = tableName;
+                    baseTable = tableName;
 
                     // Select that ends on FROM clause is valid, check for end of input
                     if (!it.hasNext()) {
@@ -213,34 +230,86 @@ public class Parser {
                         break;
                     }
 
-                    // Else go onto next clause: join or where
-                    // TODO after adding GROUP BY, add it here
+                    // continue parsing
                     String nextToken = it.next();
                     if (nextToken.equals("join")) {
-                        // TODO: Implement JOIN clause into switch statement
                         state = SELECT_STATE.JOIN;
-                        throw new RuntimeException("Implement this you lazy bastard");
                     } else if (nextToken.equals("where")) {
                         state = SELECT_STATE.WHERE;
+                    } else if (nextToken.equals("group")) {
+                        state = SELECT_STATE.GROUP_BY;
+                    } else {
+                        throw new SQLParseException("Expected `join`, `where`, or `group by` after `from` clause");
                     }
 
                     break;
                 }
-                case WHERE: {
-                    String field1TableName = null, field1ColumnName;
-                    String field2TableName = null, field2ColumnName;
+                case JOIN: {
+                    if (!it.hasNext()) {
+                        throw (new SQLParseException("Expected table name after `join`"));
+                    }
 
-                    // where condition always starts with at least a field
+                    // get table name of join
+                    String tableName = it.next();
+                    joinTables.add(tableName);
+
+                    // `on` keyword is required
+                    if (!it.hasNext() || !it.next().equals("on")) {
+                        throw (new SQLParseException("Expected `on` after `join` and table name `" + tableName + "`"));
+                    }
+
+                    // get join condition
                     String field1 = it.next();
-                    String[] split = field1.split("[.]", 2);
-                    if (split.length == 2) {
-                        field1TableName = split[0];
-                        field1ColumnName = split[1];
+                    String opOrFunc = it.next();
+                    String field2 = it.next();
 
-                        checkName(field1TableName, NAME_TYPE.TABLE);
-                        // TODO: maybe check column name too?
+                    // both field1 and field2 need to be format `table.field`
+                    // opOrFunc can only be EQUALS on join
+
+                    // validate if field1 and field2 are in format `table.field`
+                    String[] split1 = field1.split("\\.");
+                    String[] split2 = field2.split("\\.");
+                    if (split1.length != 2) {
+                        throw (new SQLParseException("Invalid field name in join condition left side: `" + field1 + "` - Must be in table.field format"));
+                    }
+                    if (split2.length != 2) {
+                        throw (new SQLParseException("Invalid field name in join condition right side: `" + field2 + "` - Must be in table.field format"));
+                    }
+
+                    // validate that opOrFunc is EQUALS
+                    if (!Operator.isValidOperator(opOrFunc) || Operator.getOperator(opOrFunc) != Operator.EQUALS) {
+                        throw (new SQLParseException("Invalid operator: " + opOrFunc + " - Must be `=`"));
+                    }
+
+                    // add to join model
+                    // according to special requests, JoinModel tableNames contain the 'tablename', but fieldNames contain 'tablename.fieldname'
+                    joinModels.add(new JoinModel(split1[0], field1, split2[0], field2));
+
+                    // check if end of input
+                    if (!it.hasNext()) {
+                        state = SELECT_STATE.END;
+                        break;
+                    }
+
+                    // continue parsing
+                    String nextToken = it.next();
+                    if (nextToken.equals("join")) {
+                        continue;
+                    } else if (nextToken.equals("where")) {
+                        state = SELECT_STATE.WHERE;
+                    } else if (nextToken.equals("group")) {
+                        state = SELECT_STATE.GROUP_BY;
                     } else {
-                        field1ColumnName = field1;
+                        throw new SQLParseException("Expected `join` or `where` after join condition, got `" + nextToken + "`");
+                    }
+                    break;
+                }
+                case WHERE: {
+                    // where condition starts with a field name in format `table.field`
+                    String field1 = it.next();
+                    String[] split1 = field1.split("\\.");
+                    if (split1.length != 2) {
+                        throw new SQLParseException("Invalid field name in where condition left side: `" + field1 + "` - Must be in table.field format");
                     }
 
                     // next we get a function or operator (between, <, >, =, etc)
@@ -250,20 +319,13 @@ public class Parser {
                     if (Operator.isValidOperator(opOrFunc)) {
                         Operator op = Operator.getOperator(opOrFunc);
 
+                        // on the right side of a condition, we have a constant
                         String field2 = it.next();
-                        split = field2.split("[.]", 2);
-                        if (split.length == 2) {
-                            field2TableName = split[0];
-                            field2ColumnName = split[1];
 
-                            checkName(field1TableName, NAME_TYPE.TABLE);
-                            // TODO: maybe check column name too?
-                        } else {
-                            field2ColumnName = field2;
-                        }
-
-                        Equation c = new Equation(field1TableName, field1ColumnName, op, field2TableName, field2ColumnName);
-                        conditions.add(c);
+                        // once again, according to special requests, Equation tableNames contain the 'tablename', but fieldNames contain 'tablename.fieldname'
+                        // field2 is a constant, so column is null
+                        Equation equation = new Equation(split1[0], field1, op, null, field2);
+                        conditions.add(equation);
                     } // case for function
                     else if (Function.isValidFunction(opOrFunc)) {
                         Function func = Function.getFunction(opOrFunc);
@@ -276,34 +338,74 @@ public class Parser {
                             args.add(arg);
                         }
 
-                        FunctionCall fc = new FunctionCall(field1TableName, field1ColumnName, func, args);
+                        FunctionCall fc = new FunctionCall(split1[0], field1, func, args);
                         conditions.add(fc);
                     }
                     else {
                         throw (new SQLParseException("Expected operator or function after field name in WHERE clause"));
                     }
 
-                    if (it.hasNext()) {
-                        String nextToken = it.next();
-                        if (nextToken.equals("and")) {
-                            continue;
-                        }
-                    }
-
+                    // check for end
                     if (!it.hasNext()) {
                         state = SELECT_STATE.END;
+                        break;
                     }
+
+                    // continue parsing
+                    String nextToken = it.next();
+                    if (nextToken.equals("and")) {
+                        continue;
+                    }
+                    else if (nextToken.equals("group")) {
+                        state = SELECT_STATE.GROUP_BY;
+                    }
+                    else {
+                        throw (new SQLParseException("Expected `and` or 'group by' or end of input after where condition, got `" + nextToken + "`"));
+                    }
+                    break;
+                }
+                case GROUP_BY: {
+                    if (!it.hasNext() || !it.next().equals("by")) {
+                        throw (new SQLParseException("Expected keyword `by` after `group`"));
+                    }
+
+                    // get column name list
+                    while (true) {
+                        String columnName = it.next();
+
+                        // check if columnName is in format `table.field`
+                        if (columnName.split("\\.").length != 2) {
+                            throw (new SQLParseException("Invalid column name in group by clause: `" + columnName + "` - Must be in table.field format"));
+                        }
+
+                        groupedByColumns.add(columnName);
+
+                        // check if end of input
+                        if (!it.hasNext()) {
+                            state = SELECT_STATE.END;
+                            break;
+                        }
+
+                        if (it.next().equals(",")) {
+                            continue;
+                        } else {
+                            throw new SQLParseException("Expected `,` or end of input after column name in group by clause");
+                        }
+                    }
+                    break;
                 }
             }
         }
 
-        System.out.println(fromTable);
-        System.out.println(columnsTables);
-        System.out.println(columns);
-        System.out.println(conditions);
+        log.info("BaseTable: " + baseTable);
+        log.info("Columns: " + columns);
+        log.info("Aggregations: " + aggregations);
+        log.info("JoinTables: " + joinTables);
+        log.info("JoinModels: " + joinModels);
+        log.info("Conditions: " + conditions);
+        log.info("GroupedByColumns: " + groupedByColumns);
 
-        // return new SelectAction(databaseName, columnsTables, columns, fromTable, whereClause);
-        return null;
+        return new SelectAction(databaseName, baseTable, columns, conditions, joinModels, groupedByColumns, aggregations);
     }
 
     /**

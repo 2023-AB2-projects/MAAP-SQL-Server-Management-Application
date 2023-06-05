@@ -70,4 +70,8 @@ public class Aggregator {
             case COUNT -> column.size();
         };
     }
+
+    public String toString() {
+        return aggr + "(" + fieldName + ")";
+    }
 }

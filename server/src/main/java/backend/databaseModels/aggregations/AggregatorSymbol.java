@@ -14,6 +14,15 @@ public enum AggregatorSymbol {
         };
     }
 
+    public static boolean isValidAggregatorSymbol(String aggr) {
+        try {
+            getAggregatorSymbol(aggr);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     public static String toString(AggregatorSymbol aggr){
         return switch (aggr) {
             case SUM -> "SUM";
