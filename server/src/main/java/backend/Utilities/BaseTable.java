@@ -53,7 +53,7 @@ public class BaseTable implements Table {
             if (condition instanceof Equation){
                 String fieldName = ((Equation) condition).getLFieldName();
                 int fieldIndex = columnNames.indexOf(fieldName);
-                //this is good only for testing tell them to fix it
+
                 String indexName;
                 try {
                     String trueFieldName = fieldName.substring(fieldName.indexOf('.') + 1);
@@ -92,10 +92,12 @@ public class BaseTable implements Table {
             } else if ( condition instanceof FunctionCall) {
                 String fieldName = ((FunctionCall) condition).getFieldName();
                 int fieldIndex = columnNames.indexOf(fieldName);
+                String indexName;
                 try {
-                    List<String> indexName = CatalogManager.getIndexFieldNames(databaseName, tableName, fieldName);
-                    conditions.remove(condition);
-                } catch (Exception e) {
+                    String trueFieldName = fieldName.substring(fieldName.indexOf('.') + 1);
+                    indexName = CatalogManager.getIndexName(databaseName, tableName, trueFieldName);
+                    usedConditions.add(condition);
+                } catch (NoIndexException e) {
                     continue;
                 }
 
@@ -105,8 +107,6 @@ public class BaseTable implements Table {
                 Object upper = TypeConverter.toObject(fieldType, args.get(1));
 
                 Queryable index;
-                //replace with index name later
-                String indexName = fieldName;
                 if(CatalogManager.isFieldUnique(databaseName, tableName, indexName)){
                     index = new UniqueIndexManager(databaseName, tableName, indexName);
                 } else {
