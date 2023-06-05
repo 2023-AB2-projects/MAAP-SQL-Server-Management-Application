@@ -9,7 +9,7 @@ After installing gradle, in the root project folder, you can build everything wi
 <b> Client: </b> <code>gradle :client:build</code> && <code>gradle :client:run</code> <br>
 <b> Server: </b> <code>gradle :server:build</code> && <code>gradle :server:run</code> <br> 
 
-## Commands supported
+## Supported commands
 
 <pre>
 USE database_name
@@ -66,9 +66,17 @@ FROM table_name
 
 <pre>
 &lt;condition_schema&gt;:
-[table_name.]field1 OP [table_name.]field2
-[table_name.]field FUNC func_args
+table_name.field1 OP table_name.field2
+table_name.field FUNC func_args
 
 <b>Supported OP's:</b> <i>=, !=, <, >, <=, >=</i>
 <b>Supported FUNC:</b> BETWEEN <i>lower_bound upper_bound</i>
+</pre>
+
+<pre>
+<i>Note:</i> 
+    Conditions of <b>table joins</b> must have the following format: 
+        table_name1.field = table_name2.field
+    Conditions on <b>selection</b> must have the following format:
+        table_name.field OP/FUNC constant(s)
 </pre>

@@ -806,7 +806,7 @@ public class Parser {
 
     private DeleteFromAction parseDeleteFrom(List<String> tokens, String databaseName, PeekingIterator<String> it) throws SQLParseException {
         String tableName = "";
-        ArrayList<String> keys = new ArrayList<>();
+        ArrayList<Condition> conditions = new ArrayList<>();
 
         if (!it.hasNext()) {
             throw(new SQLParseException("Missing token for table name"));
@@ -814,15 +814,78 @@ public class Parser {
 
         tableName = it.next();
 
-        while (it.hasNext()) {
-            keys.add(it.next());
+        // check for conditions
+        if (it.hasNext()) {
+
+            if (!it.next().equals("where")) {
+                throw(new SQLParseException("Expected `where` keyword or end of input after table name"));
+            }
+
+            while (true) {
+                if (!it.hasNext()) {
+                    throw(new SQLParseException("Unexpected end of input"));
+                }
+
+                String field1 = it.next();
+                String opOrFunc = it.next();
+
+                // check if field name has structure `table.field`
+                String[] split1 = field1.split("\\.");
+                if (split1.length != 2) {
+                    throw (new SQLParseException("Invalid field name: `" + field1 + "` - Must be in table.field format"));
+                }
+
+                // note: copy-pasterino from SelectFromAction
+                // case for operator
+                if (Operator.isValidOperator(opOrFunc)) {
+                    Operator op = Operator.getOperator(opOrFunc);
+
+                    // on the right side of a condition, we have a constant
+                    String field2 = it.next();
+
+                    // once again, according to special requests, Equation tableNames contain the 'tablename', but fieldNames contain 'tablename.fieldname'
+                    // field2 is a constant, so column is null
+                    Equation equation = new Equation(split1[0], field1, op, null, field2);
+                    conditions.add(equation);
+                } // case for function
+                else if (Function.isValidFunction(opOrFunc)) {
+                    Function func = Function.getFunction(opOrFunc);
+
+                    int numArgs = Function.getNumArgs(func);
+
+                    ArrayList<String> args = new ArrayList<>();
+                    for (int i=0; i<numArgs; i++) {
+                        String arg = it.next();
+                        args.add(arg);
+                    }
+
+                    FunctionCall fc = new FunctionCall(split1[0], field1, func, args);
+                    conditions.add(fc);
+                }
+                else {
+                    throw (new SQLParseException("Expected operator or function after field name in WHERE clause"));
+                }
+
+                // stop if end of input
+                if (!it.hasNext()) {
+                    break;
+                }
+
+                // continue if there is another condition
+                String nextToken = it.next();
+                if (nextToken.equals("and")) {
+                    continue;
+                } else {
+                    throw(new SQLParseException("Expected `and` or end of input after condition"));
+                }
+            }
         }
 
-        log.info(tableName);
-        log.info(keys.toString());
+        log.info("tableName: " + tableName);
+        log.info("conditions: " + conditions.toString());
 
-        DeleteFromAction da = new DeleteFromAction(databaseName, tableName, keys);
-        return da;
+        // DeleteFromAction da = new DeleteFromAction(databaseName, tableName, keys);
+        return null;
     }
 
     private enum CreateIndexStates {
