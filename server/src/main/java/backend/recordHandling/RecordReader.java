@@ -27,8 +27,8 @@ public class RecordReader {
         return table;
     }
 
-    public HashSet<Integer> getAllPointers() throws IOException {
-        HashSet<Integer> pointers = new HashSet<>();
+    public LinkedHashSet<Integer> getAllPointers() throws IOException {
+        LinkedHashSet<Integer> pointers = new LinkedHashSet<>();
         for (int i = 0; i < recordHandler.getRecordCount(); i++){
             pointers.add(i);
         }
