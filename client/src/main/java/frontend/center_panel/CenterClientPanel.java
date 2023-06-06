@@ -1,10 +1,12 @@
 package frontend.center_panel;
 
 import control.ClientController;
+import lombok.Getter;
 
 import java.util.ArrayList;
 
 public class CenterClientPanel extends javax.swing.JPanel {
+    @Getter
     private ClientController clientController;
 
     public CenterClientPanel() {
@@ -111,10 +113,14 @@ public class CenterClientPanel extends javax.swing.JPanel {
     public void setLightMode() {
         this.commandInputOutputPanel1.setLightMode();
         this.visualSelectDesignerPanel.setLightMode();
+        this.visualInsertDesignerPanel.setLightMode();
+        this.visualDeleteDesignerPanel.setLightMode();
     }
     public void setDarkMode() {
         this.commandInputOutputPanel1.setDarkMode();
         this.visualSelectDesignerPanel.setDarkMode();
+        this.visualInsertDesignerPanel.setDarkMode();
+        this.visualDeleteDesignerPanel.setDarkMode();
     }
 
     /* Getters */

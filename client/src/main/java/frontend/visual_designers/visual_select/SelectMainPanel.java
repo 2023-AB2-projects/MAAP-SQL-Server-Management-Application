@@ -53,7 +53,6 @@ public class SelectMainPanel extends javax.swing.JPanel {
         this.tableSelectorsPanel.removeAll();
 
         // Create new panels
-        int count = 0;
         for (final String tableName : tableNames) {
             // Create panel object and set reference
             SelectTableFieldsPanel panel = new SelectTableFieldsPanel(databaseName, tableName);
@@ -62,10 +61,14 @@ public class SelectMainPanel extends javax.swing.JPanel {
             // Add to list and panel
             this.tableFieldsPanels.add(panel);
             this.tableSelectorsPanel.add(panel);
-            count++;
+        }
 
-            // A max of 6 tables are supported
-            if (count >= 6) break;
+        // Update panels according to current theme
+        if (this.centerClientPanel.getClientController().isDarkMode())
+            this.setDarkMode();
+        else {
+            System.out.println("Light mode");
+            this.setLightMode();
         }
 
         this.tableSelectorsPanel.revalidate();
@@ -87,15 +90,30 @@ public class SelectMainPanel extends javax.swing.JPanel {
 
     /* Setters */
     public void setLightMode() {
+        // Update each panel's theme
         for (final SelectTableFieldsPanel panel : this.tableFieldsPanels) {
             panel.setLightMode();
         }
+
+        // Update document syntax highlighting
+        SQLDocument doc = (SQLDocument) this.commandOutputTextPane.getStyledDocument();
+        doc.lightMode();
+
+        // Update text
+        this.commandOutputTextPane.setText(this.commandOutputTextPane.getText());
     }
 
     public void setDarkMode() {
         for (final SelectTableFieldsPanel panel : this.tableFieldsPanels) {
             panel.setDarkMode();
         }
+
+        // Update document syntax highlighting
+        SQLDocument doc = (SQLDocument) this.commandOutputTextPane.getStyledDocument();
+        doc.darkMode();
+
+        // Update text
+        this.commandOutputTextPane.setText(this.commandOutputTextPane.getText());
     }
 
     public void setCenterClientPanel(CenterClientPanel clientPanel) { this.centerClientPanel = clientPanel; }
