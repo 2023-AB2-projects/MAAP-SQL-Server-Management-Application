@@ -3,12 +3,16 @@ package frontend.visual_designers.visual_select;
 import frontend.visual_designers.VisualSelectDesigner;
 import lombok.Getter;
 import service.CatalogManager;
+import service.Config;
+import service.Utility;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.plaf.basic.BasicCheckBoxUI;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +21,7 @@ public class SelectTablesPanel extends javax.swing.JPanel {
     private String databaseName;
     private List<String> tableNames;
     private List<JCheckBox> checkBoxes;
+    private final ImageIcon tableIcon = Utility.resizeIcon(new ImageIcon(Config.getImagesPath() + File.separator + "table_icon_mini.png"), 30, 25);
 
     // References
     private VisualSelectDesigner visualSelectDesigner;
@@ -43,14 +48,38 @@ public class SelectTablesPanel extends javax.swing.JPanel {
         // Empty grid layout
         this.tablesPanel.removeAll();
 
+        // Add a label that has the table icon
+        JLabel tableIconLabelAll = new JLabel();
+        tableIconLabelAll.setIcon(this.tableIcon);
+
+        // Create a panel that has the table icon and the table name
+        JPanel checkBoxPanelAll = new JPanel();
+        checkBoxPanelAll.setLayout(new FlowLayout());
+        checkBoxPanelAll.add(tableIconLabelAll);
+        checkBoxPanelAll.add(this.selectAllTablesBox);
+
+        // Add a line border to the panel with rounder corners
+        checkBoxPanelAll.setBorder(new LineBorder(new Color(102, 102, 102), 3, true));
+
         // Add back select all tables checkbox
-        this.tablesPanel.add(this.selectAllTablesBox);
+        this.tablesPanel.add(checkBoxPanelAll);
         for (final String tableName : this.tableNames) {
             JCheckBox checkBox = new JCheckBox(tableName);
             checkBox.setFont(font);
             checkBox.setHorizontalAlignment(JCheckBox.CENTER);
-            checkBox.setBorder(new LineBorder(new Color(102, 102, 102), 3));
-            checkBox.setBorderPainted(true);
+
+            // Add a label that has the table icon
+            JLabel tableIconLabel = new JLabel();
+            tableIconLabel.setIcon(this.tableIcon);
+
+            // Create a panel that has the table icon and the table name
+            JPanel checkBoxPanel = new JPanel();
+            checkBoxPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            checkBoxPanel.add(tableIconLabel);
+            checkBoxPanel.add(checkBox);
+
+            // Add a line border to the panel with rounder corners
+            checkBoxPanel.setBorder(new LineBorder(new Color(102, 102, 102), 3, true));
 
             // Add listener
             checkBox.addItemListener(new ItemListener() {
@@ -64,7 +93,7 @@ public class SelectTablesPanel extends javax.swing.JPanel {
             });
 
             // Add to panel and list
-            this.tablesPanel.add(checkBox);
+            this.tablesPanel.add(checkBoxPanel);
             this.checkBoxes.add(checkBox);
         }
     }
@@ -90,7 +119,7 @@ public class SelectTablesPanel extends javax.swing.JPanel {
         doneButton = new javax.swing.JButton();
         tablesPanel = new javax.swing.JPanel();
         selectAllTablesBox = new javax.swing.JCheckBox();
-        jLabel1 = new javax.swing.JLabel();
+        listText = new javax.swing.JLabel();
 
         setMinimumSize(new java.awt.Dimension(1000, 850));
 
@@ -123,7 +152,7 @@ public class SelectTablesPanel extends javax.swing.JPanel {
         selectAllTablesBox.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         selectAllTablesBox.setSelected(true);
         selectAllTablesBox.setText("* (Every table)");
-        selectAllTablesBox.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(102, 102, 102), 3, true));
+        selectAllTablesBox.setBorder(null);
         selectAllTablesBox.setBorderPainted(true);
         selectAllTablesBox.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         selectAllTablesBox.setOpaque(true);
@@ -134,11 +163,11 @@ public class SelectTablesPanel extends javax.swing.JPanel {
         });
         tablesPanel.add(selectAllTablesBox);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("List of tables in current database:");
-        jLabel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        listText.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        listText.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        listText.setText("List of tables in current database:");
+        listText.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        listText.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -147,7 +176,7 @@ public class SelectTablesPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(listText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(tablesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(explainerScrollPanel))
                 .addContainerGap())
@@ -162,7 +191,7 @@ public class SelectTablesPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(explainerScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(listText, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tablesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 591, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -221,7 +250,7 @@ public class SelectTablesPanel extends javax.swing.JPanel {
     private javax.swing.JButton doneButton;
     private javax.swing.JScrollPane explainerScrollPanel;
     private javax.swing.JTextArea explainerTextArea;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel listText;
     private javax.swing.JCheckBox selectAllTablesBox;
     private javax.swing.JPanel tablesPanel;
     // End of variables declaration//GEN-END:variables
