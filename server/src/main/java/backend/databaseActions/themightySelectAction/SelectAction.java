@@ -13,6 +13,8 @@ import backend.exceptions.databaseActionsExceptions.*;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.exceptions.validatorExceptions.*;
+import backend.validators.SelectValidator;
+import backend.validators.Validator;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -55,12 +57,12 @@ public class SelectAction implements DatabaseAction {
 
     @Override
     public Object actionPerform() throws DatabaseNameAlreadyExists, TableNameAlreadyExists, DatabaseDoesntExist, PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique, TableDoesntExist, IndexAlreadyExists, ForeignKeyFieldNotFound, IOException, RecordNotFoundException, PrimaryKeyValuesContainDuplicates, UniqueFieldValuesContainDuplicates, PrimaryKeyValueAlreadyInTable, UniqueValueAlreadyInTable, ForeignKeyValueNotFoundInParentTable, InvalidReadException, ForeignKeyValueIsBeingReferencedInAnotherTable, FieldsNotCompatible {
-//        Validator validator = new SelectValidator(databaseName, baseTable, projectionColumns, conditions, joinModels, groupedByColumns, aggregations);
-//        try {
-//            validator.validate();
-//        } catch (FieldNotFound e) {
-//            log.error(e.toString());
-//        }
+        Validator validator = new SelectValidator(databaseName, baseTable, projectionColumns, conditions, joinModels, groupedByColumns, aggregations);
+        try {
+            validator.validate();
+        } catch (FieldNotFound e) {
+            log.error(e.toString());
+        }
 
         log.info("Select passed the validation!");
         // Group the conditions by tables

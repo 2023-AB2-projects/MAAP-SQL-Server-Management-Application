@@ -51,14 +51,16 @@ public class SelectValidator implements Validator{
         // check if fields and tables exist
         // from the join model, extract the valid tables, other tables' field are not allowed to project
         HashMap<String, ArrayList<String>> tableFields = new HashMap<>();
+        tableFields.put(baseTable, new ArrayList<>());
+
         for (JoinModel model : joinModels) {
             String ltable = model.getLeftTableName();
             String rtable = model.getRightTableName();
 
           // check if the two fields have the same type
             try {
-                String lType = CatalogManager.getFieldType(databaseName, ltable, model.getLeftFieldName());
-                String rType = CatalogManager.getFieldType(databaseName, rtable, model.getRightFieldName());
+                String lType = CatalogManager.getFieldType(databaseName, ltable, model.getLeftFieldName().split("\\.")[1]);
+                String rType = CatalogManager.getFieldType(databaseName, rtable, model.getRightFieldName().split("\\.")[1]);
 
                 if (!lType.equals(rType)) {
                     // accepted types : "int", "float", "bit", "date", "datetime", "char"
@@ -88,7 +90,7 @@ public class SelectValidator implements Validator{
             }
         }
 
-        ArrayList<String> validTables = (ArrayList<String>) tableFields.keySet();
+        ArrayList<String> validTables =  new ArrayList<>(tableFields.keySet());
         validTables.forEach(e -> log.info(e.toString()));
 
         // check if tables and fields exist
@@ -103,7 +105,7 @@ public class SelectValidator implements Validator{
 
             // check if fields exist
             for (String field : currentJoinedField) {
-                if (!CatalogManager.getFieldNames(databaseName, currentTable).contains(field)) {
+                if (!CatalogManager.getFieldNames(databaseName, currentTable).contains(field.split("\\.")[1])) {
                     throw new FieldNotFound(field, currentTable);
                 }
             }
@@ -147,7 +149,7 @@ public class SelectValidator implements Validator{
 
              // check if the tables' fields exist
              for (String field : conditionedFields) {
-                 if ( !CatalogManager.getFieldNames(databaseName, currentTable).contains(field)) {
+                 if ( !CatalogManager.getFieldNames(databaseName, currentTable).contains(field.split("\\.")[1])) {
                      log.error( "In table " + currentTable + " field" + field + " doesn't exist!");
                      throw new FieldNotFound(field, currentTable);
                 }
@@ -161,37 +163,39 @@ public class SelectValidator implements Validator{
 
         // TODO Insert the aggregator list shit into aggregatedColumns
 
-        // check if the projection tables and fields are correct
-        for (String tableNameAndFieldName : projectionColumns) {
-            // check if the projection is an aggregate function
-            Matcher matcher = pattern.matcher(tableNameAndFieldName);
-            String currentTable;
-            String projectedField;
+        if ( !projectionColumns.contains("*")) {
+            // check if the projection tables and fields are correct
+            for (String tableNameAndFieldName : projectionColumns) {
+                // check if the projection is an aggregate function
+                Matcher matcher = pattern.matcher(tableNameAndFieldName);
+                String currentTable;
+                String projectedField;
 
-            if (matcher.find()) {
-                // aggregate found
-                String match = matcher.group();
-                log.info("Match found: " + match);
+                if (matcher.find()) {
+                    // aggregate found
+                    String match = matcher.group();
+                    log.info("Match found: " + match);
 
-                currentTable = match.split("\\(")[1].split("\\.")[0];
-                projectedField = match.split("\\(")[1].split("\\.")[1];
-                aggregatedColumns.add(currentTable+"."+projectedField);
-            } else {
-                // simple column projection
-                currentTable = tableNameAndFieldName.split("\\.")[0];
-                projectedField = tableNameAndFieldName.split("\\.")[1];
-                projectedColumns.add(tableNameAndFieldName);
-            }
+                    currentTable = match.split("\\(")[1].split("\\.")[0];
+                    projectedField = match.split("\\(")[1].split("\\.")[1].split("\\)")[0];
+                    aggregatedColumns.add(currentTable + "." + projectedField);
+                } else {
+                    // simple column projection
+                    currentTable = tableNameAndFieldName.split("\\.")[0];
+                    projectedField = tableNameAndFieldName.split("\\.")[1];
+                    projectedColumns.add(tableNameAndFieldName);
+                }
 
-            if (!validTables.contains(currentTable)) {
-                log.error(" Table " + currentTable + " is not present in the joinModel!");
-                throw new RuntimeException(" Table " + currentTable + " is not present in the joinModel!");
-            }
-            log.info("Table " + currentTable + " is present in the joinModel!");
+                if (!validTables.contains(currentTable)) {
+                    log.error(" Table " + currentTable + " is not present in the joinModel!");
+                    throw new RuntimeException(" Table " + currentTable + " is not present in the joinModel!");
+                }
+                log.info("Table " + currentTable + " is present in the joinModel!");
 
-            if (!CatalogManager.getFieldNames(databaseName, currentTable).contains(projectedField)) {
-                log.error("In table " + currentTable + " field" + projectedField + " doesn't exist!");
-                throw new FieldNotFound(projectedField, currentTable);
+                if (!CatalogManager.getFieldNames(databaseName, currentTable).contains(projectedField)) {
+                    log.error("In table " + currentTable + " field" + projectedField + " doesn't exist!");
+                    throw new FieldNotFound(projectedField, currentTable);
+                }
             }
         }
 
@@ -215,7 +219,7 @@ public class SelectValidator implements Validator{
             }
         }
 
-        //check if every field in projection are from the grouped fields
+        // check if every field in projection are from the grouped fields
         for (String projectedField : projectedColumns) {
             if ( !groupedColumns.contains(projectedField) && !aggregatedColumns.contains(projectedField)) {
                 log.error("Field" + projectedField + " is not present in GROUP BY columns, neither in aggregate functions!");
