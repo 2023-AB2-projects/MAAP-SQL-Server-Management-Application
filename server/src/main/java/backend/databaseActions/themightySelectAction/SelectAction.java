@@ -120,7 +120,7 @@ public class SelectAction implements DatabaseAction {
 
             // same for the right table
             if (! tableConditions.containsKey(rtable) && !finalTableNames.contains(rtable)) {
-                finalTables.add(new BaseTable(databaseName, ltable, new ArrayList<>()));
+                finalTables.add(new BaseTable(databaseName, rtable, new ArrayList<>()));
                 finalTableNames.add(rtable);
             } else if (!finalTableNames.contains(rtable)) {
                 for (BaseTable table : baseConditionedTables) {

@@ -92,7 +92,7 @@ public class CatalogManager {
             }
         }
         log.error("findTableNode() ->  No table were found with given name " + tableName);
-        throw new RuntimeException();
+        throw new RuntimeException("findTableNode() ->  No table were found with given name " + tableName);
     }
 
     private static JsonNode findTableNode(String databaseName, String tableName) {
@@ -108,7 +108,7 @@ public class CatalogManager {
         JsonNode tableNode = findTableNode(databaseName, tableName);
         if(tableNode == null) {
             log.error("Database=" + databaseName + ", table=" + tableName + " not found!");
-            throw new RuntimeException();
+            throw new RuntimeException("Database=" + databaseName + ", table=" + tableName + " not found!");
         }
 
         // Iterate over fields
@@ -491,7 +491,7 @@ public class CatalogManager {
         JsonNode fieldNode = CatalogManager.findTableFieldNode(databaseName, tableName, fieldName);
         if(fieldNode == null) {
             log.error("Database=" + databaseName + ", table=" + tableName + ", field=" + fieldName + " not found!");
-            throw new RuntimeException();
+            throw new RuntimeException("Database=" + databaseName + ", table=" + tableName + ", field=" + fieldName + " not found!");
         }
 
         return fieldNode.get("type").asText();
