@@ -113,10 +113,14 @@ public class CenterClientPanel extends javax.swing.JPanel {
     public void setLightMode() {
         this.commandInputOutputPanel1.setLightMode();
         this.visualSelectDesignerPanel.setLightMode();
+        this.visualInsertDesignerPanel.setLightMode();
+        this.visualDeleteDesignerPanel.setLightMode();
     }
     public void setDarkMode() {
         this.commandInputOutputPanel1.setDarkMode();
         this.visualSelectDesignerPanel.setDarkMode();
+        this.visualInsertDesignerPanel.setDarkMode();
+        this.visualDeleteDesignerPanel.setDarkMode();
     }
 
     /* Getters */

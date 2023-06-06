@@ -41,6 +41,24 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         }
     }
 
+    public void setLightMode() {
+        // Update document syntax highlighting
+        SQLDocument doc = (SQLDocument) this.generatedCodeTextArea.getStyledDocument();
+        doc.lightMode();
+
+        // Update text
+        this.generatedCodeTextArea.setText(this.generatedCodeTextArea.getText());
+    }
+
+    public void setDarkMode() {
+        // Update document syntax highlighting
+        SQLDocument doc = (SQLDocument) this.generatedCodeTextArea.getStyledDocument();
+        doc.darkMode();
+
+        // Update text
+        this.generatedCodeTextArea.setText(this.generatedCodeTextArea.getText());
+    }
+
     /* Getters */
     public String getSelectedTable() { return (String) this.tableSelectComboBox.getSelectedItem(); }
 
