@@ -27,7 +27,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="executeButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="generateCodeButton" min="-2" pref="126" max="-2" attributes="0"/>
+                      <Component id="generateCodeButton" min="-2" pref="132" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
