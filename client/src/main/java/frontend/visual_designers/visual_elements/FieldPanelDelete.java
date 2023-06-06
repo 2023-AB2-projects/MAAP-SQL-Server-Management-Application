@@ -20,7 +20,7 @@ public class FieldPanelDelete extends javax.swing.JPanel {
             return "";      // Signal that no base condition has been set -> We will ignore this attribute
         }
         // Add first condition to conditions
-        conditions += "(" + this.getColumnName() + " " + this.conditionField1.getText() + ")";
+        conditions += this.tableField.getText() + "." + this.getColumnName() + " " + this.conditionField1.getText();
 
         // Check if second condition is non-empty
         if(this.conditionField2.getText().equals("")) {
@@ -101,6 +101,7 @@ public class FieldPanelDelete extends javax.swing.JPanel {
         conditionField1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         conditionField1.setEnabled(false);
 
+        conditionField3.setEditable(false);
         conditionField3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         conditionField3.setEnabled(false);
         conditionField3.setMinimumSize(new java.awt.Dimension(68, 38));
@@ -110,6 +111,7 @@ public class FieldPanelDelete extends javax.swing.JPanel {
             }
         });
 
+        conditionField2.setEditable(false);
         conditionField2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         conditionField2.setEnabled(false);
         conditionField2.setMinimumSize(new java.awt.Dimension(68, 38));

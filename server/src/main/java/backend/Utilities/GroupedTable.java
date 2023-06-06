@@ -59,6 +59,11 @@ public class GroupedTable implements Table{
     @Override
     public void aggregation(ArrayList<Aggregator> aggregators) {
         AnonymousTable anonymousTable = null;
+
+        if(tableMap.keySet().size() == 0) {
+            return;
+        }
+
         for(var key : tableMap.keySet()){
             anonymousTable = tableMap.get(key);
             anonymousTable.aggregation(aggregators);
@@ -66,7 +71,6 @@ public class GroupedTable implements Table{
 
         }
 
-        assert anonymousTable != null;
         unGroupedColumnNames = anonymousTable.getColumnNames();
         unGroupedColumnTypes = anonymousTable.getColumnTypes();
         groupedColumnNames.addAll(unGroupedColumnNames);

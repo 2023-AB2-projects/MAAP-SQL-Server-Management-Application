@@ -42,6 +42,9 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
         // By default, the output is a text area
         this.outputTabbedPane.setSelectedIndex(0);
         this.outputTabbedPane.setEnabledAt(1, false);   // Disable table panel
+
+        // Make JTable not editable
+        this.outputTable.setDefaultEditor(Object.class, null);
     }
 
     /**
@@ -228,25 +231,21 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
     }
 
     public void setLightMode() {
+        // Update document syntax highlighting
         SQLDocument doc = (SQLDocument) this.inputArea.getStyledDocument();
         doc.lightMode();
 
-        // Get text from input area
-        String text = this.inputArea.getText();
-
-        // Set text
-        this.inputArea.setText(text);
+        // Update text
+        this.inputArea.setText(this.inputArea.getText());
     }
 
     public void setDarkMode() {
+        // Update document syntax highlighting
         SQLDocument doc = (SQLDocument) this.inputArea.getStyledDocument();
         doc.darkMode();
 
-        // Get text from input area
-        String text = this.inputArea.getText();
-
-        // Set text
-        this.inputArea.setText(text);
+        // Update text
+        this.inputArea.setText(this.inputArea.getText());
     }
 
     /* Getters */

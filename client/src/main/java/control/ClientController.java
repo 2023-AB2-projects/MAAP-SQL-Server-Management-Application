@@ -28,8 +28,11 @@ public class ClientController {
     /* ClientController has a reference to GUI, MessageHandler and ConnectionManager */
     @Getter
     private ClientFrame clientFrame;
-    private ConnectionFrame connectionFrame;
     private MessageHandler messageHandler;
+
+    // Theme logic
+    @Getter
+    private boolean isDarkMode = true;
 
     // Data/Logic
     private String catalogJSON;
@@ -72,8 +75,8 @@ public class ClientController {
     private void initComponents() {
         // Do not touch this (ffs)
         this.setDarkMode();
-        
-        this.connectionFrame = new ConnectionFrame(this);
+
+        ConnectionFrame connectionFrame = new ConnectionFrame(this);
         this.clientFrame = new ClientFrame(this);   // Hidden by default
 
         // Message handler
@@ -250,6 +253,9 @@ public class ClientController {
 
     /* Setters */
     public void setLightMode() {
+        // Update boolean
+        this.isDarkMode = false;
+
         // Set look and feel
         LookAndFeel lookAndFeel = new FlatLightLaf();
         try {
@@ -263,6 +269,9 @@ public class ClientController {
     }
 
     public void setDarkMode() {
+        // Update boolean
+        this.isDarkMode = true;
+
         // Set look and feel
         LookAndFeel lookAndFeel = new FlatDarkLaf();
         try {

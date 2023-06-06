@@ -221,6 +221,7 @@ public class SelectValidator implements Validator{
 
         // check if every field in projection are from the grouped fields
         if ( groupedByColumns.size() > 0 ) {
+
             for (String projectedField : projectedColumns) {
                 if (!groupedColumns.contains(projectedField) && !aggregatedColumns.contains(projectedField)) {
                     log.error("Field" + projectedField + " is not present in GROUP BY columns, neither in aggregate functions!");

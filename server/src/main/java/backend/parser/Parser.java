@@ -178,13 +178,13 @@ public class Parser {
 
                         String nextToken = it.next();
                         if (nextToken.equals("from")) {
-                            if (columns.size() == 0) {
+                            if (columns.size() + aggregations.size() == 0) {
                                 throw (new SQLParseException("Missing column name(s) between `select` and `from`"));
                             }
                             state = SELECT_STATE.FROM;
                             break;
                         } else if (nextToken.equals(",")) {
-                            if (columns.size() == 0) {
+                            if (columns.size() + aggregations.size() == 0) {
                                 throw (new SQLParseException("Missing column name(s) between `select` and `,`"));
                             }
                             // continue

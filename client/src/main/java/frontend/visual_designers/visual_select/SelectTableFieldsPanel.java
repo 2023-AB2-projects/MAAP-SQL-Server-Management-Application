@@ -2,9 +2,11 @@ package frontend.visual_designers.visual_select;
 
 import service.CatalogManager;
 import service.Config;
+import service.Utility;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +40,8 @@ public class SelectTableFieldsPanel extends javax.swing.JPanel {
         this.initSelectors();
 
         // Set icon for label
-        ImageIcon imageIcon = new ImageIcon(Config.getImagesPath() + "table_icon.png");
-        this.imageLabel.setIcon(imageIcon);
+        ImageIcon imageIcon = new ImageIcon(Config.getImagesPath() + File.separator + "table_icon_mini.png");
+        this.imageLabel.setIcon(Utility.resizeIcon(imageIcon, 30, 25));
 
         this.validate();
         this.repaint();

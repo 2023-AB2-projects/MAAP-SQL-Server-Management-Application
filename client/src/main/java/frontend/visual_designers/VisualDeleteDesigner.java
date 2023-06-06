@@ -41,6 +41,24 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         }
     }
 
+    public void setLightMode() {
+        // Update document syntax highlighting
+        SQLDocument doc = (SQLDocument) this.generatedCodeTextArea.getStyledDocument();
+        doc.lightMode();
+
+        // Update text
+        this.generatedCodeTextArea.setText(this.generatedCodeTextArea.getText());
+    }
+
+    public void setDarkMode() {
+        // Update document syntax highlighting
+        SQLDocument doc = (SQLDocument) this.generatedCodeTextArea.getStyledDocument();
+        doc.darkMode();
+
+        // Update text
+        this.generatedCodeTextArea.setText(this.generatedCodeTextArea.getText());
+    }
+
     /* Getters */
     public String getSelectedTable() { return (String) this.tableSelectComboBox.getSelectedItem(); }
 
@@ -61,6 +79,8 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
         generatedCodeScrollPanel = new javax.swing.JScrollPane();
         generatedCodeTextArea = new javax.swing.JTextPane();
         executeButton = new javax.swing.JButton();
+        explainerScrollPanel = new javax.swing.JScrollPane();
+        explainerTextArea = new javax.swing.JTextArea();
 
         tabelNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tabelNameLabel.setText("Table Name:");
@@ -114,21 +134,32 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
             }
         });
 
+        explainerTextArea.setEditable(false);
+        explainerTextArea.setColumns(20);
+        explainerTextArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        explainerTextArea.setRows(5);
+        explainerTextArea.setText("Welcome to the Visual Delete Designer, where we help you design your delete commands!\n\nSelect a table from the dropdown in which you would like to delete data from.\nAll the fields in the table are enumerated below, choose 'on' for each field  you would like to apply a condition to.");
+        explainerTextArea.setFocusable(false);
+        explainerScrollPanel.setViewportView(explainerTextArea);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1016, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(executeButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(generateCodeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(executeButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(generateCodeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(explainerScrollPanel))
                 .addContainerGap())
-            .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1016, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -140,7 +171,9 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
                     .addComponent(tableSelectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(executeButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 815, Short.MAX_VALUE))
+                .addComponent(explainerScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 694, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -190,6 +223,8 @@ public class VisualDeleteDesigner extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton executeButton;
+    private javax.swing.JScrollPane explainerScrollPanel;
+    private javax.swing.JTextArea explainerTextArea;
     private javax.swing.JButton generateCodeButton;
     private javax.swing.JScrollPane generatedCodeScrollPanel;
     private javax.swing.JTextPane generatedCodeTextArea;

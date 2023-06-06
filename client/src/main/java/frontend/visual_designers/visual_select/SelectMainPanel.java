@@ -7,13 +7,16 @@ import service.CatalogManager;
 import service.ForeignKeyModel;
 
 import javax.swing.*;
+import javax.swing.event.CellEditorListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 public class SelectMainPanel extends javax.swing.JPanel {
@@ -33,7 +36,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
         this.tableFieldsPanels = new ArrayList<>();
 
         // Make first two columns of table not editable
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"Field Name", "Table Name", "Alias", "Condition"}, 0)
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"Field Name", "Table Name", "Alias", "Condition", "Group By"}, 0)
         {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -41,7 +44,62 @@ public class SelectMainPanel extends javax.swing.JPanel {
                 return column != 0 && column != 1;
             }
         };
+
+        // Change the model that the 'Group By' column is a JCheckBox that can be selected
         this.fieldSelectorTable.setModel(model);
+
+        // Set the renderer
+        this.fieldSelectorTable.getColumn("Group By").setCellRenderer(new CheckBoxRenderer());
+
+        // Set the editor by extending the default editor
+        this.fieldSelectorTable.getColumn("Group By").setCellEditor(new CheckBoxEditor());
+    }
+
+    // Custom cell renderer for the checkbox column
+    static class CheckBoxRenderer extends JPanel implements TableCellRenderer {
+        private JCheckBox checkBox;
+
+        public CheckBoxRenderer() {
+            setLayout(new GridBagLayout());
+            checkBox = new JCheckBox();
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.anchor = GridBagConstraints.CENTER;
+            add(checkBox, gbc);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            checkBox.setSelected(value != null && (Boolean) value);
+            return this;
+        }
+    }
+
+    // Custom cell editor for the checkbox column
+    static class CheckBoxEditor extends AbstractCellEditor implements TableCellEditor {
+        private JCheckBox checkBox;
+
+        public CheckBoxEditor() {
+            checkBox = new JCheckBox();
+            checkBox.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    checkBox.setSelected(!checkBox.isSelected());
+                    fireEditingStopped();
+                }
+            });
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            checkBox.setSelected(value != null && (Boolean) value);
+            return checkBox;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return checkBox.isSelected();
+        }
     }
 
     public void update(String databaseName, List<String> tableNames) {
@@ -53,7 +111,6 @@ public class SelectMainPanel extends javax.swing.JPanel {
         this.tableSelectorsPanel.removeAll();
 
         // Create new panels
-        int count = 0;
         for (final String tableName : tableNames) {
             // Create panel object and set reference
             SelectTableFieldsPanel panel = new SelectTableFieldsPanel(databaseName, tableName);
@@ -62,11 +119,22 @@ public class SelectMainPanel extends javax.swing.JPanel {
             // Add to list and panel
             this.tableFieldsPanels.add(panel);
             this.tableSelectorsPanel.add(panel);
-            count++;
-
-            // A max of 6 tables are supported
-            if (count >= 6) break;
         }
+
+        // Update panels according to current theme
+        if (this.centerClientPanel.getClientController().isDarkMode())
+            this.setDarkMode();
+        else {
+            System.out.println("Light mode");
+            this.setLightMode();
+        }
+
+        // Clear the JTable
+        DefaultTableModel model = (DefaultTableModel) this.fieldSelectorTable.getModel();
+        model.setRowCount(0);
+
+        // Clear the JTextPane
+        this.commandOutputTextPane.setText("");
 
         this.tableSelectorsPanel.revalidate();
         this.tableSelectorsPanel.repaint();
@@ -87,15 +155,30 @@ public class SelectMainPanel extends javax.swing.JPanel {
 
     /* Setters */
     public void setLightMode() {
+        // Update each panel's theme
         for (final SelectTableFieldsPanel panel : this.tableFieldsPanels) {
             panel.setLightMode();
         }
+
+        // Update document syntax highlighting
+        SQLDocument doc = (SQLDocument) this.commandOutputTextPane.getStyledDocument();
+        doc.lightMode();
+
+        // Update text
+        this.commandOutputTextPane.setText(this.commandOutputTextPane.getText());
     }
 
     public void setDarkMode() {
         for (final SelectTableFieldsPanel panel : this.tableFieldsPanels) {
             panel.setDarkMode();
         }
+
+        // Update document syntax highlighting
+        SQLDocument doc = (SQLDocument) this.commandOutputTextPane.getStyledDocument();
+        doc.darkMode();
+
+        // Update text
+        this.commandOutputTextPane.setText(this.commandOutputTextPane.getText());
     }
 
     public void setCenterClientPanel(CenterClientPanel clientPanel) { this.centerClientPanel = clientPanel; }
@@ -162,7 +245,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Field Name", "Table", "Alias", "Condition"
+                "Field Name", "Table", "Alias", "Condition", "Group By"
             }
         ));
         fieldSelectorTable.setShowGrid(true);
@@ -212,7 +295,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(executeButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(generateCodeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(generateCodeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -319,7 +402,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
                         String referencingField = foreignKey.getReferencingFields().get(0);
                         String referencedField = foreignKey.getReferencedFields().get(0);
                         if (nonUsedTables.contains(referencedTable)) {
-                            messageBuilder.append("\n      ").append("INNER JOIN ").append(referencedTable).append(" ON ")
+                            messageBuilder.append("\n      ").append("JOIN ").append(referencedTable).append(" ON ")
                                     .append(usedTableName).append('.').append(referencingField).append(" = ")
                                     .append(referencedTable).append('.').append(referencedField);
 
@@ -343,7 +426,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
                         String referencingField = foreignKey.getReferencingFields().get(0);
                         String referencedField = foreignKey.getReferencedFields().get(0);
                         if (usedTables.contains(referencedTable)) {
-                            messageBuilder.append("\n      ").append("INNER JOIN ").append(tableName).append(" ON ")
+                            messageBuilder.append("\n      ").append("JOIN ").append(tableName).append(" ON ")
                                     .append(tableName).append('.').append(referencingField).append(" = ")
                                     .append(referencedTable).append('.').append(referencedField);
 
@@ -421,6 +504,27 @@ public class SelectMainPanel extends javax.swing.JPanel {
                     commandBuilder.append(" AND\n").append("      ").append(conditionWithField);
                 }
                 if (!hasWhere) hasWhere = true;
+            }
+        }
+
+        // For each row check if the 'Group By' checkbox is checked
+        boolean hasGroupBy = false;
+        for(int row = 0; row < this.fieldSelectorTable.getRowCount(); ++row) {
+            // Get field and table name
+            String fieldName = (String) this.fieldSelectorTable.getValueAt(row, 0);
+            String tableName = (String) this.fieldSelectorTable.getValueAt(row, 1);
+
+            if (this.fieldSelectorTable.getValueAt(row, 4) == null) continue;
+            boolean groupBy = (boolean) this.fieldSelectorTable.getValueAt(row, 4);
+
+
+            // If it has condition add where
+            if (groupBy) {
+                if (!hasGroupBy) commandBuilder.append("GROUP BY ");
+                else commandBuilder.append(", ");
+
+                commandBuilder.append(tableName).append(".").append(fieldName);
+                if (!hasGroupBy) hasGroupBy = true;
             }
         }
 
