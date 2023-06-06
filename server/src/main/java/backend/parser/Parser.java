@@ -1,21 +1,26 @@
 package backend.parser;
 
-import java.util.*;
-
 import backend.databaseActions.DatabaseAction;
-import backend.databaseActions.createActions.*;
-import backend.databaseActions.dropActions.*;
-import backend.databaseActions.miscActions.*;
+import backend.databaseActions.createActions.CreateDatabaseAction;
+import backend.databaseActions.createActions.CreateIndexAction;
+import backend.databaseActions.createActions.CreateTableAction;
+import backend.databaseActions.createActions.InsertIntoAction;
+import backend.databaseActions.dropActions.DeleteFromAction;
+import backend.databaseActions.dropActions.DropDatabaseAction;
+import backend.databaseActions.dropActions.DropTableAction;
+import backend.databaseActions.miscActions.NothingDatabaseAction;
+import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseActions.themightySelectAction.SelectAction;
 import backend.databaseModels.*;
 import backend.databaseModels.aggregations.Aggregator;
 import backend.databaseModels.aggregations.AggregatorSymbol;
+import backend.databaseModels.conditions.*;
 import backend.exceptions.InvalidSQLCommand;
 import backend.exceptions.SQLParseException;
-import backend.databaseModels.conditions.*;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.iterators.PeekingIterator;
+
+import java.util.*;
 
 import static backend.databaseModels.aggregations.AggregatorSymbol.isValidAggregatorSymbol;
 
@@ -94,6 +99,10 @@ public class Parser {
      * @throws InvalidSQLCommand
      */
     public DatabaseAction parseInput(String input, String databaseName) throws SQLParseException {
+
+        // if the sql message is empty return nothing
+        if (input.equals("")) { return new NothingDatabaseAction(); }
+
         List<String> tokens = tokenize(input);
         PeekingIterator<String> it = new PeekingIterator<>(tokens.iterator());
 

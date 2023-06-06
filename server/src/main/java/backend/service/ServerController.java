@@ -5,7 +5,7 @@ import backend.config.Config;
 import backend.databaseActions.DatabaseAction;
 import backend.databaseActions.createActions.CreateDatabaseAction;
 import backend.databaseModels.DatabaseModel;
-import backend.exceptions.databaseActionsExceptions.*;
+import backend.exceptions.databaseActionsExceptions.DatabaseNameAlreadyExists;
 import backend.responseObjects.SQLResponseObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 @Slf4j
 public class ServerController {
@@ -237,6 +236,7 @@ public class ServerController {
                     break;
                 }
 
+
                 // pass message to parser and receive the answer
                 setSqlCommand(msg);         // if the client message is a sql command, then execute it
 
@@ -246,32 +246,6 @@ public class ServerController {
                 // 1. Send JSON Catalog
                 jsonText = Files.readString(Config.getCatalogFile().toPath());
                 serverConnection.send(jsonText);
-
-                // 2. Send message
-                // For testing table sending
-//                ArrayList<String> fieldNames = new ArrayList<>();
-//                fieldNames.add("name1");
-//                fieldNames.add("name2");
-//                fieldNames.add("name3");
-//                fieldNames.add("name4");
-//                if (new Random().nextInt(3) == 0) {
-//                    ArrayList<ArrayList<String>> rows = new ArrayList<>();
-//                    ArrayList<String> row1 = new ArrayList<>();
-//                    row1.add("a");
-//                    row1.add("a");
-//                    row1.add("a");
-//                    row1.add("a");
-//
-//                    ArrayList<String> row2 = new ArrayList<>();
-//                    row2.add("b");
-//                    row2.add("b");
-//                    row2.add("b");
-//                    row2.add("b");
-//                    rows.add(row1);
-//                    rows.add(row2);
-//
-//                    this.sqlResponseObject = new SQLResponseObject(fieldNames, rows);
-//                }
 
                 this.sendSQLResponseObjectToClient();
 

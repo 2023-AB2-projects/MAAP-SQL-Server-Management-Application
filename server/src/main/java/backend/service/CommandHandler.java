@@ -10,6 +10,7 @@ import backend.databaseActions.createActions.InsertIntoAction;
 import backend.databaseActions.dropActions.DeleteFromAction;
 import backend.databaseActions.dropActions.DropDatabaseAction;
 import backend.databaseActions.dropActions.DropTableAction;
+import backend.databaseActions.miscActions.NothingDatabaseAction;
 import backend.databaseActions.miscActions.UseDatabaseAction;
 import backend.databaseActions.themightySelectAction.SelectAction;
 import backend.exceptions.SQLParseException;
@@ -52,6 +53,9 @@ public class CommandHandler {
     }
 
     private void updateControllerNodes(DatabaseAction databaseAction, Object returnValue) {
+        if ( databaseAction instanceof NothingDatabaseAction) {
+            serverController.setSqlResponseObject(new SQLResponseObject(false, "Am I a joke to you?"));
+        }
         if (databaseAction instanceof CreateDatabaseAction) {
             serverController.updateRootNodeAndNamesList();
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Database created successfully!"));
