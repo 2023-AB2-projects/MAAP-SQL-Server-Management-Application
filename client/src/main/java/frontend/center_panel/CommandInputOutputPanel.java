@@ -42,6 +42,9 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
         // By default, the output is a text area
         this.outputTabbedPane.setSelectedIndex(0);
         this.outputTabbedPane.setEnabledAt(1, false);   // Disable table panel
+
+        // Make JTable not editable
+        this.outputTable.setDefaultEditor(Object.class, null);
     }
 
     /**

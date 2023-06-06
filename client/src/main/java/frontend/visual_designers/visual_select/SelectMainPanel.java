@@ -337,7 +337,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
                         String referencingField = foreignKey.getReferencingFields().get(0);
                         String referencedField = foreignKey.getReferencedFields().get(0);
                         if (nonUsedTables.contains(referencedTable)) {
-                            messageBuilder.append("\n      ").append("INNER JOIN ").append(referencedTable).append(" ON ")
+                            messageBuilder.append("\n      ").append("JOIN ").append(referencedTable).append(" ON ")
                                     .append(usedTableName).append('.').append(referencingField).append(" = ")
                                     .append(referencedTable).append('.').append(referencedField);
 
@@ -361,7 +361,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
                         String referencingField = foreignKey.getReferencingFields().get(0);
                         String referencedField = foreignKey.getReferencedFields().get(0);
                         if (usedTables.contains(referencedTable)) {
-                            messageBuilder.append("\n      ").append("INNER JOIN ").append(tableName).append(" ON ")
+                            messageBuilder.append("\n      ").append("JOIN ").append(tableName).append(" ON ")
                                     .append(tableName).append('.').append(referencingField).append(" = ")
                                     .append(referencedTable).append('.').append(referencedField);
 
