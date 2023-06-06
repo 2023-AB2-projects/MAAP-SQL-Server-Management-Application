@@ -1,10 +1,12 @@
 package frontend.center_panel;
 
 import control.ClientController;
+import lombok.Getter;
 
 import java.util.ArrayList;
 
 public class CenterClientPanel extends javax.swing.JPanel {
+    @Getter
     private ClientController clientController;
 
     public CenterClientPanel() {

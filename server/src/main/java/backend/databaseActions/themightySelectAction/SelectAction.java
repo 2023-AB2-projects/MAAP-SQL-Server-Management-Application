@@ -56,11 +56,11 @@ public class SelectAction implements DatabaseAction {
     @Override
     public Object actionPerform() throws DatabaseNameAlreadyExists, TableNameAlreadyExists, DatabaseDoesntExist, PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique, TableDoesntExist, IndexAlreadyExists, ForeignKeyFieldNotFound, IOException, RecordNotFoundException, PrimaryKeyValuesContainDuplicates, UniqueFieldValuesContainDuplicates, PrimaryKeyValueAlreadyInTable, UniqueValueAlreadyInTable, ForeignKeyValueNotFoundInParentTable, InvalidReadException, ForeignKeyValueIsBeingReferencedInAnotherTable, FieldsNotCompatible {
         Validator validator = new SelectValidator(databaseName, baseTable, projectionColumns, conditions, joinModels, groupedByColumns, aggregations);
-        try {
-            validator.validate();
-        } catch (FieldNotFound e) {
-            log.error(e.toString());
-        }
+//        try {
+//            validator.validate();
+//        } catch (FieldNotFound e) {
+//            log.error(e.toString());
+//        }
 
         log.info("Select passed the validation!");
         // Group the conditions by tables
