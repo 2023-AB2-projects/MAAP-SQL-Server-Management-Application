@@ -226,10 +226,5 @@ public class test {
         //tableTest();
         //joinTest();
 
-        ArrayList<Condition> conds = new ArrayList<>();
-        conds.add(new Equation("testing6.id", Operator.LESS_THAN, "4"));
-
-        BaseTable table = new BaseTable("master", "testing6", conds);
-        table.printState();
     }
 }

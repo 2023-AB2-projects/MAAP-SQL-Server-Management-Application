@@ -54,9 +54,9 @@ public class BaseTable implements Table {
                 String fieldName = ((Equation) condition).getLFieldName();
                 int fieldIndex = columnNames.indexOf(fieldName);
 
-                String indexName;
+                String indexName, trueFieldName;
                 try {
-                    String trueFieldName = fieldName.substring(fieldName.indexOf('.') + 1);
+                    trueFieldName = fieldName.substring(fieldName.indexOf('.') + 1);
                     indexName = CatalogManager.getIndexName(databaseName, tableName, trueFieldName);
                     usedConditions.add(condition);
                 } catch (NoIndexException e) {
@@ -68,7 +68,7 @@ public class BaseTable implements Table {
                 Object compareValue = TypeConverter.toObject(fieldType, compareValueString);
 
                 Queryable index;
-                if(CatalogManager.isFieldUnique(databaseName, tableName, indexName)){
+                if(CatalogManager.isFieldUnique(databaseName, tableName,trueFieldName)){
                     index = new UniqueIndexManager(databaseName, tableName, indexName);
                 } else {
                     index = new NonUniqueIndexManager(databaseName, tableName, indexName);
@@ -92,10 +92,11 @@ public class BaseTable implements Table {
             } else if ( condition instanceof FunctionCall) {
                 String fieldName = ((FunctionCall) condition).getFieldName();
                 int fieldIndex = columnNames.indexOf(fieldName);
-                String indexName;
+                String indexName, trueFieldName;
                 try {
-                    String trueFieldName = fieldName.substring(fieldName.indexOf('.') + 1);
+                    trueFieldName = fieldName.substring(fieldName.indexOf('.') + 1);
                     indexName = CatalogManager.getIndexName(databaseName, tableName, trueFieldName);
+                    System.out.println(indexName);
                     usedConditions.add(condition);
                 } catch (NoIndexException e) {
                     continue;
@@ -107,7 +108,7 @@ public class BaseTable implements Table {
                 Object upper = TypeConverter.toObject(fieldType, args.get(1));
 
                 Queryable index;
-                if(CatalogManager.isFieldUnique(databaseName, tableName, indexName)){
+                if(CatalogManager.isFieldUnique(databaseName, tableName, trueFieldName)){
                     index = new UniqueIndexManager(databaseName, tableName, indexName);
                 } else {
                     index = new NonUniqueIndexManager(databaseName, tableName, indexName);

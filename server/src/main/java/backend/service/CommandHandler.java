@@ -1,13 +1,23 @@
 package backend.service;
 
+import backend.Utilities.Table;
+import backend.Utilities.TableContentConverter;
 import backend.databaseActions.DatabaseAction;
-import backend.databaseActions.createActions.*;
-import backend.databaseActions.dropActions.*;
+import backend.databaseActions.createActions.CreateDatabaseAction;
+import backend.databaseActions.createActions.CreateIndexAction;
+import backend.databaseActions.createActions.CreateTableAction;
+import backend.databaseActions.createActions.InsertIntoAction;
+import backend.databaseActions.dropActions.DeleteFromAction;
+import backend.databaseActions.dropActions.DropDatabaseAction;
+import backend.databaseActions.dropActions.DropTableAction;
 import backend.databaseActions.miscActions.UseDatabaseAction;
+import backend.databaseActions.themightySelectAction.SelectAction;
 import backend.exceptions.SQLParseException;
 import backend.parser.Parser;
 import backend.responseObjects.SQLResponseObject;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
 
 @Slf4j
 public class CommandHandler {
@@ -73,12 +83,12 @@ public class CommandHandler {
         if (databaseAction instanceof CreateIndexAction) {
             serverController.setSqlResponseObject(new SQLResponseObject(false, "Index created successfully"));
         }
-        /* TODO: Complete when SELECT IS DONE
         if (databaseAction instanceof SelectAction) {
-            ArrayList<ArrayList<String>> rows = (ArrayList<ArrayList<String>>) returnValue;
-            serverController.setSqlResponseObject(new SQLResponseObject(rows));
+            ArrayList<ArrayList<String>> rows = TableContentConverter.convert((Table) returnValue);
+            ArrayList<String> headers = ((Table) returnValue).getColumnNames();
+            serverController.setSqlResponseObject(new SQLResponseObject(headers, rows));
         }
-        */
+
     }
 
     private void updateControllerNodes(Exception e) {
