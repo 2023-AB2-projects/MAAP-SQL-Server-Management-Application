@@ -189,7 +189,7 @@ public class test {
         groupedPeople.projection(columns);
         groupedPeople.printState();
 
-        //people.printState();
+        people.printState();
     }
 
     public static void joinTest() throws IOException {
@@ -226,6 +226,10 @@ public class test {
         //tableTest();
         //joinTest();
 
-        System.out.println(CatalogManager.getIndexName("master", "testing5", "age"));
+        ArrayList<Condition> conds = new ArrayList<>();
+        conds.add(new Equation("testing6.id", Operator.LESS_THAN, "4"));
+
+        BaseTable table = new BaseTable("master", "testing6", conds);
+        table.printState();
     }
 }
