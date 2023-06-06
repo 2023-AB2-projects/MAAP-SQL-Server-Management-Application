@@ -403,8 +403,8 @@ public class SelectMainPanel extends javax.swing.JPanel {
                         String referencedField = foreignKey.getReferencedFields().get(0);
                         if (nonUsedTables.contains(referencedTable)) {
                             messageBuilder.append("\n      ").append("JOIN ").append(referencedTable).append(" ON ")
-                                    .append(usedTableName).append('.').append(referencingField).append(" = ")
-                                    .append(referencedTable).append('.').append(referencedField);
+                                    .append(referencedTable).append('.').append(referencedField).append(" = ")
+                                    .append(usedTableName).append('.').append(referencingField);
 
                             usedTables.add(referencedTable);
                             nonUsedTables.remove(referencedTable);
@@ -427,8 +427,8 @@ public class SelectMainPanel extends javax.swing.JPanel {
                         String referencedField = foreignKey.getReferencedFields().get(0);
                         if (usedTables.contains(referencedTable)) {
                             messageBuilder.append("\n      ").append("JOIN ").append(tableName).append(" ON ")
-                                    .append(tableName).append('.').append(referencingField).append(" = ")
-                                    .append(referencedTable).append('.').append(referencedField);
+                                    .append(referencedTable).append('.').append(referencedField).append(" = ")
+                                    .append(tableName).append('.').append(referencingField);
 
                             usedTables.add(tableName);
                             nonUsedTables.remove(tableName);
@@ -490,13 +490,14 @@ public class SelectMainPanel extends javax.swing.JPanel {
         for(int row = 0; row < this.fieldSelectorTable.getRowCount(); ++row) {
             // Get field and table name
             String fieldName = (String) this.fieldSelectorTable.getValueAt(row, 0);
+            String tableName = (String) this.fieldSelectorTable.getValueAt(row, 1);
             String condition = (String) this.fieldSelectorTable.getValueAt(row, 3);
 
             // If it has condition add where
             if (condition != null) {
                 if (!hasWhere) commandBuilder.append("WHERE ");
 
-                String conditionWithField = '(' + fieldName + ' ' + condition + ')';
+                String conditionWithField = tableName + "." +  fieldName + ' ' + condition;
                 if (!hasWhere) {
                     commandBuilder.append(conditionWithField);
                 } else {
