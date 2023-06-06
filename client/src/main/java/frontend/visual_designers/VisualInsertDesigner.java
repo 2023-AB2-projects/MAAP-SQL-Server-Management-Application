@@ -148,6 +148,8 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
         minusRowButton = new javax.swing.JButton();
         plusRowButton = new javax.swing.JButton();
         executeButton = new javax.swing.JButton();
+        explainerScrollPanel = new javax.swing.JScrollPane();
+        explainerTextArea = new javax.swing.JTextArea();
 
         generateCodeButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         generateCodeButton.setText("Generate Code");
@@ -225,11 +227,20 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
             }
         });
 
+        explainerTextArea.setEditable(false);
+        explainerTextArea.setColumns(20);
+        explainerTextArea.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        explainerTextArea.setRows(5);
+        explainerTextArea.setText("Welcome to the Visual Insert Designer, where we help you design your inserts!\n\nSelect a table from the dropdown in which you would like to insert data.\nIn the table below you will see each field the table has, and you can add values in each row.\nIf a row is not fully filled in or you have rows missing between two rows, those will be ignored.");
+        explainerTextArea.setFocusable(false);
+        explainerScrollPanel.setViewportView(explainerTextArea);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addComponent(splitInsertPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 822, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(tabelNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -243,7 +254,7 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(generateCodeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addComponent(splitInsertPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 822, Short.MAX_VALUE)
+            .addComponent(explainerScrollPanel)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -259,7 +270,9 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
                         .addComponent(minusRowButton)
                         .addComponent(plusRowButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(splitInsertPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE))
+                .addComponent(explainerScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(splitInsertPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 711, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -309,6 +322,8 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton executeButton;
+    private javax.swing.JScrollPane explainerScrollPanel;
+    private javax.swing.JTextArea explainerTextArea;
     private javax.swing.JButton generateCodeButton;
     private javax.swing.JScrollPane generatedCodeScrollPanel;
     private javax.swing.JTextPane generatedCodeTextArea;
