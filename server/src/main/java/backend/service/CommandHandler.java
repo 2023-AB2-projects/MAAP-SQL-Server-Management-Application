@@ -54,7 +54,7 @@ public class CommandHandler {
 
     private void updateControllerNodes(DatabaseAction databaseAction, Object returnValue) {
         if ( databaseAction instanceof NothingDatabaseAction) {
-            serverController.setSqlResponseObject(new SQLResponseObject(false, "Am I a joke to you?"));
+            serverController.setSqlResponseObject(new SQLResponseObject(true, NothingDatabaseAction.getRandomMessage()));
         }
         if (databaseAction instanceof CreateDatabaseAction) {
             serverController.updateRootNodeAndNamesList();
