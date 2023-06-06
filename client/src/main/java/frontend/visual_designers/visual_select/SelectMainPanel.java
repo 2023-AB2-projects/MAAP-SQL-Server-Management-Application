@@ -7,13 +7,16 @@ import service.CatalogManager;
 import service.ForeignKeyModel;
 
 import javax.swing.*;
+import javax.swing.event.CellEditorListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 public class SelectMainPanel extends javax.swing.JPanel {
@@ -33,7 +36,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
         this.tableFieldsPanels = new ArrayList<>();
 
         // Make first two columns of table not editable
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"Field Name", "Table Name", "Alias", "Condition"}, 0)
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"Field Name", "Table Name", "Alias", "Condition", "Group By"}, 0)
         {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -41,7 +44,62 @@ public class SelectMainPanel extends javax.swing.JPanel {
                 return column != 0 && column != 1;
             }
         };
+
+        // Change the model that the 'Group By' column is a JCheckBox that can be selected
         this.fieldSelectorTable.setModel(model);
+
+        // Set the renderer
+        this.fieldSelectorTable.getColumn("Group By").setCellRenderer(new CheckBoxRenderer());
+
+        // Set the editor by extending the default editor
+        this.fieldSelectorTable.getColumn("Group By").setCellEditor(new CheckBoxEditor());
+    }
+
+    // Custom cell renderer for the checkbox column
+    static class CheckBoxRenderer extends JPanel implements TableCellRenderer {
+        private JCheckBox checkBox;
+
+        public CheckBoxRenderer() {
+            setLayout(new GridBagLayout());
+            checkBox = new JCheckBox();
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.anchor = GridBagConstraints.CENTER;
+            add(checkBox, gbc);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            checkBox.setSelected(value != null && (Boolean) value);
+            return this;
+        }
+    }
+
+    // Custom cell editor for the checkbox column
+    static class CheckBoxEditor extends AbstractCellEditor implements TableCellEditor {
+        private JCheckBox checkBox;
+
+        public CheckBoxEditor() {
+            checkBox = new JCheckBox();
+            checkBox.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    checkBox.setSelected(!checkBox.isSelected());
+                    fireEditingStopped();
+                }
+            });
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            checkBox.setSelected(value != null && (Boolean) value);
+            return checkBox;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return checkBox.isSelected();
+        }
     }
 
     public void update(String databaseName, List<String> tableNames) {
@@ -70,6 +128,13 @@ public class SelectMainPanel extends javax.swing.JPanel {
             System.out.println("Light mode");
             this.setLightMode();
         }
+
+        // Clear the JTable
+        DefaultTableModel model = (DefaultTableModel) this.fieldSelectorTable.getModel();
+        model.setRowCount(0);
+
+        // Clear the JTextPane
+        this.commandOutputTextPane.setText("");
 
         this.tableSelectorsPanel.revalidate();
         this.tableSelectorsPanel.repaint();
@@ -180,7 +245,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Field Name", "Table", "Alias", "Condition"
+                "Field Name", "Table", "Alias", "Condition", "Group By"
             }
         ));
         fieldSelectorTable.setShowGrid(true);
@@ -439,6 +504,27 @@ public class SelectMainPanel extends javax.swing.JPanel {
                     commandBuilder.append(" AND\n").append("      ").append(conditionWithField);
                 }
                 if (!hasWhere) hasWhere = true;
+            }
+        }
+
+        // For each row check if the 'Group By' checkbox is checked
+        boolean hasGroupBy = false;
+        for(int row = 0; row < this.fieldSelectorTable.getRowCount(); ++row) {
+            // Get field and table name
+            String fieldName = (String) this.fieldSelectorTable.getValueAt(row, 0);
+            String tableName = (String) this.fieldSelectorTable.getValueAt(row, 1);
+
+            if (this.fieldSelectorTable.getValueAt(row, 4) == null) continue;
+            boolean groupBy = (boolean) this.fieldSelectorTable.getValueAt(row, 4);
+
+
+            // If it has condition add where
+            if (groupBy) {
+                if (!hasGroupBy) commandBuilder.append("GROUP BY ");
+                else commandBuilder.append(", ");
+
+                commandBuilder.append(tableName).append(".").append(fieldName);
+                if (!hasGroupBy) hasGroupBy = true;
             }
         }
 
