@@ -90,15 +90,30 @@ public class SelectMainPanel extends javax.swing.JPanel {
 
     /* Setters */
     public void setLightMode() {
+        // Update each panel's theme
         for (final SelectTableFieldsPanel panel : this.tableFieldsPanels) {
             panel.setLightMode();
         }
+
+        // Update document syntax highlighting
+        SQLDocument doc = (SQLDocument) this.commandOutputTextPane.getStyledDocument();
+        doc.lightMode();
+
+        // Update text
+        this.commandOutputTextPane.setText(this.commandOutputTextPane.getText());
     }
 
     public void setDarkMode() {
         for (final SelectTableFieldsPanel panel : this.tableFieldsPanels) {
             panel.setDarkMode();
         }
+
+        // Update document syntax highlighting
+        SQLDocument doc = (SQLDocument) this.commandOutputTextPane.getStyledDocument();
+        doc.darkMode();
+
+        // Update text
+        this.commandOutputTextPane.setText(this.commandOutputTextPane.getText());
     }
 
     public void setCenterClientPanel(CenterClientPanel clientPanel) { this.centerClientPanel = clientPanel; }
