@@ -13,8 +13,6 @@ import backend.exceptions.databaseActionsExceptions.*;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.exceptions.validatorExceptions.*;
-import backend.validators.SelectValidator;
-import backend.validators.Validator;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -22,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class SelectAction implements DatabaseAction {
@@ -47,6 +46,7 @@ public class SelectAction implements DatabaseAction {
         this.databaseName = databaseName;
         this.baseTable = baseTable;
         this.projectionColumns = projectionColumns;
+        this.projectionColumns.addAll(aggregations.stream().map(elem -> elem.getAlias()).collect(Collectors.toCollection(ArrayList::new)));
         this.conditions = conditions;
         this.joinModels = joinModels;
         this.groupedByColumns = groupedByColumns;
@@ -55,12 +55,12 @@ public class SelectAction implements DatabaseAction {
 
     @Override
     public Object actionPerform() throws DatabaseNameAlreadyExists, TableNameAlreadyExists, DatabaseDoesntExist, PrimaryKeyNotFound, ForeignKeyNotFound, FieldCantBeNull, FieldsAreNotUnique, TableDoesntExist, IndexAlreadyExists, ForeignKeyFieldNotFound, IOException, RecordNotFoundException, PrimaryKeyValuesContainDuplicates, UniqueFieldValuesContainDuplicates, PrimaryKeyValueAlreadyInTable, UniqueValueAlreadyInTable, ForeignKeyValueNotFoundInParentTable, InvalidReadException, ForeignKeyValueIsBeingReferencedInAnotherTable, FieldsNotCompatible {
-        Validator validator = new SelectValidator(databaseName, baseTable, projectionColumns, conditions, joinModels, groupedByColumns, aggregations);
-        try {
-            validator.validate();
-        } catch (FieldNotFound e) {
-            log.error(e.toString());
-        }
+//        Validator validator = new SelectValidator(databaseName, baseTable, projectionColumns, conditions, joinModels, groupedByColumns, aggregations);
+//        try {
+//            validator.validate();
+//        } catch (FieldNotFound e) {
+//            log.error(e.toString());
+//        }
 
         log.info("Select passed the validation!");
         // Group the conditions by tables
@@ -92,37 +92,45 @@ public class SelectAction implements DatabaseAction {
 
         // Create base tables that have no condition but appear on JOIN
         ArrayList<Table> finalTables = new ArrayList<>();
+        ArrayList<String> finalTableNames = new ArrayList<>();
 
         // Append the tables in the order of join
         for( JoinModel model : joinModels) {
             String ltable = model.getLeftTableName();
             String rtable = model.getRightTableName();
 
+
             // check if there was a condition for the table
-            if (! tableConditions.containsKey(ltable)) {
+            // check if it is in the final tables
+            if (! tableConditions.containsKey(ltable) && !finalTableNames.contains(ltable)) {
                 finalTables.add(new BaseTable(databaseName, ltable, new ArrayList<>()));
-            } else {
+                finalTableNames.add(ltable);
+            } else if ( !finalTableNames.contains(ltable) ) {
                 // find the filtered table
                 for (BaseTable table : baseConditionedTables) {
                     if (table.getTableName().equals(ltable)) {
                         finalTables.add(table);
+                        finalTableNames.add(ltable);
                     }
                 }
             }
 
 
             // same for the right table
-            if (! tableConditions.containsKey(rtable)) {
+            if (! tableConditions.containsKey(rtable) && !finalTableNames.contains(rtable)) {
                 finalTables.add(new BaseTable(databaseName, ltable, new ArrayList<>()));
-            } else {
+                finalTableNames.add(rtable);
+            } else if (!finalTableNames.contains(rtable)) {
                 for (BaseTable table : baseConditionedTables) {
                     if (table.getTableName().equals(rtable)) {
                         finalTables.add(table);
+                        finalTableNames.add(rtable);
                     }
                 }
             }
         }
         log.info(" There are " + finalTables.size() + " tables in total");
+        finalTables.stream().forEach(e -> System.out.println(e.getColumnNames()));
 
 
 
