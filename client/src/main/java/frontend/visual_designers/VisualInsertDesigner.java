@@ -122,6 +122,12 @@ public class VisualInsertDesigner extends javax.swing.JPanel {
                 commandBuilder.append(", ").append(value);
             }
 
+            // Special case if there's only one column
+            if(columnCount == 1) {
+                commandBuilder.append(")");
+                rowCount++;         // Increase row count
+            }
+
             counter++;              // Update counter
         }
 
