@@ -8,6 +8,8 @@ import backend.databaseModels.conditions.FunctionCall;
 import backend.exceptions.databaseActionsExceptions.DatabaseDoesntExist;
 import backend.exceptions.databaseActionsExceptions.FieldNotFound;
 import backend.exceptions.databaseActionsExceptions.TableDoesntExist;
+import backend.exceptions.recordHandlingExceptions.InvalidTypeException;
+import backend.recordHandling.TypeConverter;
 import backend.service.CatalogManager;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +42,7 @@ public class SelectValidator implements Validator{
     }
 
     @Override
-    public void validate() throws DatabaseDoesntExist, TableDoesntExist, FieldNotFound {
+    public void validate() throws DatabaseDoesntExist, TableDoesntExist, FieldNotFound, InvalidTypeException {
 
         // check if database exists
         if ( !CatalogManager.getDatabaseNames().contains(databaseName)) {
@@ -121,8 +123,14 @@ public class SelectValidator implements Validator{
             if (condition instanceof Equation equation) {
                 String tableName = equation.getLFieldTable();
                 String fieldName = equation.getLFieldName();
+                String value = equation.getRFieldName();
 
                 //TODO Check if type(id) = type("alma"),
+                try {
+                    TypeConverter.toObject(CatalogManager.getFieldType(databaseName, tableName, fieldName), value);
+                } catch (Exception e) {
+                    throw new InvalidTypeException();
+                }
 
                 ArrayList<String> conditionsList = tableConditionedFields.computeIfAbsent(tableName, k -> new ArrayList<>());
                 conditionsList.add(fieldName);
