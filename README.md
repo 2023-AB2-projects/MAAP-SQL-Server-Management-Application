@@ -51,7 +51,7 @@ VALUES (field_value [, ... n])
 
 <pre>
 DELETE FROM table_name
-primary_key_field_value [, ... n]
+[ &lt;condition_schema&gt;  [, ... n] ]
 </pre>
 
 ### Data Query Language (DQL)
