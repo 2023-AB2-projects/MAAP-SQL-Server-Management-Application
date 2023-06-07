@@ -28,7 +28,7 @@ public class TestSelectAction {
         conditions.add(new FunctionCall("cucc", "cucc", Function.BETWEEN, arg));
         conditions.add(new FunctionCall("cucc", "cucc", Function.BETWEEN, arg));
 
-        SelectAction selectActionTest = new SelectAction("database", "table",  null, conditions, null, null, null);
+        SelectAction selectActionTest = new SelectAction("database", "table",  null, conditions, null, joinedTables, null, null);
         try {
             selectActionTest.actionPerform();
         } catch (DatabaseNameAlreadyExists e) {

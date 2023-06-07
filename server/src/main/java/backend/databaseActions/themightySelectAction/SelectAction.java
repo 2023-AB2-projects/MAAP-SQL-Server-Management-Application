@@ -31,23 +31,27 @@ public class SelectAction implements DatabaseAction {
     private final String baseTable;
     private final ArrayList<String> projectionColumns;
     private final List<Condition> conditions;
-    private final List<JoinModel> joinModels;
+    private List<JoinModel> joinModels;
+    private final List<String> joinedTables;
     private final List<String> groupedByColumns;
     private final ArrayList<Aggregator> aggregations;
 
     /**
-     * @author Kovacs Elek Akos
-     * @param databaseName This is databases name that is currently used
-     * @param baseTable This is the base table name in FROM clause
+     * @param databaseName      This is databases name that is currently used
+     * @param baseTable         This is the base table name in FROM clause
      * @param projectionColumns These are the table + column names that are projected eg: "users.name" or "package.price", where 'users' & 'package' are tables names, and 'name' & 'price' are column names, IMPORTANT is SELECT * is present, than the only elem of the list is:  ['*']
-     * @param conditions These are the conditions of the WHERE clause, see the Condition interface for more information
-     * @param groupedByColumns A list of table names and column names eq: 'users.name'
-     * @param aggregations A list of columns inside functions eq: SUM(users.ID) see Aggregator Class
-     * */
-    public SelectAction(String databaseName, String baseTable, ArrayList<String> projectionColumns, List<Condition> conditions, List<JoinModel> joinModels, List<String> groupedByColumns, ArrayList<Aggregator> aggregations) {
+     * @param conditions        These are the conditions of the WHERE clause, see the Condition interface for more information
+     * @param joinedTables
+     * @param groupedByColumns  A list of table names and column names eq: 'users.name'
+     * @param aggregations      A list of columns inside functions eq: SUM(users.ID) see Aggregator Class
+     * @author Kovacs Elek Akos
+     */
+    public SelectAction(String databaseName, String baseTable, ArrayList<String> projectionColumns, List<Condition> conditions, List<JoinModel> joinModels, List<String> joinedTables, List<String> groupedByColumns, ArrayList<Aggregator> aggregations) {
         this.databaseName = databaseName;
         this.baseTable = baseTable;
+
         this.projectionColumns = projectionColumns;
+        this.joinedTables = joinedTables;
         this.projectionColumns.addAll(aggregations.stream().map(elem -> elem.getAlias()).collect(Collectors.toCollection(ArrayList::new)));
         this.conditions = conditions;
         this.joinModels = joinModels;
@@ -135,6 +139,8 @@ public class SelectAction implements DatabaseAction {
         finalTables.stream().forEach(e -> System.out.println(e.getColumnNames()));
 
 
+        // put the joinModel in the right order
+        JoinModel.sort(joinModels, joinedTables);
 
         // If there were no joins, the only table that could be filtered is the base table
         // From now on the working table is called 'joinedTable'

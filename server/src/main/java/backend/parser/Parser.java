@@ -414,7 +414,7 @@ public class Parser {
         log.info("Conditions: " + conditions);
         log.info("GroupedByColumns: " + groupedByColumns);
 
-        return new SelectAction(databaseName, baseTable, columns, conditions, joinModels, groupedByColumns, aggregations);
+        return new SelectAction(databaseName, baseTable, columns, conditions, joinModels, joinedTables, groupedByColumns, aggregations);
     }
 
     /**
