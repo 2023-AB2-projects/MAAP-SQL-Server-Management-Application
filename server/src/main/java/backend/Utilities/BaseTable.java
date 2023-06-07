@@ -10,6 +10,7 @@ import backend.databaseModels.conditions.Equation;
 import backend.databaseModels.conditions.FunctionCall;
 import backend.exceptions.NoIndexException;
 import backend.exceptions.recordHandlingExceptions.UndefinedQueryException;
+import backend.recordHandling.RecordDeleter;
 import backend.recordHandling.RecordReader;
 import backend.recordHandling.TypeConverter;
 import backend.service.CatalogManager;
@@ -298,5 +299,10 @@ public class BaseTable implements Table {
 
         columnNames = wantedColumns;
         columnTypes = newColumnTypes;
+    }
+    public void delete() throws IOException {
+        RecordDeleter io = new RecordDeleter(databaseName, tableName);
+        io.deleteRecords(new ArrayList<>(pointerMapper.keySet()));
+        io.close();
     }
 }

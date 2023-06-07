@@ -893,8 +893,7 @@ public class Parser {
         log.info("tableName: " + tableName);
         log.info("conditions: " + conditions.toString());
 
-        // DeleteFromAction da = new DeleteFromAction(databaseName, tableName, keys);
-        return null;
+        return new DeleteFromAction(databaseName, tableName, conditions);
     }
 
     private enum CreateIndexStates {
