@@ -57,6 +57,8 @@ public class SelectAction implements DatabaseAction {
         this.joinModels = joinModels;
         this.groupedByColumns = groupedByColumns;
         this.aggregations = aggregations;
+
+
     }
 
     @Override
@@ -138,9 +140,23 @@ public class SelectAction implements DatabaseAction {
         log.info(" There are " + finalTables.size() + " tables in total");
         finalTables.stream().forEach(e -> System.out.println(e.getColumnNames()));
 
-
+        log.info(joinedTables.toString());
+        for (JoinModel joinModel : joinModels) {
+            log.info(joinModel.getLeftFieldName() + " x " + joinModel.getRightFieldName());
+        }
         // put the joinModel in the right order
         JoinModel.sort(joinModels, joinedTables);
+        // put the created basetables in the right order
+        finalTables = sortTables(finalTables, finalTableNames, joinedTables);
+
+        for (JoinModel joinModel : joinModels) {
+            log.info(joinModel.getLeftFieldName() + " x " + joinModel.getRightFieldName());
+        }
+        log.info("Final tablenames");
+        for ( String name : finalTableNames) {
+            log.info(name);
+        }
+
 
         // If there were no joins, the only table that could be filtered is the base table
         // From now on the working table is called 'joinedTable'
@@ -175,5 +191,16 @@ public class SelectAction implements DatabaseAction {
         }
 
         return grouppedTable;
+    }
+
+    private ArrayList<Table> sortTables(ArrayList<Table> finalTables, ArrayList<String> finalTableNames, List<String> joinedTables) {
+        ArrayList<Table> sortedTables = new ArrayList<>();
+
+        for ( String tableName : joinedTables ) {
+            int indexOfUnsortedTable = finalTableNames.indexOf(tableName);
+            sortedTables.add(finalTables.get(indexOfUnsortedTable));
+        }
+
+        return sortedTables;
     }
 }
