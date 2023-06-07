@@ -35,7 +35,7 @@ public class CommandInputOutputPanel extends javax.swing.JPanel {
 
         // Create the green style with green font color
         greenStyle = this.outputArea.addStyle("GreenColorStyle", null);
-        StyleConstants.setForeground(greenStyle, new Color(160, 252, 160));
+        StyleConstants.setForeground(greenStyle, new Color(84, 190, 84));
 
         doc.setParagraphAttributes(0, doc.getLength(), greenStyle, false);
 

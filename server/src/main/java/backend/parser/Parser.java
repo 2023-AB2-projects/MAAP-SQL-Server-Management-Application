@@ -630,6 +630,10 @@ public class Parser {
         catch (NoSuchElementException e) {
             throw (new SQLParseException("Unexpected end of string"));
         }
+
+        if (primaryKeyAttributes.size() == 0) {
+            throw(new SQLParseException("Table cannot be created without primary key"));
+        }
         
         fileName = tableName + ".data.bin";
         primaryKey = new PrimaryKeyModel(primaryKeyAttributes);
