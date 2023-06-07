@@ -36,7 +36,7 @@ public class SQLDocument extends DefaultStyledDocument {
     };
 
     private final String[] OPERATORS = {
-            "OR", "or", "AND", "and",
+            "OR", "or", "AND", "and", "SUM", "sum", "AVG", "avg", "MAX", "max", "MIN", "min", "COUNT", "count",
             "(", ")", "*",
             "==", "!=", "=", ">=", "<=", ">", "<",
     };
