@@ -147,8 +147,9 @@ public class SelectAction implements DatabaseAction {
         // put the joinModel in the right order
         JoinModel.sort(joinModels, joinedTables);
         // put the created basetables in the right order
-        finalTables = sortTables(finalTables, finalTableNames, joinedTables);
-
+        if ( !(finalTables.size() == 0 && joinedTables.size() == 1)) {
+            finalTables = sortTables(finalTables, finalTableNames, joinedTables);
+        }
         for (JoinModel joinModel : joinModels) {
             log.info(joinModel.getLeftFieldName() + " x " + joinModel.getRightFieldName());
         }
