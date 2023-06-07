@@ -115,6 +115,9 @@ public class InsertIntoAction implements DatabaseAction {
             recordInserter.insert(row);
         }
 
+        recordInserter.close();
+        rowValidator.close();
+
         return rowCount;        // Display inserted row count to user
     }
 }

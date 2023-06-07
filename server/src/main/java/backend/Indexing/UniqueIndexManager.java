@@ -161,6 +161,7 @@ public class UniqueIndexManager implements Queryable{
             }catch (KeyAlreadyInTreeException ignored){}
         }
 
+        reader.close();
         tree.close();
     }
 

@@ -7,6 +7,7 @@ import backend.exceptions.validatorExceptions.PrimaryKeyValueAlreadyInTable;
 import backend.exceptions.validatorExceptions.UniqueValueAlreadyInTable;
 import backend.service.CatalogManager;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,6 +108,13 @@ public class InsertRowValidator {
         ind = 0;
         for (final String foreignKeyValue : foreignKeyValues) {
             this.validateForeignKey(ind++, foreignKeyValue);
+        }
+    }
+
+    public void close() throws IOException {
+        primaryKeyIndexManager.close();
+        for (var manager : uniqueIndexManagers) {
+            manager.close();
         }
     }
 }

@@ -191,6 +191,13 @@ public class BaseTable implements Table {
             Integer origin = (Integer) tableContent.get(i).remove(last);
             pointerMapper.put(origin, i);
         }
+
+        try {
+            io.close();
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        }
+
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------//
@@ -260,7 +267,7 @@ public class BaseTable implements Table {
             newTypes.add(TypeConverter.mapAggregatorType(fieldType, aggregatorSymbol));
 
             ArrayList<Object> column = tableContent.stream().map((elem) -> elem.get(fieldIndex)).collect(Collectors.toCollection(ArrayList::new));
-            
+
             newRow.add(Aggregator.resolve(aggregatorSymbol, column, fieldType));
         }
         newTable.add(newRow);

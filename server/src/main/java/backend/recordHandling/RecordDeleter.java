@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 @Slf4j
 public class RecordDeleter {
-    private RecordHandler recordHandler;
+    private final RecordHandler recordHandler;
     private final String databaseName, tableName;
     private final MultipleIndexUpdater multipleIndexUpdater;
 
