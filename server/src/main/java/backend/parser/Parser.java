@@ -232,6 +232,7 @@ public class Parser {
                     checkName(tableName, NAME_TYPE.TABLE);
 
                     baseTable = tableName;
+                    joinTables.add(baseTable);
 
                     // Select that ends on FROM clause is valid, check for end of input
                     if (!it.hasNext()) {
