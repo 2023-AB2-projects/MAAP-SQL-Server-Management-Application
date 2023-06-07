@@ -65,7 +65,7 @@ public class SelectValidator implements Validator{
                 if (!lType.equals(rType)) {
                     // accepted types : "int", "float", "bit", "date", "datetime", "char"
                     log.info("Not compatible on join" + model.getLeftFieldName() + " : " + lType + " AND " + model.getRightFieldName() + " : " + rType);
-                    throw new RuntimeException(" Types of where clause do not match " + model.getLeftFieldName() + " : " + lType + " AND " + model.getRightFieldName() + " : " + rType);
+                    throw new RuntimeException("Types of where clause do not match " + model.getLeftFieldName() + " : " + lType + " AND " + model.getRightFieldName() + " : " + rType);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage());
@@ -143,7 +143,7 @@ public class SelectValidator implements Validator{
              // check if table are in join, othervise dont care if exits
              if ( !validTables.contains(currentTable)) {
                  log.error(" Table " + currentTable + " is not present in the joinModel!");
-                 throw new RuntimeException(" Table " + currentTable + " is not present in the joinModel!");
+                 throw new RuntimeException("Table " + currentTable + " is not present in the joinModel!");
              }
              log.info("Table " + currentTable + " is present in the joinModel!");
 
@@ -225,7 +225,7 @@ public class SelectValidator implements Validator{
             for (String projectedField : projectedColumns) {
                 if (!groupedColumns.contains(projectedField) && !aggregatedColumns.contains(projectedField)) {
                     log.error("Field" + projectedField + " is not present in GROUP BY columns, neither in aggregate functions!");
-                    throw new RuntimeException("Field" + projectedField + " is not present in GROUP BY columns, neither in aggregate functions!");
+                    throw new RuntimeException("Field '" + projectedField + "' is not present in GROUP BY columns, neither in aggregate functions!");
                 }
             }
         }

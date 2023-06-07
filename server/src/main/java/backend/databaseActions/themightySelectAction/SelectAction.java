@@ -131,7 +131,7 @@ public class SelectAction implements DatabaseAction {
                 }
             }
         }
-        log.info(" There are " + finalTables.size() + " tables in total");
+        log.info("There are " + finalTables.size() + " tables in total");
         finalTables.stream().forEach(e -> System.out.println(e.getColumnNames()));
 
 
