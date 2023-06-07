@@ -2,6 +2,8 @@ package backend.databaseModels;
 
 import lombok.Getter;
 
+import java.util.List;
+
 public class JoinModel {
     @Getter
     private String leftTableName, leftFieldName, rightTableName, rightFieldName;
@@ -25,5 +27,18 @@ public class JoinModel {
 
     public String toString() {
         return leftFieldName + " = " + rightFieldName;
+    }
+
+    public static List<JoinModel> sort(List<JoinModel> models, List<String> tableNamesInOrder) {
+        // check every model
+        for ( JoinModel model : models) {
+            int leftTableIndex = tableNamesInOrder.indexOf(model.getLeftTableName());
+            int rightTableIndex = tableNamesInOrder.indexOf(model.getRightTableName());
+
+            if (rightTableIndex < leftTableIndex) {
+                model.swap();
+            }
+        }
+        return models;
     }
 }
