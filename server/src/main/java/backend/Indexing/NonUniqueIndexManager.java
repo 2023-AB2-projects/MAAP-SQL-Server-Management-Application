@@ -181,6 +181,7 @@ public class NonUniqueIndexManager implements Queryable{
             }catch (KeyAlreadyInTreeException ignored){}
         }
 
+        reader.close();
         tree.close();
     }
 }

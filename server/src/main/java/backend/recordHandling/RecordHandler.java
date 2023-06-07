@@ -12,6 +12,7 @@ public class RecordHandler {
     private long recordSize;
     private final ArrayList<String> tableStructure;
     private final RandomAccessFile io;
+
     public RecordHandler(String databaseName, String tableName) throws FileNotFoundException {
         String fileLocation = CatalogManager.getTableDataPath(databaseName, tableName);
 
@@ -22,6 +23,7 @@ public class RecordHandler {
             recordSize += TypeConverter.sizeof(type);
         }
         io = new RandomAccessFile(fileLocation, "rw");
+        System.out.println("Open: RecordHandler");
     }
 
     public void insert(ArrayList<String> values, int line) throws IOException {
@@ -130,6 +132,7 @@ public class RecordHandler {
     }
 
     public void close() throws IOException {
+        System.out.println("Close RecordHandler");
         io.close();
     }
 }

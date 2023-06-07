@@ -1,11 +1,13 @@
 package backend.Indexing;
 
 import backend.recordHandling.TypeConverter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
+@Slf4j
 public class IndexFileHandler {
     private final RandomAccessFile io;
     private ArrayList<String> keyStructure;
@@ -21,11 +23,10 @@ public class IndexFileHandler {
         nodeSize = 1 + Integer.BYTES + (2 * Constants.D) * keySize + (2 * Constants.D + 1) * Integer.BYTES;
 
         io = new RandomAccessFile(fileLocation, "rw");
-
+        System.out.println("Open: IndexFileHandler");
         if(io.length() == 0){
             io.writeInt(0);
         }
-
     }
 
     public void writeNode(TreeNode node, int line) throws IOException {
@@ -92,6 +93,7 @@ public class IndexFileHandler {
     }
 
     public void close() throws IOException {
+        System.out.println("Close: IndexFileHandler");
         io.close();
     }
 }
