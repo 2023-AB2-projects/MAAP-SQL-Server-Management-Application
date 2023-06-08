@@ -232,6 +232,7 @@ public class Parser {
                     checkName(tableName, NAME_TYPE.TABLE);
 
                     baseTable = tableName;
+                    joinTables.add(baseTable);
 
                     // Select that ends on FROM clause is valid, check for end of input
                     if (!it.hasNext()) {
@@ -414,7 +415,7 @@ public class Parser {
         log.info("Conditions: " + conditions);
         log.info("GroupedByColumns: " + groupedByColumns);
 
-        return new SelectAction(databaseName, baseTable, columns, conditions, joinModels, groupedByColumns, aggregations);
+        return new SelectAction(databaseName, baseTable, columns, conditions, joinModels, joinTables, groupedByColumns, aggregations);
     }
 
     /**
@@ -628,6 +629,10 @@ public class Parser {
         } 
         catch (NoSuchElementException e) {
             throw (new SQLParseException("Unexpected end of string"));
+        }
+
+        if (primaryKeyAttributes.size() == 0) {
+            throw(new SQLParseException("Table cannot be created without primary key"));
         }
         
         fileName = tableName + ".data.bin";

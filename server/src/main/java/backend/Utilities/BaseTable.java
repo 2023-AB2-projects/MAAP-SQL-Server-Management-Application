@@ -300,9 +300,11 @@ public class BaseTable implements Table {
         columnNames = wantedColumns;
         columnTypes = newColumnTypes;
     }
+
     public void delete() throws IOException {
         RecordDeleter io = new RecordDeleter(databaseName, tableName);
         io.deleteRecords(new ArrayList<>(pointerMapper.keySet()));
         io.close();
     }
+
 }

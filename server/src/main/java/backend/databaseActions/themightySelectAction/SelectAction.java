@@ -11,6 +11,7 @@ import backend.databaseModels.conditions.Equation;
 import backend.databaseModels.conditions.FunctionCall;
 import backend.exceptions.databaseActionsExceptions.*;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
+import backend.exceptions.recordHandlingExceptions.InvalidTypeException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.exceptions.validatorExceptions.*;
 import backend.validators.SelectValidator;
@@ -31,28 +32,34 @@ public class SelectAction implements DatabaseAction {
     private final String baseTable;
     private final ArrayList<String> projectionColumns;
     private final List<Condition> conditions;
-    private final List<JoinModel> joinModels;
+    private List<JoinModel> joinModels;
+    private final List<String> joinedTables;
     private final List<String> groupedByColumns;
     private final ArrayList<Aggregator> aggregations;
 
     /**
-     * @author Kovacs Elek Akos
-     * @param databaseName This is databases name that is currently used
-     * @param baseTable This is the base table name in FROM clause
+     * @param databaseName      This is databases name that is currently used
+     * @param baseTable         This is the base table name in FROM clause
      * @param projectionColumns These are the table + column names that are projected eg: "users.name" or "package.price", where 'users' & 'package' are tables names, and 'name' & 'price' are column names, IMPORTANT is SELECT * is present, than the only elem of the list is:  ['*']
-     * @param conditions These are the conditions of the WHERE clause, see the Condition interface for more information
-     * @param groupedByColumns A list of table names and column names eq: 'users.name'
-     * @param aggregations A list of columns inside functions eq: SUM(users.ID) see Aggregator Class
-     * */
-    public SelectAction(String databaseName, String baseTable, ArrayList<String> projectionColumns, List<Condition> conditions, List<JoinModel> joinModels, List<String> groupedByColumns, ArrayList<Aggregator> aggregations) {
+     * @param conditions        These are the conditions of the WHERE clause, see the Condition interface for more information
+     * @param joinedTables
+     * @param groupedByColumns  A list of table names and column names eq: 'users.name'
+     * @param aggregations      A list of columns inside functions eq: SUM(users.ID) see Aggregator Class
+     * @author Kovacs Elek Akos
+     */
+    public SelectAction(String databaseName, String baseTable, ArrayList<String> projectionColumns, List<Condition> conditions, List<JoinModel> joinModels, List<String> joinedTables, List<String> groupedByColumns, ArrayList<Aggregator> aggregations) {
         this.databaseName = databaseName;
         this.baseTable = baseTable;
+
         this.projectionColumns = projectionColumns;
+        this.joinedTables = joinedTables;
         this.projectionColumns.addAll(aggregations.stream().map(elem -> elem.getAlias()).collect(Collectors.toCollection(ArrayList::new)));
         this.conditions = conditions;
         this.joinModels = joinModels;
         this.groupedByColumns = groupedByColumns;
         this.aggregations = aggregations;
+
+
     }
 
     @Override
@@ -62,6 +69,9 @@ public class SelectAction implements DatabaseAction {
             validator.validate();
         } catch (FieldNotFound e) {
             log.error(e.toString());
+        } catch (InvalidTypeException e) {
+            log.error("Invalid type in WHERE clause");
+            throw new RuntimeException("Invalid type in WHERE clause");
         }
 
         log.info("Select passed the validation!");
@@ -134,6 +144,23 @@ public class SelectAction implements DatabaseAction {
         log.info("There are " + finalTables.size() + " tables in total");
         finalTables.stream().forEach(e -> System.out.println(e.getColumnNames()));
 
+        log.info(joinedTables.toString());
+        for (JoinModel joinModel : joinModels) {
+            log.info(joinModel.getLeftFieldName() + " x " + joinModel.getRightFieldName());
+        }
+        // put the joinModel in the right order
+        JoinModel.sort(joinModels, joinedTables);
+        // put the created basetables in the right order
+        if ( !(finalTables.size() == 0 && joinedTables.size() == 1)) {
+            finalTables = sortTables(finalTables, finalTableNames, joinedTables);
+        }
+        for (JoinModel joinModel : joinModels) {
+            log.info(joinModel.getLeftFieldName() + " x " + joinModel.getRightFieldName());
+        }
+        log.info("Final tablenames");
+        for ( String name : finalTableNames) {
+            log.info(name);
+        }
 
 
         // If there were no joins, the only table that could be filtered is the base table
@@ -169,5 +196,16 @@ public class SelectAction implements DatabaseAction {
         }
 
         return grouppedTable;
+    }
+
+    private ArrayList<Table> sortTables(ArrayList<Table> finalTables, ArrayList<String> finalTableNames, List<String> joinedTables) {
+        ArrayList<Table> sortedTables = new ArrayList<>();
+
+        for ( String tableName : joinedTables ) {
+            int indexOfUnsortedTable = finalTableNames.indexOf(tableName);
+            sortedTables.add(finalTables.get(indexOfUnsortedTable));
+        }
+
+        return sortedTables;
     }
 }

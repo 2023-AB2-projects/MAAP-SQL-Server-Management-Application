@@ -51,7 +51,7 @@ VALUES (field_value [, ... n])
 
 <pre>
 DELETE FROM table_name
-primary_key_field_value [, ... n]
+[ WHERE &lt;condition_schema&gt;  [AND ... n] ]
 </pre>
 
 ### Data Query Language (DQL)
@@ -77,6 +77,6 @@ table_name.field FUNC func_args
 <i>Note:</i> 
     Conditions of <b>table joins</b> must have the following format: 
         table_name1.field = table_name2.field
-    Conditions on <b>selection</b> must have the following format:
+    Conditions on <b>selection</b> or <b>deletion</b> must have the following format:
         table_name.field OP/FUNC constant(s)
 </pre>
