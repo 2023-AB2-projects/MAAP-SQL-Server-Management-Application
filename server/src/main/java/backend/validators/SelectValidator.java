@@ -127,7 +127,7 @@ public class SelectValidator implements Validator{
 
                 //TODO Check if type(id) = type("alma"),
                 try {
-                    TypeConverter.toObject(CatalogManager.getFieldType(databaseName, tableName, fieldName), value);
+                    TypeConverter.toObject(CatalogManager.getFieldType(databaseName, tableName, fieldName.split("\\.")[1]), value);
                 } catch (Exception e) {
                     throw new InvalidTypeException();
                 }

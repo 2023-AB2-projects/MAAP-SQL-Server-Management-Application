@@ -44,13 +44,13 @@ public class RecordHandler {
 
         io.writeBoolean(true);
         for(int i = 0; i < values.size(); i++){
-            if(values.get(i).equals("null")){
-                io.writeBoolean(false);
-                io.write(new byte[(int) TypeConverter.sizeof(tableStructure.get(i))]);
-            }else{
-                io.writeBoolean(true);
-                io.write(TypeConverter.toBytes(tableStructure.get(i), values.get(i)));
-            }
+            // if(values.get(i).equals("null")){
+            //    io.writeBoolean(false);
+            //    io.write(new byte[(int) TypeConverter.sizeof(tableStructure.get(i))]);
+            //}else{
+            io.writeBoolean(true);
+            io.write(TypeConverter.toBytes(tableStructure.get(i), values.get(i)));
+            //}
 
         }
     }
