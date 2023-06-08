@@ -11,6 +11,7 @@ import backend.databaseModels.conditions.Equation;
 import backend.databaseModels.conditions.FunctionCall;
 import backend.exceptions.databaseActionsExceptions.*;
 import backend.exceptions.recordHandlingExceptions.InvalidReadException;
+import backend.exceptions.recordHandlingExceptions.InvalidTypeException;
 import backend.exceptions.recordHandlingExceptions.RecordNotFoundException;
 import backend.exceptions.validatorExceptions.*;
 import backend.validators.SelectValidator;
@@ -68,6 +69,9 @@ public class SelectAction implements DatabaseAction {
             validator.validate();
         } catch (FieldNotFound e) {
             log.error(e.toString());
+        } catch (InvalidTypeException e) {
+            log.error("Invalid type in WHERE clause");
+            throw new RuntimeException("Invalid type in WHERE clause");
         }
 
         log.info("Select passed the validation!");
