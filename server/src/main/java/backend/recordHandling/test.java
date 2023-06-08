@@ -226,5 +226,7 @@ public class test {
         //tableTest();
         //joinTest();
 
+        System.out.println(CatalogManager.getForeignKeysReferencingThisTable("master", "parent"));
+        System.out.println(CatalogManager.getForeignKeysTableNamesReferencingThisTable("master", "parent"));
     }
 }
