@@ -1,7 +1,7 @@
 package backend.exceptions.validatorExceptions;
 
 public class ForeignKeyValueIsBeingReferencedInAnotherTable extends Exception {
-    public ForeignKeyValueIsBeingReferencedInAnotherTable(String value, String tableName) {
-        super("Foreign key with value '" + value + "' already found in table '" + tableName + "'!");
+    public ForeignKeyValueIsBeingReferencedInAnotherTable() {
+        super("Primary key is referenced in a child table DELETE not possible");
     }
 }
