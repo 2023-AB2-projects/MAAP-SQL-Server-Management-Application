@@ -508,6 +508,8 @@ public class SelectMainPanel extends javax.swing.JPanel {
             }
         }
 
+        if (hasWhere) commandBuilder.append('\n');
+
         // For each row check if the 'Group By' checkbox is checked
         boolean hasGroupBy = false;
         for(int row = 0; row < this.fieldSelectorTable.getRowCount(); ++row) {
