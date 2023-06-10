@@ -1,13 +1,35 @@
 # MAAP SQL Server Management Application
-![](https://github.com/2023-AB2-projects/ab2-project-nemleszkitolmasolni/blob/new_develop/client/src/main/java/images/logo_wide.png)
 
-## Build help
+![our_log](https://github.com/2023-AB2-projects/ab2-project-nemleszkitolmasolni/blob/new_develop/client/src/main/java/images/logo_wide.png)
+
+## About the project
+
+![client_side_app](https://github.com/2023-AB2-projects/ab2-project-nemleszkitolmasolni/blob/new_develop/client/src/main/java/images/light_and_dark_mode.png)
+
+**MAAP** is a **relational database managament system** (RDBMS) that supports a variety of SQL commands, with a friendly client side and helpful designers.
+
+The backend and frontend was written fully in Java, using JSON for communication and catalog, binary file management and indexing with [B+ Trees](https://en.wikipedia.org/wiki/B%2B_tree).
+
+---
+
+## Build & run help
 
 ### How to run
-After installing gradle, in the root project folder, you can build everything with `gradle build` command. <br>
-### Separate build and run for client and server
-<b> Client: </b> <code>gradle :client:build</code> && <code>gradle :client:run</code> <br>
-<b> Server: </b> <code>gradle :server:build</code> && <code>gradle :server:run</code> <br> 
+
+After installing gradle, in the root project folder, you can build everything with `gradle build` command.
+
+### Separately build serve and client
+
+<b> Server: </b> <code>gradle server:build</code>
+
+<b> Client: </b> <code>gradle client:build</code>
+
+### Running the server and client
+Open two terminals and run the follwing gradle scripts:
+<code>gradle client:run</code> 
+&& <code>gradle server:run</code> 
+
+---
 
 ## Supported commands
 
