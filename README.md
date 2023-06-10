@@ -12,6 +12,19 @@ The backend and frontend was written fully in Java, using JSON for communication
 
 ---
 
+## Client-side
+
+The user is presented with a GUI, where he can write and execute SQL commands.
+
+On the **left** there's the ***Object Explorer*** panel, where the user can see every
+database, table and fields, unique fields, primary and foreign keys for each table.
+
+On the **right** there's the ***Project Manager*** panel, where the user can create new queries, new 'projects' and save/delete/load them.
+
+
+
+---
+
 ## Build & run help
 
 ### How to run
