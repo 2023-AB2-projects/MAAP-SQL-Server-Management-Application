@@ -21,7 +21,19 @@ database, table and fields, unique fields, primary and foreign keys for each tab
 
 On the **right** there's the ***Project Manager*** panel, where the user can create new queries, new 'projects' and save/delete/load them.
 
+![client_app_design](https://github.com/2023-AB2-projects/ab2-project-nemleszkitolmasolni/blob/new_develop/client/src/main/java/images/client_app.png)
 
+### Visual Designers
+
+#### Visual Insert Designer
+A handy visual tool that let's you design **'INSERT INTO'** queries with ease.
+
+By selecting the table you want to insert into, the field names are loaded into a little table, where you can insert values for each row.
+Add/remove rows using ***+/-***.
+
+Once you're done you can generate the code and execute it!
+
+![visual_insert_designer](https://github.com/2023-AB2-projects/ab2-project-nemleszkitolmasolni/blob/new_develop/client/src/main/java/images/visual_insert_designer.png)
 
 ---
 
