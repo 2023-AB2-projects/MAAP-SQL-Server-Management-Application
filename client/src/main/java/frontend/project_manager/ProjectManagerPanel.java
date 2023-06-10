@@ -221,9 +221,17 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
 
         // Save SQL text to file
         try {
+            // Check if file exists
+            boolean fileExists = this.currentFile.exists();
+
             FileWriter fileWriter = new FileWriter(this.currentFile);
             fileWriter.write(currentSQLText);
             fileWriter.close();
+
+            // If the file didn't exist before -> Update the JTree
+            if (!fileExists) {
+                this.update();
+            }
         } catch (IOException e) {
             log.error("Error saving file: " + this.currentFileName);
             e.printStackTrace();
@@ -231,9 +239,6 @@ public class ProjectManagerPanel extends javax.swing.JPanel {
 
         // File saved -> Switch to OK icon
         this.fileIndicatorLabel.setIcon(okSymbolIcon);
-
-        // Update the JTree
-        this.update();
     }
 
     public void inputAreaChanged() {
