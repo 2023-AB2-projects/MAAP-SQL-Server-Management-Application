@@ -26,6 +26,7 @@ On the **right** there's the ***Project Manager*** panel, where the user can cre
 ### Visual Designers
 
 #### Visual Insert Designer
+
 A handy visual tool that let's you design **'INSERT INTO'** queries with ease.
 
 By selecting the table you want to insert into, the field names are loaded into a little table, where you can insert values for each row.
@@ -34,6 +35,21 @@ Add/remove rows using ***+/-***.
 Once you're done you can generate the code and execute it!
 
 ![visual_insert_designer](https://github.com/2023-AB2-projects/ab2-project-nemleszkitolmasolni/blob/new_develop/client/src/main/java/images/visual_insert_designer.png)
+
+#### Visual Delete Designer
+
+A tool that helps you design your **'DELETE FROM'** queries by choosing which fields you would like to apply a condition to.
+
+![visual_delete_designer](https://github.com/2023-AB2-projects/ab2-project-nemleszkitolmasolni/blob/new_develop/client/src/main/java/images/visual_delete_designer.png)
+
+#### Visual Select Designer
+
+A handy little tool that let's you design your **'SELECT'** queries with **joins**, **conditions** and **group by** statements.
+
+The user is first presented with a panel where he can choose which tables he wants to join together from the current database.
+The following panel will only appear if the tables can be joined (else he will get an error message to choose 'joinable' tables):
+
+![visual_select_designer](https://github.com/2023-AB2-projects/ab2-project-nemleszkitolmasolni/blob/new_develop/client/src/main/java/images/visual_select_designer.png)
 
 ---
 
