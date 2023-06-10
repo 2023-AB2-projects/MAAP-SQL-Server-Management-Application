@@ -36,7 +36,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
         this.tableFieldsPanels = new ArrayList<>();
 
         // Make first two columns of table not editable
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"Field Name", "Table Name", "Alias", "Condition", "Group By"}, 0)
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"Field Name", "Table Name", "Condition", "Group By"}, 0)
         {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -455,20 +455,14 @@ public class SelectMainPanel extends javax.swing.JPanel {
             // Get field and table name
             String fieldName = (String) this.fieldSelectorTable.getValueAt(row, 0);
             String tableName = (String) this.fieldSelectorTable.getValueAt(row, 1);
-            String aliasName = (String) this.fieldSelectorTable.getValueAt(row, 2);
 
             // Cache selected tables
             selectedTables.add(tableName);
 
             // If it has alias ad it
             String tableFieldName = tableName + '.' + fieldName;
-            if (row == 0) {
-                if (aliasName != null) commandBuilder.append(tableFieldName).append(" AS ").append(aliasName);
-                else commandBuilder.append(tableFieldName);
-            } else {
-                if (aliasName != null) commandBuilder.append(", ").append(tableFieldName).append(" AS ").append(aliasName);
-                else commandBuilder.append(", ").append(tableFieldName);
-            }
+            if (row == 0) commandBuilder.append(tableFieldName);
+            else commandBuilder.append(", ").append(tableFieldName);
         }
         commandBuilder.append('\n');
 
@@ -491,7 +485,7 @@ public class SelectMainPanel extends javax.swing.JPanel {
             // Get field and table name
             String fieldName = (String) this.fieldSelectorTable.getValueAt(row, 0);
             String tableName = (String) this.fieldSelectorTable.getValueAt(row, 1);
-            String condition = (String) this.fieldSelectorTable.getValueAt(row, 3);
+            String condition = (String) this.fieldSelectorTable.getValueAt(row, 2);
 
             // If it has condition add where
             if (condition != null) {
@@ -517,8 +511,8 @@ public class SelectMainPanel extends javax.swing.JPanel {
             String fieldName = (String) this.fieldSelectorTable.getValueAt(row, 0);
             String tableName = (String) this.fieldSelectorTable.getValueAt(row, 1);
 
-            if (this.fieldSelectorTable.getValueAt(row, 4) == null) continue;
-            boolean groupBy = (boolean) this.fieldSelectorTable.getValueAt(row, 4);
+            if (this.fieldSelectorTable.getValueAt(row, 3) == null) continue;
+            boolean groupBy = (boolean) this.fieldSelectorTable.getValueAt(row, 3);
 
 
             // If it has condition add where
